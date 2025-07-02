@@ -1,0 +1,88 @@
+name: apollo
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  get: ^4.7.2
+  fluttertoast: ^8.2.12
+  flutter_svg: ^2.1.0
+  get_storage: ^2.1.1
+  dropdown_button2: ^2.3.9
+  scaled_app: ^2.3.0
+  lottie: ^3.3.1
+  form_field_validator: ^1.1.0
+  pin_code_fields: ^8.0.1
+  flutter_staggered_animations: ^1.1.1
+  flutter_card_swiper: ^7.0.2
+  smooth_page_indicator: ^1.2.1
+  widgets_easier: ^0.0.10
+  flutter_fortune_wheel: ^1.3.2
+  carousel_slider: ^5.1.1
+  animated_item: ^0.0.2
+  flutter_slidable: ^4.0.0
+  flip_card: ^0.7.0
+  flutter_html: ^3.0.0
+  share_plus: ^11.0.0
+  audioplayers: ^6.5.0
+  shimmer: ^3.0.0
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^5.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/audio/
+    - assets/bottom_bar/
+    - assets/images/
+    - assets/icons/
+    - assets/Lottie/
+
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/manrope/Manrope-Light.ttf
+          style: normal
+          weight: 300
+        - asset: assets/fonts/manrope/Manrope-Regular.ttf
+          style: normal
+          weight: 400
+        - asset: assets/fonts/manrope/Manrope-Medium.ttf
+          style: normal
+          weight: 500
+        - asset: assets/fonts/manrope/Manrope-SemiBold.ttf
+          style: normal
+          weight: 600
+        - asset: assets/fonts/manrope/Manrope-Bold.ttf
+          style: normal
+          weight: 700
+        - asset: assets/fonts/manrope/Manrope-ExtraBold.ttf
+          style: normal
+          weight: 800
+    - family: Caprasimo
+      fonts:
+        - asset: assets/fonts/Caprasimo/Caprasimo-Regular.ttf
+          style: normal
+          weight: 400
+
