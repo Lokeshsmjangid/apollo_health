@@ -5,14 +5,17 @@ import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/models/notifications_model.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'resources/Apis/api_models/notification_model.dart';
+import 'resources/Apis/api_repository/notification_delete_repo.dart';
 import 'resources/app_routers.dart';
 import 'resources/text_utility.dart';
 
@@ -30,6 +33,8 @@ class NotificationsPage extends StatelessWidget {
           elevation: 0,
           automaticallyImplyLeading: false,
           centerTitle: true,
+          leading: backButton(backButtonColor: AppColors.whiteColor,
+              onTap: (){ Get.back();}).marginAll(10),
 
           title: addText400(
             "Notifications",
@@ -40,18 +45,24 @@ class NotificationsPage extends StatelessWidget {
 
           ),
           actions: [
-            if(logic.notifications.isNotEmpty)
+            if(logic.model.data!=null && logic.model.data!.isNotEmpty)
             IconButton(
                 tooltip: 'Clear all Notifications',
                 onPressed: () {
                   showClearAllNotificationsSheet(context, () {
-                    
-                    // Get.find<NotificationsCtrl>().effectSound(sound: AppAssets.actionButtonTapSound);
                     Get.back();
-                    Get.find<NotificationsCtrl>().notifications.clear();
-                    Get.find<NotificationsCtrl>().update();
+                    if(Get.find<NotificationsCtrl>().model.data!=null && Get.find<NotificationsCtrl>().model.data!.isNotEmpty){
+                      showLoader(true);
+                      notificationRemoveApi(apiFor: 'clear').then((value){
+                        showLoader(false);
+                        if(value.status==true){
+                          Get.find<NotificationsCtrl>().model.data!.clear();
+                          Get.find<NotificationsCtrl>().update();
+                        }
+                      });
+                    }
                   });
-                }, icon: Icon(Icons.cancel_outlined))
+                }, icon: SvgPicture.asset(AppAssets.binIcon,height: 30,width: 30,))
           ],
 
         ),
@@ -87,14 +98,14 @@ class NotificationsPage extends StatelessWidget {
                       // ).marginSymmetric(horizontal: 16),
                       // addHeight(32),
 
-                      logic.notifications.isNotEmpty
-                          ? Expanded(child: logic.isDataLoading
-                          ? buildLoader()
-                          : ListView.builder(
+                      Expanded(
+                          child: logic.isDataLoading
+                          ? buildCpiLoader()
+                          : logic.model.data!=null && logic.model.data!.isNotEmpty? ListView.builder(
                         controller: logic.scaleController,
                         scrollDirection: Axis.vertical,
                         // shrinkWrap: true,
-                        itemCount: logic.notifications.length,
+                        itemCount: logic.model.data!.length,
                         itemBuilder: (context, index) {
 
                           return AnimatedItem(
@@ -104,28 +115,29 @@ class NotificationsPage extends StatelessWidget {
                                 snap: false,
                                 type: AnimationType.end,
                               ),
-                              child: buildNotificationTile(index: index,
-                                  item: logic.notifications[index]).marginOnly(
+                              child: buildNotificationTileApi(index: index,
+                                  item: logic.model.data![index]).marginOnly(
                                   top: index == 0 ? 32 : 0)
                           );
                         },
-                      ))
-                          : Column(
-                        children: [
-                          Lottie.asset(
-                              'assets/Lottie/Appolo dance.json',
-                              repeat: true,
-                              reverse: false,
-                              animate: true,
-                              width: 240,
-                              height: 240
-                          ).marginOnly(top: 30),
-                          addText500('You don\'t have any notifications.',
-                              textAlign: TextAlign.center,
-                              color: AppColors.whiteColor, fontSize: 20)
-                              .marginSymmetric(horizontal: 60),
-                        ],
                       )
+                              : Column(
+                      children: [
+                      Lottie.asset(
+                      'assets/Lottie/Appolo dance.json',
+                          repeat: true,
+                          reverse: false,
+                          animate: true,
+                          width: 240,
+                          height: 240
+                      ).marginOnly(top: 30),
+                      addText500('You don\'t have any notifications.',
+                          textAlign: TextAlign.center,
+                          color: AppColors.whiteColor, fontSize: 20)
+                          .marginSymmetric(horizontal: 60),
+                    ],
+                  ))
+
                     ],
                   ),
                 );
@@ -157,9 +169,8 @@ class NotificationsPage extends StatelessWidget {
         image = AppAssets.tagIcon;
         break;
       case NotificationType.system:
-        image =
-        item.message.contains('alert') ? AppAssets.warningCircleIcon : AppAssets
-            .checkCircleGreenIcon;
+        image = AppAssets.checkCircleGreenIcon;
+        // item.message.contains('alert') ? AppAssets.warningCircleIcon : AppAssets.checkCircleGreenIcon;
         break;
     }
 
@@ -171,7 +182,9 @@ class NotificationsPage extends StatelessWidget {
             break;
           case 'Friend Request':
             Get.toNamed(AppRoutes.playRequestScreen);
-
+            break;
+          case 'Friend Request Accepted':
+            Get.toNamed(AppRoutes.myFriendsScreen);
             break;
         }
       },
@@ -233,7 +246,105 @@ class NotificationsPage extends StatelessWidget {
     );
   }
 
+  Widget buildNotificationTileApi({required int index, required NotificationData item}) {
+    String? image;
+    Color iconColor;
+    // Color bgColor = item.isHighlighted ? AppColors.yellow10Color : AppColors.whiteColor;
+    Color bgColor = item.title=="Group Play Invite" || item.title=="Friend Request" || item.title=="Friend Request Accepted" ? AppColors.yellow10Color : AppColors.whiteColor;
 
+    switch (item.title) {
+      case 'Group Play Invite':
+        image = AppAssets.friendsIcon;
+        break;
+      case 'Friend Request':
+        image = AppAssets.userAddIcon;
+        break;
+      case 'Friend Request Accepted':
+        image = AppAssets.userAddIcon;
+        break;
+      case 'Promotion':
+        image = AppAssets.tagIcon;
+        break;
+      case 'System':
+        image = AppAssets.checkCircleGreenIcon;
+        // image = item.description!.contains('alert') ? AppAssets.warningCircleIcon : AppAssets.checkCircleGreenIcon;
+        break;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        switch (item.title) {
+          case 'Group Play Invite':
+            Get.toNamed(AppRoutes.groupPlayRequestScreen,arguments: {'group_game_id':item.groupGameId,'sender_id':item.senderId});
+            break;
+          case 'Friend Request Accepted':
+            Get.toNamed(AppRoutes.myFriendsScreen);
+            break;
+          case 'Friend Request':
+            Get.toNamed(AppRoutes.playRequestScreen,arguments: {'group_game_id':item.groupGameId});
+            // Get.toNamed(AppRoutes.groupPlayRequestScreen,arguments: {'group_game_id':item.groupGameId,'sender_id':item.senderId});
+            break;
+        }
+      },
+      child: Slidable(
+        key: ValueKey(item.title), // Unique ID
+
+        endActionPane: ActionPane(
+          motion: const DrawerMotion(), // Slide animation
+          extentRatio: 0.25, // Width of action area
+          children: [
+            SlidableAction(
+              onPressed: (context) {
+
+                showLoader(true);
+                notificationRemoveApi(                 // Handle delete
+                    apiFor: 'delete',
+                    id: item.notificationId
+                ).then((value){ showLoader(false);
+                  if(value.status==true){
+                    Get.find<NotificationsCtrl>().model.data!.removeAt(index);
+                    Get.find<NotificationsCtrl>().update();
+                  } else if(value.status==false){
+                    CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
+                  }
+                });
+              },
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              padding: EdgeInsets.zero,
+
+              label: 'Delete',
+            ),
+
+          ],
+        ),
+        child: Container(
+          // height: 100,
+          margin: const EdgeInsets.only(left: 16, right: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Image.asset('$image', width: 30,color: item.title=='Group Play Invite'? AppColors.primaryColor: null,),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    addText600('${item.title}', fontSize: 16, maxLines: 2,overflow: TextOverflow.ellipsis,color: AppColors.blackColor),
+                    const SizedBox(height: 4),
+                    addText400('${item.description}', fontSize: 12, maxLines: 2,overflow:TextOverflow.ellipsis,color: AppColors.blackColor),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              addText400('${item.sentTime}',fontSize: 8)]))).marginOnly(bottom: 12),
+    );
+  }
   buildShimmerLoader(){
     return ListView.builder(
         itemCount: 10,
@@ -303,33 +414,4 @@ class NotificationsPage extends StatelessWidget {
           ).marginOnly(top:index == 0 ? 32 : 0,bottom: 14);
     });
   }
-
-  buildLoader(){
-    return Center(
-      child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-                width: 60.0,
-                height: 60.0,
-                decoration: BoxDecoration(
-                    color: AppColors.whiteColor,
-                    shape: BoxShape.circle
-                ),
-                child: ClipRRect(child: SvgPicture.asset(AppAssets.logo).marginAll(6))),
-            Container(
-                width: 60.0,
-                height: 60.0,
-                decoration: BoxDecoration(
-                  // color: AppColors.primaryColor,
-                  // borderRadius: BorderRadius.circular(4.0),
-                  shape: BoxShape.circle,
-                  // image: DecorationImage(image: AssetImage(AppAssets.commonLogo)),
-                ),
-                child: CircularProgressIndicator(color: AppColors.secondaryColor,strokeWidth: 4,).marginAll(1))
-          ]
-      ),
-    );
-  }
-
 }

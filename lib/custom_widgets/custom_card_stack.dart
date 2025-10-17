@@ -385,7 +385,8 @@ class StackedDraggableSwiperState extends State<StackedDraggableSwiper> with Sin
   void swipeRight() => _startProgSwipe(SwipeDirection.right);
 
   void _startProgSwipe(SwipeDirection dir) {
-    if (!widget.swipeEnabled ||
+    if (
+    // !widget.swipeEnabled ||
         _isAnimating ||
         _currentIndex >= widget.cards.length - 1) return;
 

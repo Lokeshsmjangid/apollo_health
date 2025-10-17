@@ -1,18 +1,15 @@
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_column_animation.dart';
 import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/custom_widgets/custom_text_field.dart';
-import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/Apis/api_repository/forgot_password_repo.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/get_utils.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -85,7 +82,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       buttonColor: isButtonDisable?AppColors.buttonDisableColor:AppColors.primaryColor,
                       onButtonTap: isButtonDisable?(){}:(){
                           if(formKey.currentState?.validate()??false){
-                            Get.toNamed(AppRoutes.forgotPasswordOtpScreen,arguments: {'email':emailController.text});
+                            showLoader(true);
+                            forgotPasswordApi(email: emailController.text).then((value){
+                              showLoader(false);
+                              if(value.status==true){
+                                CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                                Get.toNamed(AppRoutes.forgotPasswordOtpScreen,
+                                    arguments: {'email':emailController.text,
+                                      'password_reset_token':value.data?.passwordResetToken,
+                                      'otp':value.data?.otp.toString(),
+
+                                    });
+                              }else if(value.status==false){
+                                CustomSnackBar().showSnack(Get.context!,message: '${value.message}',isSuccess: false);
+                              }
+                            });
+
+
+
                           }
                       },
                     ),

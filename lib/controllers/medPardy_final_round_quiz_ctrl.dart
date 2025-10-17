@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:apollo/models/questions_model.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/utils.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';

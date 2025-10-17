@@ -1,5 +1,6 @@
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+
 import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
@@ -49,7 +50,7 @@ class _HealthApprenticeBadgeScreenState extends State<HealthApprenticeBadgeScree
             child: null,
           ),
 
-          Container(
+          SizedBox(
             width: double.infinity,
             child: Image.asset(
               AppAssets.notificationsBg,
@@ -58,7 +59,7 @@ class _HealthApprenticeBadgeScreenState extends State<HealthApprenticeBadgeScree
           ),
 
           // if(result! > 60)
-          Container(
+          SizedBox(
             width: double.infinity,
             child: Image.asset(
               "assets/Lottie/party.gif",
@@ -81,7 +82,7 @@ class _HealthApprenticeBadgeScreenState extends State<HealthApprenticeBadgeScree
               Image.asset(AppAssets.healthApprenticeBadge,height: 279,width: 294),
 
               Spacer(),
-              addText400("Health\nApprentice Madelyn",
+              addText400("Health\nApprentice ${AuthData().userModel?.firstName}",
 
                 fontSize: 38,
                 height: 43,

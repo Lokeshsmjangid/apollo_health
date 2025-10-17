@@ -1,20 +1,22 @@
 import 'dart:io';
-
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:apollo/resources/utils.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/resources/Apis/api_models/livec_chalenge_score_model.dart';
 
 class LiveChallengeResultPrecentageScreen extends StatefulWidget {
-  double? result;
-  LiveChallengeResultPrecentageScreen({super.key,this.result=0});
+  LiveChallengeScore? result;
+  LiveChallengeResultPrecentageScreen({super.key,this.result});
 
   @override
   State<LiveChallengeResultPrecentageScreen> createState() => _LiveChallengeResultPrecentageScreenState();
@@ -29,9 +31,27 @@ class _LiveChallengeResultPrecentageScreenState extends State<LiveChallengeResul
   void initState() {
     // TODO: implement initState
     super.initState();
-    // effectSound(sound: AppAssets.confettiWave);
+    _startPeriodicTimer();
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _timerNew?.cancel();
+    super.dispose();
+  }
+  Timer? _timerNew;
+  int _counter = 10;
+  void _startPeriodicTimer() {
+    _timerNew = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _counter--;
+      });
+      if(_counter==0){
+        Get.offAll(()=>DashBoardScreen());
+      }
+    });
+  }
 
 
   @override
@@ -48,8 +68,8 @@ class _LiveChallengeResultPrecentageScreenState extends State<LiveChallengeResul
             ),
           ),
 
-          if(widget.result! > 60)
-            Container(
+          if(widget.result!.percentage! > 60)
+            SizedBox(
               width: double.infinity,
               child: Image.asset(
                 "assets/Lottie/party.gif",
@@ -64,6 +84,8 @@ class _LiveChallengeResultPrecentageScreenState extends State<LiveChallengeResul
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.center,
               children: [
+
+                addHeight(10),
                 Row(
                   children: [
                     Image.asset(AppAssets.circleQuestionIcon, height: 24),
@@ -79,7 +101,8 @@ class _LiveChallengeResultPrecentageScreenState extends State<LiveChallengeResul
                     GestureDetector(
                         onTap: (){
                           // effectSound(sound: AppAssets.actionButtonTapSound);
-                          Share.share('Check out Apollo MedGames!');
+                          Share.share(
+                              shareText                          );
                         },
                         child: Image.asset(AppAssets.shareIcon,height: 24,width: 24,)),
                     const SizedBox(width: 10),
@@ -93,7 +116,7 @@ class _LiveChallengeResultPrecentageScreenState extends State<LiveChallengeResul
                 ),
                 addHeight(24),
                 addText400(
-                  widget.result! > 60?"Great job!":"You're learning!",
+                  widget.result!.percentage! > 60?"Great job!":"You're learning!",
                   fontSize: 32,
                   fontFamily: 'Caprasimo',
                   color: Colors.white,
@@ -112,11 +135,10 @@ class _LiveChallengeResultPrecentageScreenState extends State<LiveChallengeResul
 
                 // const SizedBox(height: 30),
                 addText400(
-                  "${widget.result?.toStringAsFixed(0)}%",
-
+                  "${widget.result?.percentage!.toStringAsFixed(0)}%",
                     fontSize: 110,
                     color: Colors.white,
-                    fontFamily: 'Caprasimo', // Use custom font if needed
+                    fontFamily: 'Caprasimo',
 
                 ),
 
@@ -126,7 +148,7 @@ class _LiveChallengeResultPrecentageScreenState extends State<LiveChallengeResul
                   children: [
                     Image.asset(AppAssets.coinIcon,height: 24,),
                     SizedBox(width: 6),
-                    Text("+120 HP", style: TextStyle(color: Colors.white)),
+                    Text("${widget.result!.totalXp} HP", style: TextStyle(color: Colors.white)),
 
                   ],
                 ),

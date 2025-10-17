@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
 
 import 'app_assets.dart';
@@ -9,6 +10,7 @@ class CountdownTimerWidget extends StatefulWidget {
   final int duration; // Number of minutes or seconds
   final bool isInSecondsMode; // true = seconds, false = minutes
   final VoidCallback? onTimerEnd;
+  final void Function(int secondsLeft)? onTick;
   final bool shouldStop;
 
   const CountdownTimerWidget({
@@ -16,6 +18,7 @@ class CountdownTimerWidget extends StatefulWidget {
     required this.duration,
     this.isInSecondsMode = false,
     this.onTimerEnd,
+    this.onTick,
     this.shouldStop = false,
   }) : super(key: key);
 
@@ -47,6 +50,9 @@ class CountdownTimerWidgetState extends State<CountdownTimerWidget> {
         setState(() {
           _secondsLeft--;
         });
+        if (widget.onTick != null) {
+          widget.onTick!(_secondsLeft); // <-- Call onTick with seconds left
+        }
       }
     });
   }
@@ -68,6 +74,7 @@ class CountdownTimerWidgetState extends State<CountdownTimerWidget> {
   @override
   void dispose() {
     timer?.cancel();
+    timer = null;
     super.dispose();
   }
 
@@ -75,11 +82,9 @@ class CountdownTimerWidgetState extends State<CountdownTimerWidget> {
   void didUpdateWidget(covariant CountdownTimerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.shouldStop && timer != null) {
-      timer?.cancel();
-      print('dsffvf');
+      timer?.cancel();timer = null;
+      apolloPrint(message: 'Countdown timer');
     }
-
-
   }
 
 

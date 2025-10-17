@@ -2,16 +2,18 @@ import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/models/medpardy_players_model.dart';
+import 'package:apollo/resources/Apis/api_repository/medpardy_register_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/utils.dart';
-
-import 'medpardy_board_screen.dart';
 
 class MedpardyChooseFriendScreen extends StatefulWidget {
   @override
@@ -19,21 +21,14 @@ class MedpardyChooseFriendScreen extends StatefulWidget {
       _MedpardyChooseFriendScreenState();
 }
 
-class _MedpardyChooseFriendScreenState
-    extends State<MedpardyChooseFriendScreen> {
-  final TextEditingController loginUserController = TextEditingController(
-      text: 'Madelyn');
+class _MedpardyChooseFriendScreenState extends State<MedpardyChooseFriendScreen> {
+  final TextEditingController loginUserController = TextEditingController(text: AuthData().userModel?.firstName??'');
 
   final TextEditingController player2Controller = TextEditingController();
 
   final TextEditingController player3Controller = TextEditingController();
 
-  bool get isButtonEnabled =>
-      player2Controller.text
-          .trim()
-          .isNotEmpty && player3Controller.text
-          .trim()
-          .isNotEmpty;
+  bool get isButtonEnabled => player2Controller.text.trim().isNotEmpty && player3Controller.text.trim().isNotEmpty;
 
   @override
   void initState() {
@@ -61,7 +56,6 @@ class _MedpardyChooseFriendScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      // backgroundColor: AppColors.primaryColor,
       body: SizedBox.expand(
         child: Stack(
           children: [
@@ -78,11 +72,12 @@ class _MedpardyChooseFriendScreenState
               bottom: false,
               child: Column(
                 children: [
-                  // Header with back button and title
 
-                  // addHeight(52),
+                  // Header with back button and title
+                  addHeight(10),
                   backBar(
                     title: "Medpardy",
+                    trailing: true,
                     onTap: () {
                       Get.back();
                     },
@@ -102,9 +97,9 @@ class _MedpardyChooseFriendScreenState
                       ),
                       child: LayoutBuilder(
                           builder: (context, constraints)  {
+
                         return SingleChildScrollView(
-                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior
-                              .manual,
+                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
                               minHeight: constraints.maxHeight,
@@ -116,7 +111,7 @@ class _MedpardyChooseFriendScreenState
                                   // Select Players Title
                                   addText400(
                                       "Enter Players ", fontFamily: 'Caprasimo',
-                                      fontSize: 32,
+                                      fontSize: 26,
                                       height: 40,
                                       color: AppColors.primaryColor),
                                   SizedBox(height: 16),
@@ -148,7 +143,7 @@ class _MedpardyChooseFriendScreenState
                                     labelColor: AppColors.pink500Color,
                                     controller: player3Controller,
                                   ),
-                                  const SizedBox(height: 40),
+                                  const SizedBox(height: 80),
 
                                   // addHeight(100)
                                 ],
@@ -179,12 +174,56 @@ class _MedpardyChooseFriendScreenState
               buttonText: 'Start Game',
               onButtonTap: () {
                 if (isButtonEnabled) {
-                  // Get.toNamed(AppRoutes.medpardyBoardScreen);
-                  Get.to(() =>
-                      MedpardyBoardScreen(
-                    player1: loginUserController.text,
-                    player2: player2Controller.text,
-                    player3: player3Controller.text,));
+                  List<MedPardyPlayerModel> players = [
+                    MedPardyPlayerModel(
+                        name: loginUserController.text,
+                        color: Color(0xFFFFF3C4),
+                        textColor: AppColors.brownColor,
+                        borderColor: Color(0xFFFFE066),
+                        hp: 0,
+                        round: 0,
+                        gamePlayed: 0
+                    ),
+                    MedPardyPlayerModel(
+                        name: player2Controller.text,
+                        color: Color(0xFFE5F7EF),
+                        textColor: AppColors.green500Color,
+                        borderColor: Color(0xFFB9F6CA),
+                        hp: 0, round: 0,gamePlayed: 0
+                    ),
+                    MedPardyPlayerModel(
+                        name: player3Controller.text,
+                        color: Color(0xFFF8E6F6),
+                        textColor: AppColors.pink500Color,
+                        borderColor: Color(0xFFF7C8FF),
+                        hp: 0,
+                        round: 0,
+                        gamePlayed: 0
+                    ),
+                  ];
+                  showLoader(true);
+                  medpardyRegisterApi(
+                      player1: loginUserController.text,
+                      player2: player2Controller.text,
+                      player3: player3Controller.text).then((registerData){
+                    showLoader(false);
+                    if(registerData.status==true && registerData.data!=null){
+                      Get.toNamed(AppRoutes.medpardy1stRoundScreen,arguments: {
+                        'initialTime': true,
+                        'game_id': registerData.data!.users!.id,
+                        'category_list': registerData.data!.categoryList??[],
+                        'selected_player': 0,
+                        'players_list':players,
+                        'cells':[],
+                      });
+                    }
+                  });
+
+
+                  // Get.to(() => MedpardyBoardScreen(
+                  //   player1: loginUserController.text,
+                  //   player2: player2Controller.text,
+                  //   player3: player3Controller.text,));
                 }
               },
 
@@ -192,18 +231,7 @@ class _MedpardyChooseFriendScreenState
                 left: 16, right: 16,
                 bottom: 32, top: 7),
           )),
-      /*bottomSheet:  Container(
-        height: 90,
-        decoration: BoxDecoration(color: AppColors.whiteColor),
-        width: double.infinity,
-        child: AppButton(
-          buttonText: 'Start Game',
-          onButtonTap: (){
-            Get.toNamed(AppRoutes.medpardyBoardScreen);
-          },
-          buttonColor: AppColors.buttonDisableColor,
-        ).marginOnly(left: 16, right: 16, bottom: 24, top: 5),
-      )*/
+
     );
   }
 
@@ -243,6 +271,7 @@ class _MedpardyChooseFriendScreenState
           CustomTextField(
               enabled: enabled,
               controller: controller,
+              textCapitalization: TextCapitalization.words,
               fillColor: AppColors.whiteColor,
               hintText: enabled ? "Enter First Name" : value),
 

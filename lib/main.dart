@@ -1,14 +1,29 @@
 
+import 'dart:io';
+import 'package:advertising_id/advertising_id.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+import 'resources/Apis/api_constant.dart';
 import 'resources/app_color.dart';
+import 'resources/app_routers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'resources/app_routers.dart';
 import 'resources/dependencies.dart' as de;
 import 'package:scaled_app/scaled_app.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:apollo/resources/unilink.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:apollo/resources/notification_service.dart';
 
+
+
+var referralCode = "";
+bool unityAdsInitialized = false;
 Future<void> main() async{
+
   ScaledWidgetsFlutterBinding.ensureInitialized(
     scaleFactor: (deviceSize) {
       const double widthOfDesign = 375; // screen width used in your UI design
@@ -16,42 +31,121 @@ Future<void> main() async{
     },
   );
 
-  /*if(Platform.isIOS){ await Firebase.initializeApp();}
-  else { await Firebase.initializeApp(options: FirebaseOptions(
-      apiKey: 'AIzaSyCnyBP4n_Kt3dD3qz4APEDLLXSnNzlvXKQ',
-      appId: '1:237317545931:android:40987e4bc8555b4c3ce04e',
-      messagingSenderId: '237317545931',
-      projectId: 'levicon-carpooling-32563'));}*/
+  if(Platform.isIOS){
+    await Firebase.initializeApp();
+  }
+  else {
+    await Firebase.initializeApp(options: FirebaseOptions(
+      apiKey: 'AIzaSyAf4dYqkNwXH5b7oau2lQ0Kk2JSe_3AF_Q',
+      appId: '1:1029679126997:android:49144c4a734ee7c5d1855c',
+      messagingSenderId: '1029679126997',
+      projectId: 'apollo-medgames'));}
   await de.init();
   await GetStorage.init();
-  // initMessaging();
+
+  // await AppLinksService.init(); // to use dynamic link
+  initMessaging();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  /// ---------------- Initialize Unity Ads Globally ----------------
+  await _initializeUnityAdsGlobal();
+  // MobileAds.instance.initialize();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+Future<void> _initializeUnityAdsGlobal() async {
+  final gameId = Platform.isAndroid
+      ? ApiUrls.gameIdAndroid
+      : ApiUrls.gameIdIOS;
+  apolloPrint(message: "🔹 Initializing Unity Ads...");
+  apolloPrint(message: "🔹 Platform: ${Platform.operatingSystem}");
+  apolloPrint(message: "🔹 Game ID: $gameId");
+  apolloPrint(message: "🔹 Test Mode: ${kDebugMode}");
+  await UnityAds.init(
+    gameId: gameId,
+    testMode: kDebugMode, // false in production
+    onComplete: () {
+      apolloPrint(message: "✅ Unity Ads Initialized Successfully!");
+      apolloPrint(message: "✅ Game ID: $gameId");
+      apolloPrint(message: "✅ Platform: ${Platform.operatingSystem}");
+      unityAdsInitialized = true;
+    },
+    onFailed: (error, message) {
+      apolloPrint(message: "❌ Unity Ads Initialization Failed!");
+      apolloPrint(message: "❌ Error Type: $error");     // e.g., 'INIT_FAILED'
+      apolloPrint(message: "❌ Error Message: $message"); // detailed message
+      apolloPrint(message: "❌ Game ID: $gameId");
+      apolloPrint(message: "❌ Platform: ${Platform.operatingSystem}");
+      apolloPrint(message: "❌ Check your Unity Dashboard & Game ID");
+      unityAdsInitialized = false;
+    },
+  );
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  /// when use of ads make myapp to stateless
+  String adId = "Fetching...";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAdId();
+  }
+
+  Future<void> _fetchAdId() async {
+    try {
+      String? id;
+
+      if (Platform.isIOS) {
+        // Request tracking permission (required from iOS 14+)
+        final status = await AppTrackingTransparency.requestTrackingAuthorization();
+        apolloPrint(message: "Tracking authorization status: $status");
+
+        id = await AppTrackingTransparency.getAdvertisingIdentifier();
+      } else {
+        id = await AdvertisingId.id(true); // true = limit ad tracking
+      }
+
+      setState(() {
+        adId = id!;
+      });
+
+      apolloPrint(message: "Advertising ID: $id");
+    } catch (e) {
+      setState(() {
+        adId = "Error: $e";
+      });
+      apolloPrint(message: "Error fetching ad ID: $e");
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             statusBarIconBrightness: Brightness.dark,
             statusBarBrightness: Brightness.light
         ));
     return GestureDetector(
       onTap: () {
-        if (FocusManager.instance.primaryFocus!.hasFocus) {
+        if (FocusManager.instance.primaryFocus?.hasFocus ?? false) {
           FocusManager.instance.primaryFocus!.unfocus();
         }
       },
       child: GetMaterialApp(
-        title: 'Apollo',
+        title: 'Apollo MedGames',
         locale: Get.deviceLocale,
         getPages: AppRoutes.getRoute,
         debugShowCheckedModeBanner: false,
-        // initialRoute: AppRoutes.splashScreen,
-        initialRoute: AppRoutes.dashboardScreen,
+        initialRoute: AppRoutes.splashMainScreen,
         defaultTransition: Transition.noTransition,
         theme: ThemeData(
             primarySwatch: primaryColorShades,
@@ -63,11 +157,16 @@ class MyApp extends StatelessWidget {
             data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0), // Set the desired text scaling factor here
             child: child!,
           );
-        },
-      ),
+        })
     );
   }
 }
+
+
+
 // command to generate SHA key
 // keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 // firebase hosting for dynamic link---> levicon-carpooling-32563.web.app
+// share url var url = '${ApiUrls.domain}refer/?promo-id=${ctrl.communityID}&promo-type=community';
+
+// add to xcode associate domain-> applinks:apollomedgames.com

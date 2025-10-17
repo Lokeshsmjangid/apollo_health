@@ -1,23 +1,25 @@
-import 'package:apollo/bottom_sheets/winner_takes_all_one_table_bottom_sheet.dart';
-import 'package:apollo/controllers/group_play_request_ctrl.dart';
-import 'package:apollo/controllers/play_request_ctrl.dart';
+import 'package:apollo/controllers/group_play_frinds_ctrl.dart';
+import 'package:apollo/controllers/mutual_friend_ctrl.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 class MutualFriendScreen extends StatelessWidget {
 
 
-  MutualFriendScreen({super.key});
+  const MutualFriendScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryColor, // Purple background
-      body: GetBuilder<PlayRequestCtrl>(builder: (logic) {
+      body: GetBuilder<MutualFriendCtrl>(builder: (logic) {
         return Stack(
           children: [
             Positioned.fill(
@@ -31,17 +33,22 @@ class MutualFriendScreen extends StatelessWidget {
               child: Column(
                 children: [
                   // addHeight(52),
+
+                  addHeight(10),
                   // Top Bar
                   backBar(
                     title: "Mutual Friends",
                     onTap: () {
                       Get.back();
                     },
+                    // isCancel: true
                   ).marginSymmetric(horizontal: 16),
                   const SizedBox(height: 24),
                   // White rounded container
                   Expanded(
-                    child: Container(
+                    child:  logic.isDataLoading? buildCpiLoader()
+                        : logic.friendModel.data!=null && logic.friendModel.data!.isNotEmpty
+                        ? Container(
                       width: double.infinity,
                       decoration: const BoxDecoration(
                         color: Colors.white,
@@ -52,18 +59,18 @@ class MutualFriendScreen extends StatelessWidget {
                           Align(
                               alignment: Alignment.centerLeft,
                               child: addText400(
-                                  'Mutual Friends (3)',
+                                  'Mutual Friends (${logic.friendModel.data!.length??0})',
                                   fontSize: 20,
                                   height: 22,
                                   fontFamily: 'Caprasimo')),
                           addHeight(8),
                           ListView.builder(
                             shrinkWrap: true,
-                            itemCount: logic.requests.length,
+                            itemCount: logic.friendModel.data!.length,
                             padding: EdgeInsets.zero,
                             // padding: const EdgeInsets.symmetric(vertical: 20),
                             itemBuilder: (context, index) {
-                              final user = logic.requests[index];
+                              final player =logic.friendModel.data![index];
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 2),
                                 padding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
@@ -74,19 +81,47 @@ class MutualFriendScreen extends StatelessWidget {
                                   children: [
                                     Stack(
                                       children: [
-                                        CircleAvatar(
-                                          radius: 25,
-                                          backgroundImage: NetworkImage(user['avatar']),
-                                        ),
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: Image.asset(
-                                            AppAssets.flag1Icon,
-                                            height: 20,
-                                            width: 24,
+                                        Container(
+                                          height: 50,
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                              color: AppColors.yellow10Color,
+                                              shape: BoxShape.circle
                                           ),
+                                          child: CachedImageCircle2(imageUrl: player.profileImage,isCircular: true),
                                         ),
+
+                                        Positioned(
+                                          // top: 2,
+                                          right: 0,
+                                          bottom: 0,
+                                          child: Container(
+                                            width: 22,height: 15,
+                                            decoration: BoxDecoration(
+                                              // border: Border.all(color: AppColors.whiteColor,width: 1.5),
+                                                borderRadius: BorderRadius.circular(2)
+
+                                            ),
+                                            child: ClipRRect(
+                                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                                              borderRadius: BorderRadius.circular(2),
+                                              child: Image.network('${player.countryFlag}',fit: BoxFit.cover),
+                                            ),),
+                                        ),
+
+                                        if(player.onlineStatusVisible==1)
+                                          Positioned(
+                                            top: 0,
+                                            right: 0,
+                                            // bottom: 0,
+                                            child: Container(
+                                              height: 12, width: 12,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Color(0xff41A43C)
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
 
@@ -95,14 +130,13 @@ class MutualFriendScreen extends StatelessWidget {
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          addText600(
-                                            user['name'],fontSize: 16,
+                                          addText600(getTruncatedName(player.firstName??'',player.lastName??""),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontSize: 16,
                                           ),
-                                          const SizedBox(height: 2),
-                                          addText400(
-                                            user['hps'],
-                                            fontSize: 12
-                                          ),
+                                          addHeight(2),
+                                          addText400('${player.xp} HP', fontSize: 12),
                                         ],
                                       ),
                                     ),
@@ -110,13 +144,13 @@ class MutualFriendScreen extends StatelessWidget {
 
                                     GestureDetector(
                                       onTap: (){
-                                        WinnerTakesAllOnOneTableSheet(context,
-                                            onTapLetsGo: (){
-                                          // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                                        },
-                                        onTapPass: (){
-                                          // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                                        });
+                                        Get.find<GroupPlayFriendsCtrl>().isFriendsTab = true;
+                                        Get.find<GroupPlayFriendsCtrl>().selectedPlayers.add(player.id!);
+                                        Get.find<GroupPlayFriendsCtrl>().update();
+                                        if(!logic.catLoading) {
+                                          Get.toNamed(AppRoutes.gMGroupPlayScreen,arguments: {'categories': logic.categories??[]})?.then((value){
+                                          });
+                                        }
                                       },
                                       child: Container(
                                         padding: EdgeInsets.symmetric(horizontal: 10,vertical: 6),
@@ -141,7 +175,17 @@ class MutualFriendScreen extends StatelessWidget {
                           ),
                         ],
                       ).marginOnly(left: 16, right: 16, top: 24),
-                    ),
+                    )
+                        : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Lottie.asset('assets/Lottie/Appolo stetoskope.json', width: 200, height: 200),
+                            addText500('No connections yet.',color: Colors.white),
+                            addHeight(50)
+                          ],
+                        )),
                   ),
                 ],
               ),

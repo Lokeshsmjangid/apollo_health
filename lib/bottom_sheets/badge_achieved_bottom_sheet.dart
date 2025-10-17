@@ -3,9 +3,8 @@ import 'dart:io';
 import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:audioplayers/audioplayers.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -61,7 +60,7 @@ void showBadgeAchievedSheet(BuildContext context) {
                     build_text_view(txt: 'Wellness Watcher — 10,000 HP'),
                     build_text_view(txt: 'Health Pro — 15,000 HP'),
                     build_text_view(txt: 'Health Whiz — 25,000 HP'),
-                    build_text_view(txt: 'Grandmaster of Healing — 50,000 HP'),
+                    build_text_view(txt: 'Grandmaster of Health — 50,000 HP'),
 
                   ],
                 ),

@@ -1,4 +1,9 @@
 
+import 'package:apollo/controllers/MedPardy_Ctrls/medpardy_1st_round_ctrl.dart';
+import 'package:apollo/controllers/MedPardy_Ctrls/medpardy_2nd_round_ctrl.dart';
+import 'package:apollo/controllers/MedPardy_Ctrls/medpardy_3rd_round_ctrl.dart';
+import 'package:apollo/controllers/app_push_nottification.dart';
+import 'package:apollo/controllers/auth_controller.dart';
 import 'package:apollo/controllers/bottom_bar_ctrl.dart';
 import 'package:apollo/controllers/categories_ctrl.dart';
 import 'package:apollo/controllers/category_ctrl.dart';
@@ -6,8 +11,8 @@ import 'package:apollo/controllers/change_password_ctrl.dart';
 import 'package:apollo/controllers/create_account_ctrl.dart';
 import 'package:apollo/controllers/deals_ctrl.dart';
 import 'package:apollo/controllers/edit_profile_ctrl.dart';
+import 'package:apollo/controllers/email_verify_otp_ctrl.dart';
 import 'package:apollo/controllers/forgot_password_otp_ctrl.dart';
-import 'package:apollo/controllers/gM_quiz_ctrl.dart';
 import 'package:apollo/controllers/gm_group_play_ctrl.dart';
 import 'package:apollo/controllers/gm_solo_play_ctrl.dart';
 import 'package:apollo/controllers/group_challengers_ctrl.dart';
@@ -16,10 +21,15 @@ import 'package:apollo/controllers/group_play_request_ctrl.dart';
 import 'package:apollo/controllers/home_ctrl.dart';
 import 'package:apollo/controllers/leaderboard_ctrl.dart';
 import 'package:apollo/controllers/live_challenge_quiz_ctrl.dart';
+import 'package:apollo/controllers/live_challenge_round_four_ctrl.dart';
+import 'package:apollo/controllers/live_challenge_round_three_ctrl.dart';
+import 'package:apollo/controllers/live_challenge_round_two_ctrl.dart';
 import 'package:apollo/controllers/login_controller.dart';
+import 'package:apollo/controllers/madlingo_ctrls/medlingo_ctrl.dart';
 import 'package:apollo/controllers/medPardy_final_round_quiz_ctrl.dart';
 import 'package:apollo/controllers/medPardy_quiz_all_ctrl.dart';
 import 'package:apollo/controllers/medPardy_quiz_ctrl.dart';
+import 'package:apollo/controllers/mutual_friend_ctrl.dart';
 import 'package:apollo/controllers/my_frinds_ctrl.dart';
 import 'package:apollo/controllers/my_profile_ctrl.dart';
 import 'package:apollo/controllers/new_password_ctrl.dart';
@@ -32,10 +42,18 @@ import 'package:apollo/controllers/settings_ctrl.dart';
 import 'package:apollo/controllers/sign_in_ctrl.dart';
 import 'package:apollo/controllers/sign_up_controller.dart';
 import 'package:apollo/controllers/sign_up_personal_info_ctrl.dart';
+import 'package:apollo/screens/app_subscriptions/new_subscription_ctrl.dart';
+import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
+import 'package:apollo/screens/app_subscriptions/subscription_ctrl.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_1/medpardy_1st_round_quiz_ctrl.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_2/medpardy_2nd_round_quiz_ctrl.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_3/medpardy_3rd_round_quiz_ctrl.dart';
 import 'package:get/get.dart';
 
 Future<void> init() async {
 
+  Get.lazyPut<AppPushNotification>(() => AppPushNotification(), fenix: true);
+  Get.lazyPut<ApolloAuthCtrl>(() => ApolloAuthCtrl(), fenix: true);
   Get.lazyPut<BottomBarController>(() => BottomBarController(), fenix: true);
   Get.lazyPut<ForgotPasswordOtpCtrl>(() => ForgotPasswordOtpCtrl(), fenix: true);
   Get.lazyPut<OnboardingController>(() => OnboardingController(), fenix: true);
@@ -44,7 +62,8 @@ Future<void> init() async {
   Get.lazyPut<NewPasswordController>(() => NewPasswordController(), fenix: true);
   Get.lazyPut<SignUpPersonalInfoController>(() => SignUpPersonalInfoController(), fenix: true);
   Get.lazyPut<CategoriesController>(() => CategoriesController(), fenix: true);
-  Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
+  // Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
+  Get.put(HomeController(), permanent: true);
   Get.lazyPut<CategoriesController>(() => CategoriesController(), fenix: true);
   Get.lazyPut<LeaderboardController>(() => LeaderboardController(), fenix: true);
   Get.lazyPut<ProfileController>(() => ProfileController(), fenix: true);
@@ -66,6 +85,12 @@ Future<void> init() async {
   Get.lazyPut<OtherProfileCtrl>(() => OtherProfileCtrl(), fenix: true);
   Get.lazyPut<GroupChallengersCtrl>(() => GroupChallengersCtrl(), fenix: true);
   Get.lazyPut<MedpardyFinalRoundQuizCtrl>(() => MedpardyFinalRoundQuizCtrl(), fenix: true);
+  Get.lazyPut<MutualFriendCtrl>(() => MutualFriendCtrl(), fenix: true);
+
+  // Live Challenges Round Ctrl
+  Get.lazyPut<LiveChallengeRoundTwoCtrl>(() => LiveChallengeRoundTwoCtrl(), fenix: true);
+  Get.lazyPut<LiveChallengeRoundThreeCtrl>(() => LiveChallengeRoundThreeCtrl(), fenix: true);
+  Get.lazyPut<LiveChallengeRoundFourCtrl>(() => LiveChallengeRoundFourCtrl(), fenix: true);
 
 
   // auth
@@ -73,6 +98,26 @@ Future<void> init() async {
   Get.lazyPut<SignUpCtrl>(() => SignUpCtrl(), fenix: true);
   Get.lazyPut<ChangePasswordCtrl>(() => ChangePasswordCtrl(), fenix: true);
   Get.lazyPut<DealsController>(() => DealsController(), fenix: true);
+  Get.lazyPut<EmailVerifyOtpCtrl>(() => EmailVerifyOtpCtrl(), fenix: true);
+
+
+  // medpardy game
+  Get.lazyPut<MedPardy1stRoundCtrl>(() => MedPardy1stRoundCtrl(), fenix: true);
+  Get.lazyPut<Medpardy1stRoundQuizCtrl>(() => Medpardy1stRoundQuizCtrl(), fenix: true);
+  Get.lazyPut<MedPardy2ndRoundCtrl>(() => MedPardy2ndRoundCtrl(), fenix: true);
+  Get.lazyPut<Medpardy2ndRoundQuizCtrl>(() => Medpardy2ndRoundQuizCtrl(), fenix: true);
+  Get.lazyPut<MedPardy3rdRoundCtrl>(() => MedPardy3rdRoundCtrl(), fenix: true);
+  Get.lazyPut<Medpardy3rdRoundQuizCtrl>(() => Medpardy3rdRoundQuizCtrl(), fenix: true);
+
+  //
+  Get.lazyPut<MedlingoCtrl>(() => MedlingoCtrl(), fenix: true);
+
+
+  // App-Subscription
+  // Get.lazyPut<SubscriptionCtrl>(() => SubscriptionCtrl(), fenix: true);
+  Get.lazyPut<PremiumPlanCtrl>(() => PremiumPlanCtrl(), fenix: true);
+  // Get.lazyPut<NewSubscriptionCtrl>(() => NewSubscriptionCtrl(), fenix: true);
+
 
 }
 

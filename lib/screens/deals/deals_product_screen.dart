@@ -1,17 +1,17 @@
-import 'dart:io';
 
-import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/models/deals_model.dart';
+import 'package:apollo/resources/Apis/api_models/deals_services_model.dart';
+import 'package:apollo/resources/Apis/api_repository/deals_searvices_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/debouncer.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/level_up_screen.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
+import 'package:share_plus/share_plus.dart';
 
 class DealsProductScreen extends StatefulWidget {
   const DealsProductScreen({super.key});
@@ -21,6 +21,34 @@ class DealsProductScreen extends StatefulWidget {
 }
 
 class _DealsProductScreenState extends State<DealsProductScreen> {
+
+
+  DealsServicesModel productModel = DealsServicesModel();
+  TextEditingController searchCtrl = TextEditingController();
+  final deBounce = Debouncer(milliseconds: 1000);
+  bool isDataLoading = false;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    Future.microtask((){
+      getDeals();
+    });
+  }
+
+  getDeals({String? searchValue}) async{
+    isDataLoading = true;
+    setState(() {});
+    await dealsServicesApi(apiFor: 'dealsProduct',search: searchValue).then((value){
+      productModel = value;
+      isDataLoading = false;
+      setState(() {});
+      glowSubscriptionIcon();
+    });
+  }
 
 
   final List<DealsModel> productList = [
@@ -110,12 +138,20 @@ class _DealsProductScreenState extends State<DealsProductScreen> {
     ),
   ];
 
+  bool _showGlow = false;
+  glowSubscriptionIcon() async{
+    setState(() => _showGlow = true);
+    await Future.delayed(Duration(milliseconds: 600)); // Glow duration
+    setState(() => _showGlow = false);
+  }
+
   @override
   Widget build(BuildContext context) {
 
 
     return Scaffold(
       backgroundColor: const Color(0xFF8A4CEB),
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Positioned.fill(
@@ -131,13 +167,15 @@ class _DealsProductScreenState extends State<DealsProductScreen> {
               children: [
                 // addHeight(52),
 
+                addHeight(10),
                 backBar(
                   title: "Products",
+                  trailing: true,
                   onTap: () {
                     Get.back();
                   },
                 ).marginSymmetric(horizontal: 16),
-                addHeight(44),
+                addHeight(48),
                 Expanded(
                   child: Stack(
                     clipBehavior: Clip.none,
@@ -151,7 +189,7 @@ class _DealsProductScreenState extends State<DealsProductScreen> {
                         child: Column(
                           children: [
 
-                            const SizedBox(height: 48),
+                            const SizedBox(height: 52),
                             Container(
                               height: 56, // Adjust height as per screenshot
                               decoration: BoxDecoration(
@@ -161,7 +199,12 @@ class _DealsProductScreenState extends State<DealsProductScreen> {
                               ),
                               child: Center(
                                 child: TextField(
-                                  // controller: _searchController,
+                                  autocorrect: false,
+                                  onChanged: (val){
+                                    deBounce.run((){
+                                      getDeals(searchValue: val);
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                     hintText: 'Search',
                                     hintStyle: TextStyle(color: Color(0XFF67656B),fontFamily: 'Manrope',fontSize: 16),
@@ -177,50 +220,106 @@ class _DealsProductScreenState extends State<DealsProductScreen> {
 
                             addHeight(8),
                             Expanded(
-                              child: ListView.builder(
-                                itemCount: productList.length,
+                              child: isDataLoading ? buildCpiLoader()
+                                  : productModel.data!=null && productModel.data!.isNotEmpty
+                                  ? ListView.builder(
+                                itemCount: productModel.data!.length,
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
                                 itemBuilder: (context, index) {
-                                  final product = productList[index];
+                                  final product = productModel.data![index];
 
-                                  return Container(
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          height: 72,
-                                          width: 72,
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFF8A4CEB),
-                                            borderRadius: BorderRadius.circular(8)
+                                  return GestureDetector(
+                                    onTap: (){
+                                      var url = product.url!.contains('https://')?product.url: 'https://${product.url}';
+                                      launchURL(url: '$url');
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(vertical: 12),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 72,
+                                            width: 72,
+                                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFF8A4CEB),
+                                              borderRadius: BorderRadius.circular(8)
+                                            ),
+                                            // child: Image.asset(product.imageUrl),
+                                            child: CachedImageCircle2(imageUrl: product.image,isCircular: false),
                                           ),
-                                          child: Image.asset(product.imageUrl),
-                                        ),
-                                        addWidth(12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
+                                          addWidth(12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Container(
 
-                                                decoration: BoxDecoration(
-                                                  color: Color(0xff8A4CEB),
-                                                  borderRadius: BorderRadius.circular(6)
+                                                      decoration: BoxDecoration(
+                                                        color: Color(0xff8A4CEB),
+                                                        borderRadius: BorderRadius.circular(6)
+                                                      ),
+                                                      child: addText700('${product.pillbox?.toUpperCase()}',fontSize: 10,color: AppColors.whiteColor).marginSymmetric(horizontal: 8,vertical: 4),
+                                                    ),
+                                                    Spacer(),
+
+                                                    IconButton(
+                                                      visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                                                      onPressed: (){
+                                                        Share.share('Hi! Just spotted a great health deal on the Apollo app. Grab your discount here:\n${product.url}');
+
+                                                      },
+                                                      icon: _showGlow
+                                                          ? AvatarGlow(
+                                                        animate: true,
+                                                        glowColor: AppColors.primaryColor,
+                                                        // endRadius: 30,
+                                                        duration: Duration(milliseconds: 1000),
+                                                        child: SvgPicture.asset(
+                                                          AppAssets.dealShareIcon,
+                                                          height: 24,
+                                                          width: 24,
+                                                          color: AppColors.primaryColor,
+                                                        ),
+                                                      )
+                                                          : SvgPicture.asset(AppAssets.dealShareIcon,
+                                                        height: 24,
+                                                        width: 24,
+                                                        color: AppColors.primaryColor,
+                                                      ),
+                                                    ),
+                                                    /*GestureDetector(
+                                                      onTap: (){
+                                                        Share.share('Hi! Just spotted a great health deal on the Apollo app. Grab your discount here:\n${product.url}');
+
+                                                      },
+                                                      child: Container(
+                                                          height: 28,
+                                                          width: 28,
+                                                          padding: EdgeInsets.all(4),
+                                                          decoration: BoxDecoration(
+                                                            // color: Colors.green,
+                                                            shape: BoxShape.circle
+                                                          ),
+                                                          child: SvgPicture.asset(AppAssets.dealShareIcon)),
+                                                    )*/
+                                                  ],
                                                 ),
-                                                child: addText700(product.tag,fontSize: 10,color: AppColors.whiteColor).marginSymmetric(horizontal: 8,vertical: 4),
-                                              ),
-                                              addText600(product.title,fontSize: 16),
-                                              addText400(product.description,fontSize: 12),
-                                              addText400(product.expiry,fontSize: 9,color: AppColors.redColor1),
-                                            ],
+                                                addText600('${product.title}',fontSize: 16),
+                                                addText400('${product.description}',fontSize: 12),
+                                                addText400('Expires in ${product.expiryDate} days',fontSize: 9,color: AppColors.redColor1),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ).marginOnly(bottom: 10);
+                                        ],
+                                      ),
+                                    ).marginOnly(bottom: 10),
+                                  );
                                 },
-                              ),
+                              ) : Center(child: addText500('No active oﬀers at the moment.\nStay tuned for fresh finds!',textAlign: TextAlign.center)),
                             ),
                             // AppButton(
                             //   buttonText: 'Start Free 7-Day Trial',
@@ -234,19 +333,16 @@ class _DealsProductScreenState extends State<DealsProductScreen> {
                       ),
 
                       Positioned(
-                        top: -50,
+                        top: -48,
 
                         child: Stack(
                           clipBehavior: Clip.none,
                           alignment: Alignment.center,
                           children: [
-                            Lottie.asset(
-                                'assets/Lottie/Appolo strength.json',
-                                repeat: true,
-                                reverse: false,
-                                animate: true,
-                                width: 100,
-                                height: 100
+                            SvgPicture.asset(
+                                AppAssets.dealsProductImg,
+                                width: 84,
+                                height: 84
                             ),
                           ],
                         ),

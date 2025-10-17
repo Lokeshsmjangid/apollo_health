@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1029679126997",
+    "project_id": "apollo-medgames",
+    "storage_bucket": "apollo-medgames.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029679126997:android:49144c4a734ee7c5d1855c",
+        "android_client_info": {
+          "package_name": "com.apollomedgames.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029679126997-dm80locni7t9skq33jlog52mi5r2m0ql.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.apollomedgames.app",
+            "certificate_hash": "f47e887f75ff8d3a49d9c84a9b523850254e046e"
+          }
+        },
+        {
+          "client_id": "1029679126997-hji4frtoum3r12fleomdtnb75pahk7tj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAf4dYqkNwXH5b7oau2lQ0Kk2JSe_3AF_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029679126997-hji4frtoum3r12fleomdtnb75pahk7tj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1029679126997-os9q30ac5hed6ofd1dcaaon2tmb2gr8t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.apollomedgames.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,14 +1,23 @@
 import 'dart:io';
 
+import 'package:apollo/bottom_sheets/category_ready_more_bottom_sheet.dart';
 import 'package:apollo/bottom_sheets/high_stack_mode_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/ready_more_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/unlock_premium_hsm_bottom_sheet.dart';
 import 'package:apollo/controllers/gm_solo_play_ctrl.dart';
 import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_models/category_model.dart';
+import 'package:apollo/resources/Apis/api_repository/category_one_dp_repo.dart';
+import 'package:apollo/resources/Apis/api_repository/start_solo_play_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
+import 'package:apollo/screens/ads/free_pass_ads_screen.dart';
+import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,113 +41,151 @@ class SoloPlayScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              Column(
-                children: [
-                  addHeight(52),
-                  backBar(
-                    title: "Solo Play",
-                    onTap: () {
-                      Get.back();
-                    },
-                  ).marginSymmetric(horizontal: 16),
-                  addHeight(24),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(16),
-                        ),
-                      ),
-                      padding: EdgeInsets.only(left: 16, right: 16, top: 16),
-                      child: ListView(
-                        padding: EdgeInsets.zero,
-                        physics: BouncingScrollPhysics(),
-                        // physics: BouncingScrollPhysics(),
-                        children: [
-                          addHeight(8), // 24-16(padding)
-                          sectionTitle('Game Settings'),
-                          addHeight(12),
-                          numberOfQuestionsSelector(),
-
-                          addHeight(4),
-                          toggleTile(
-                            'Show Explanation',
-                            logic.showExplanation, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                            logic.showExplanation = !logic.showExplanation;
-                            logic.update();
-                          },
+              SafeArea(
+                bottom: false,
+                child: Column(
+                  children: [
+                    addHeight(10),
+                    backBar(
+                      title: "Solo Play",
+                      onTap: () {
+                        Get.back();
+                        if(ctrl.categories.isNotEmpty){
+                          ctrl.categories.forEach((category) {
+                            if (category.adPass == true) {
+                              category.adPass = false;
+                            }
+                          });
+                        }
+                      },
+                    ).marginSymmetric(horizontal: 16),
+                    addHeight(24),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(16),
                           ),
-                          toggleTile('High Stakes Mode',
-                            logic.highStakes, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              logic.highStakes = !logic.highStakes;
+                        ),
+                        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                        child: ListView(
+                          padding: EdgeInsets.zero,
+                          physics: BouncingScrollPhysics(),
+                          // physics: BouncingScrollPhysics(),
+                          children: [
+                            addHeight(8), // 24-16(padding)
+                            sectionTitle('Game Settings'),
+                            addHeight(12),
+                            // numberOfQuestionsSelector(),
+                            //
+                            // addHeight(4),
+                            toggleTile(
+                              'Show Explanation',
+                              logic.showExplanation, () {
+                                // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                              logic.showExplanation = !logic.showExplanation;
                               logic.update();
                             },
-                            showInfo: true,
-                            onInfoTap: () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              HighStakeModeSheet(context);
+                            ),
+                            toggleTile('High Stakes Mode',
+                              logic.highStakes, () {
+                                // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                                logic.highStakes = !logic.highStakes;
+                                logic.update();
+                                if(AuthData().isPremium==false && logic.highStakes){
+                                  showUnlockPremiumHSMSheet(context,
+                                      onTapUpgrade: (){
+                                      Get.back();
+                                      PremiumPlanCtrl controller = Get.isRegistered<PremiumPlanCtrl>()
+                                          ? Get.find<PremiumPlanCtrl>()
+                                          : Get.put(PremiumPlanCtrl());
+                                      WidgetsBinding.instance.addPostFrameCallback((_)async {
+                                        controller.setupPurchaseListener();
+                                        await controller.initStoreInfo();
+
+                                        controller.restoreSubscription();
+                                      });
+                                      Get.toNamed(AppRoutes.subscriptionScreen);
+                                  },
+                                      onTapNotNow: (){
+                                        if(logic.highStakes==true){
+                                          logic.highStakes = false;
+                                          logic.update();
+                                        }
+                                    Get.back();});
+                                }
+                              },
+                              showInfo: true,
+                              onInfoTap: () {
+                                // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                                HighStakeModeSheet(context);
+                              },
+                            ),
+
+                            addHeight(24),
+                            divider(),
+                            /*addHeight(24),
+
+                            sectionTitle('Question Mode'),
+                            addHeight(16),
+                            toggleTile(
+                              'Random Mix',
+                              subTitle: 'Play a shuffled category round.',
+                              logic.randomMix, () {
+                              logic.randomMix = !logic.randomMix;
+                              if(logic.randomMix){
+                                logic.selectedCategories.clear();
+                                logic.selectedCategories = logic.pickRandomCategoryIds(logic.categories.length>=5?5:logic.categories.length);
+                              }
+                              logic.update();
                             },
-                          ),
+                            ),
 
-                          addHeight(24),
-                          divider(),
-                          addHeight(24),
-
-                          sectionTitle('Question Mode'),
-                          addHeight(16),
-                          toggleTile(
-                            'Random Mix',
-                            subTitle: 'Questions from all categories',
-                            logic.randomMix, () {
-                            logic.randomMix = !logic.randomMix;
-                            logic.update();
-                          },
-                          ),
-
-                          addHeight(24),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: 1,
-                                  decoration: BoxDecoration(
-                                      color: Color(0xffAAA4B3)
+                            addHeight(24),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    decoration: BoxDecoration(
+                                        color: Color(0xffAAA4B3)
+                                    ),
                                   ),
                                 ),
-                              ),
-                              addText400(
-                                  'or', fontSize: 12, color: Color(0xffAAA4B3))
-                                  .marginSymmetric(horizontal: 12),
+                                addText400(
+                                    'or', fontSize: 12, color: Color(0xffAAA4B3))
+                                    .marginSymmetric(horizontal: 12),
 
-                              Expanded(
-                                child: Container(
-                                  height: 1,
-                                  decoration: BoxDecoration(
-                                      color: Color(0xffAAA4B3)
+                                Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    decoration: BoxDecoration(
+                                        color: Color(0xffAAA4B3)
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          addHeight(24),
+                              ],
+                            ),
+                            */
+                            addHeight(24),
 
-                          sectionTitle(
-                            'Select Categories',
-                            subtitle:
-                            'You can select up to 5 categories for the game.',
-                            counter: logic.selectedCategories.length,
-                          ),
+                            sectionTitle(
+                              'Select Categories',
+                              subtitle:
+                              'Choose up to 5 categories to play.',
+                              counter: logic.selectedCategories.length,
+                            ),
 
-                          const SizedBox(height: 16),
-                          buildCategoryStack(context),
-                        ],
+                            const SizedBox(height: 16),
+                            logic.categories.isNotEmpty?buildCategoryStack(context,logic.randomMix)
+                                : Center(child: addText500('No categories found.'))
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           );
@@ -159,9 +206,35 @@ class SoloPlayScreen extends StatelessWidget {
                     ? AppColors.primaryColor
                     : AppColors.buttonDisableColor,
                 onButtonTap: ctrl.selectedCategories.isNotEmpty ? () {
-                  // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                  // Get.toNamed(AppRoutes.gMQuizScreen, arguments: {'screen': 'soloPlay'});
-                  Get.toNamed(AppRoutes.quizScreenNew, arguments: {'screen': 'soloPlay'});
+
+
+                  apolloPrint(message:
+                  'quesCount::${ctrl.selectedCount.name=='five'?5:10}::\n'
+                  'showExplanation::${ctrl.showExplanation==true?1:0}::\n'
+                  'highStakesMode::${ctrl.highStakes==true?1:0}::\n'
+                  'randomMix::${ctrl.randomMix==true?1:0}::\n'
+                      '<--${ctrl.selectedCategories.join(',')}-->');
+
+                  showLoader(true);
+                  startSoloPlayApi(categoryId: ctrl.selectedCategories.join(','),
+                      numberOfQuestions: ctrl.selectedCount.name=='five'?5:10,
+                    showExplanation: ctrl.showExplanation==true?1:0,
+                    highStakesMode: ctrl.highStakes==true?1:0,
+                    randomMix: ctrl.randomMix==true?1:0
+
+                  ).then((value){
+                    showLoader(false);
+                    if(value.status==true){
+                      if(value.data!=null && value.data!.isNotEmpty){
+                        Get.toNamed(AppRoutes.quizScreenNew, arguments: {'screen': 'soloPlay',
+                          'questions': value.data,
+                          'gameData':value.gameData});
+                      }
+                    } else if(value.status==false){
+                      CustomSnackBar().showSnack(Get.context!,message: '${value.message}',isSuccess: false);
+                    }
+                  });
+
 
                 } : () {},
 
@@ -172,28 +245,6 @@ class SoloPlayScreen extends StatelessWidget {
           })),
 
 
-
-
-      /*bottomSheet: GetBuilder<GmSoloPlayController>(
-        builder: (logic) {
-          return Container(
-            // height: 90,
-            decoration: BoxDecoration(color: AppColors.whiteColor),
-            width: double.infinity,
-            child: AppButton(
-              buttonText: 'Start Game',
-              onButtonTap: ctrl.selectedCategories.isNotEmpty?(){
-                Get.toNamed(AppRoutes.gMQuizScreen,arguments: {'screen':'soloPlay'});
-                // Get.to(QuizSwipeScreen());
-              }:(){},
-              buttonColor:
-                  ctrl.selectedCategories.isNotEmpty
-                      ? AppColors.primaryColor
-                      : AppColors.buttonDisableColor,
-            ).marginOnly(left: 16, right: 16, bottom: 32, top: 7),
-          );
-        },
-      ),*/
     );
   }
 
@@ -206,7 +257,8 @@ class SoloPlayScreen extends StatelessWidget {
             children: [
               addText400(
                 title,
-                fontSize: title == "Select Categories" ? 20 : 32,
+                // fontSize: title == "Select Categories" ? 20 : 26,
+                fontSize: 26,
                 fontFamily: 'Caprasimo',
                 height: title == "Select Categories" ? 22 : 40,
                 color: AppColors.primaryColor,
@@ -240,7 +292,7 @@ class SoloPlayScreen extends StatelessWidget {
           children: [
             Image.asset(AppAssets.starIcon, height: 18, width: 18),
             addWidth(8),
-            addText500("No. of questions", fontSize: 16),
+            addText500("No. of Questions", fontSize: 16),
           ],
         ),
         Spacer(),
@@ -416,7 +468,24 @@ class SoloPlayScreen extends StatelessWidget {
   }
 */
 
-  Widget buildCategoryStack(BuildContext context) {
+  Widget buildCategoryStack(BuildContext context, bool randomMix) {
+    final List<Color> bgColors = [
+      hexToColor("C8E6C9"),
+      hexToColor("FFE0B2"),
+      hexToColor("F8BBD0"),
+      hexToColor("B9C9FF"),
+      hexToColor("FFCDD2"),
+      hexToColor("E1BEE7"),
+    ];
+
+    final List<Color> borderColors = [
+      hexToColor("66BB6A"),
+      hexToColor("FF9800"),
+      hexToColor("F06292"),
+      hexToColor("4663D3"),
+      hexToColor("E57373"),
+      hexToColor("AB47BC"),
+    ];
     return SizedBox(
       height: ctrl.categories.length * 95.0,
       child: Stack(
@@ -424,10 +493,9 @@ class SoloPlayScreen extends StatelessWidget {
         ctrl.categories.asMap().entries.map((entry) {
           int index = entry.key;
           var category = entry.value;
-          bool isSelected = ctrl.selectedCategories.contains(
-            category['title'],
-          );
-
+          bool isSelected = ctrl.selectedCategories.contains(category.id);
+          final bgColor = bgColors[index % bgColors.length];
+          final borderColor = borderColors[index % borderColors.length];
           return Positioned(
             top: index * 94.0, // Controls the overlap
             left: 0,
@@ -435,22 +503,69 @@ class SoloPlayScreen extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 // ctrl.effectSound(sound: AppAssets.actionButtonTapSound);
-                if(category['isLock']==false){
-                  if (isSelected) {
-                    ctrl.selectedCategories.remove(category['title']);
-                  } else if (ctrl.selectedCategories.length < 5) {
-                    ctrl.selectedCategories.add(category['title']);
+
+                  if(category.paidStatus==0 || category.adPass){
+
+                    if (!randomMix && isSelected) {
+                      ctrl.selectedCategories.remove(category.id);
+                    }
+                    else if (ctrl.selectedCategories.length < 5) {
+                      ctrl.selectedCategories.add(category.id??0);
+                    }
+                    ctrl.update();
                   }
-                  ctrl.update();
-                } else{
-                  showReadyMoreSheet(context,onTapUpgrade: (){
-                    // ctrl.effectSound(sound: AppAssets.actionButtonTapSound);
-                    Get.back();
-                    Get.toNamed(AppRoutes.subscriptionScreen);
-                  });
-                }
-              },
-              child: categoryCard(category, isSelected),
+                  else{
+                    showCategoryReadyMoreSheet(
+                        context,
+                        onTapUpgrade: (){
+                      Get.back();
+                      PremiumPlanCtrl controller = Get.isRegistered<PremiumPlanCtrl>()
+                          ? Get.find<PremiumPlanCtrl>()
+                          : Get.put(PremiumPlanCtrl());
+                      WidgetsBinding.instance.addPostFrameCallback((_)async {
+                        controller.setupPurchaseListener();
+                        await controller.initStoreInfo();
+
+                        controller.restoreSubscription();
+                      });
+                      Get.toNamed(AppRoutes.subscriptionScreen);
+                    },
+                        onTapDayPass: (){
+                      Get.back();
+                          showLoader(true);
+                          categoryOneDayPassApi(categoryId: category.id).then((pass){
+                            showLoader(false);
+                            if(pass.status==true){
+                              category.paidStatus=0;
+                              ctrl.update();
+
+                            } else if(pass.status==false){
+                              CustomSnackBar().showSnack(Get.context!,message: '${pass.message}',isSuccess: false);
+                            }
+                          });
+
+
+
+                    },
+                      onTap10MinFree: (){Get.back();
+                      Get.to(FreePassAdsScreen(game: 'soloPlay',catId: category.id))?.then((activePass){
+                        if(activePass!=null){
+                          int index = ctrl.categories.indexWhere((text)=> text.id==activePass);
+                          ctrl.categories[index].adPass=true;
+                          ctrl.update();
+                        }
+                      });
+                      },
+
+                    );
+
+                    /*showReadyMoreSheet(context,onTapUpgrade: (){
+                      // ctrl.effectSound(sound: AppAssets.actionButtonTapSound);
+                      Get.back();
+                      Get.toNamed(AppRoutes.subscriptionScreen);
+                    });*/
+                  }},
+              child: categoryCard(category, isSelected, backgroundColor: bgColor,borderColor: borderColor),
             ),
           );
         }).toList(),
@@ -458,19 +573,19 @@ class SoloPlayScreen extends StatelessWidget {
     );
   }
 
-  Widget categoryCard(Map<String, dynamic> category, bool isSelected) {
+  Widget categoryCard(Category category, bool isSelected,{Color? backgroundColor,Color? borderColor}) {
     return Container(
       padding: EdgeInsets.only(left: 6, right: 6, top: 6), //
 
 
       // Main card
       decoration: BoxDecoration(
-        color: category['color'],
+        color: backgroundColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(12),
           topRight: Radius.circular(12),
         ),
-        border: Border(top: BorderSide(color: category['border'], width: 6)),
+        border: Border(top: BorderSide(color: borderColor!, width: 6)),
       ),
       child: Container(
         padding: EdgeInsets.only(left: 12, right: 24, top: 12, bottom: 40),
@@ -481,9 +596,9 @@ class SoloPlayScreen extends StatelessWidget {
             topRight: Radius.circular(10),
           ),
           border: Border(
-            top: BorderSide(color: category['border']),
-            left: BorderSide(color: category['border']),
-            right: BorderSide(color: category['border']),
+            top: BorderSide(color: borderColor),
+            left: BorderSide(color: borderColor),
+            right: BorderSide(color:borderColor),
           ),
         ),
         child: Row(
@@ -493,12 +608,12 @@ class SoloPlayScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  addText600(category['subtitle'], fontSize: 12,
+                  addText600(category.shortDescription??'', fontSize: 12,
                       color: AppColors.blackColor, height: 21.12),
                   // const SizedBox(height: 4),
-                  addText400(category['title'], fontSize: 20,
+                  addText400(category.title??'', fontSize: 20,
                       fontFamily: 'Caprasimo',
-                      color: category['border'],
+                      color: borderColor,
                       height: 22),
                   const SizedBox(height: 20),
                 ],
@@ -507,17 +622,8 @@ class SoloPlayScreen extends StatelessWidget {
 
             // Checkbox icon
 
-            category['isLock']==true
-                ? Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Image.asset(AppAssets.lockIcon,height: 20,width: 20,color: category['border'],),
-            ).marginOnly(bottom: 16)
-                
-                :Container(
+        category.paidStatus != 1 || category.adPass
+            ? Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.6),
@@ -533,8 +639,7 @@ class SoloPlayScreen extends StatelessWidget {
                         : AppColors.buttonDisableColor,
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                        color: isSelected ? Colors.transparent : AppColors
-                            .textFieldHintColor)
+                        color: isSelected ? Colors.transparent : AppColors.textFieldHintColor)
                 ),
                 child:
                 isSelected
@@ -545,10 +650,19 @@ class SoloPlayScreen extends StatelessWidget {
                 )
                     : null,
               ),
-            ).marginOnly(bottom: 16),
+            ).marginOnly(bottom: 16)
+            : Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Image.asset(AppAssets.lockIcon,height: 20,width: 20,color: borderColor),
+            ).marginOnly(bottom: 16)
+                ,
 
 
-            
+
           ],
         ),
       ),

@@ -1,8 +1,7 @@
 
-import 'package:apollo/bottom_sheets/sign_out_bottom_sheet.dart';
 import 'package:apollo/controllers/settings_ctrl.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/resources/Apis/api_models/cms_model.dart';
+import 'package:apollo/resources/Apis/api_repository/cms_page_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/text_utility.dart';
@@ -11,8 +10,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 
-class CmsScreen extends StatelessWidget {
+class CmsScreen extends StatefulWidget {
   String? appBar;
+
+
+  CmsScreen({super.key,this.appBar});
+
+  @override
+  State<CmsScreen> createState() => _CmsScreenState();
+}
+
+class _CmsScreenState extends State<CmsScreen> {
+  CmsResponseModel model = CmsResponseModel();
+  bool isDataLoading = false;
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCmsData();
+  }
+
+  getCmsData() async{
+    isDataLoading=true;
+    setState(() {});
+    await cmsApi(setting:
+    widget.appBar=='About Us'?1:
+    widget.appBar=='Privacy Policy'?2:3).then((value){
+      model = value;
+      isDataLoading=false;
+      setState(() {});
+    });
+  }
+
+
 
   String description = """
 <h1>Welcome to <strong>Apollo MedGames</strong>!</h1>
@@ -26,57 +57,56 @@ class CmsScreen extends StatelessWidget {
 <p>Ready to boost your health IQ—with a smile? 😁💡</p>
 """;
 
-  CmsScreen({super.key,this.appBar});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       resizeToAvoidBottomInset: false,
-      body: GetBuilder<SettingsCtrl>(
-        builder: (logic) {
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(
-                  AppAssets.notificationsBg,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              SafeArea(
-                bottom: false,
-                child: Column(
-                  children: [
-                    // addHeight(52),
-                    backBar(
-                      title: "$appBar",
-                      onTap: () {
-                        Get.back();
-                      },
-                    ).marginSymmetric(horizontal: 16),
-                    addHeight(24),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(10),
-                          ),
-                        ),
-                        padding: const EdgeInsets.only(left: 16,right: 16,top: 24),
-                        child: Html(data: description),
-                        ),
-                      ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              AppAssets.notificationsBg,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                addHeight(10),
+                backBar(
+                    title: "${widget.appBar}",
+                    onTap: () {
+                      Get.back();
+                    },
+                    trailing: true
 
-                  ],
+                ).marginSymmetric(horizontal: 16),
+                addHeight(24),
+                Expanded(
+                  child: isDataLoading? Center(child: buildCpiLoader()):model.data!=null? Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(10),
+                      ),
+                    ),
+                    padding: const EdgeInsets.only(left: 16,right: 16,top: 8),
+                    child: SingleChildScrollView(child: Html(data: model.data?.content,style: {
+                      "body": Style(
+                        fontSize: FontSize(13.0),
+                        fontFamily: 'Manrope',
+                      ),
+                    },)),
+                  ) : Center(child: addText600('No data found',color: AppColors.whiteColor)),
                 ),
-              ),
-            ],
-          );
-        },
+
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
-
-
 }

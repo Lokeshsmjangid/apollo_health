@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_repository/profile_delete_permanent_repo.dart';
+
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -62,6 +65,15 @@ void showDeleteAccountRequestSheet(BuildContext context) {
                     // final AudioPlayer _audioPlayer = AudioPlayer();
                     // await _audioPlayer.play(AssetSource(AppAssets.actionButtonTapSound));
                     Get.back();
+                    showLoader(true);
+                    deleteProfilePermanentApi().then((value){
+                      showLoader(false);
+                      if(value.status==true){
+                        CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                        LocalStorage().clearLocalStorage();
+                        Get.offAllNamed(AppRoutes.enterScreen);
+                      }
+                    });
                   },
                   buttonText: 'Delete Account',buttonColor: AppColors.secondaryColor,),
                 addHeight(10),

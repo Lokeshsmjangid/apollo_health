@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 void showStuckRevealLetterSheet(BuildContext context,{void Function()?onTapEliminate}) {
   showModalBottomSheet(

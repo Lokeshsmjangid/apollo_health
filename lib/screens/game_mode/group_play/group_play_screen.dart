@@ -1,17 +1,22 @@
 import 'dart:io';
 
-import 'package:apollo/bottom_sheets/high_stack_mode_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/ready_more_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/winner_takes_all_one_table_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/category_ready_more_bottom_sheet.dart';
 import 'package:apollo/bottom_sheets/winner_takes_mode_bottom_sheet.dart';
 import 'package:apollo/controllers/gm_group_play_ctrl.dart';
-import 'package:apollo/controllers/gm_solo_play_ctrl.dart';
 import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_models/category_model.dart';
+import 'package:apollo/resources/Apis/api_repository/category_one_dp_repo.dart';
+import 'package:apollo/resources/Apis/api_repository/start_group_play_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
+import 'package:apollo/screens/ads/ads_example.dart';
+import 'package:apollo/screens/ads/free_pass_ads_screen.dart';
+import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -41,10 +46,19 @@ class GroupPlayScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     // addHeight(52),
+                    addHeight(10),
                     backBar(
+                      trailing: true,
                       title: "Group Play",
                       onTap: () {
                         Get.back();
+                        if(ctrl.categories.isNotEmpty){
+                          ctrl.categories.forEach((category) {
+                            if (category.adPass == true) {
+                              category.adPass = false;
+                            }
+                          });
+                        }
                       },
                     ).marginSymmetric(horizontal: 16),
                     addHeight(24),
@@ -62,14 +76,18 @@ class GroupPlayScreen extends StatelessWidget {
                           physics: BouncingScrollPhysics(),
                           children: [
 
-                            sectionTitle('Game Settings'),
+                            GestureDetector(
+                              onTap: (){
+                                Get.to(()=>CustomAdScreen());
+                              },
+                                child: sectionTitle('Game Settings')),
                             addHeight(4),
                             toggleTile(
                               'Winner-Take-All Mode',
                               logic.winnerTakes, () {
                                 logic.winnerTakes = !logic.winnerTakes;
                                 logic.update();
-                                if(logic.winnerTakes){
+                                /*if(logic.winnerTakes){
                                   WinnerTakesAllOnOneTableSheet(context,
                                       onTapLetsGo: (){
                                     // logic.effectSound(sound: AppAssets.actionButtonTapSound);
@@ -81,15 +99,14 @@ class GroupPlayScreen extends StatelessWidget {
                                     logic.update();
                                     Get.back();
                                   });
-                                }
+                                }*/
                               },
                               showInfo: true,
                               onInfoTap: () {
-                                // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                 WinnertakeModeSheet(context);
                               },
                             ),
-                            addHeight(10),
+                            /*addHeight(10),
 
 
                             sectionTitle('Question Mode'),
@@ -97,11 +114,15 @@ class GroupPlayScreen extends StatelessWidget {
                             addHeight(16),
                             toggleTile(
                               'Random Mix',
-                              subTitle: 'Questions from all categories',
+                              subTitle: 'Play a shuffled category round.',
                               logic.randomMix,
                                   () {
                                     // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                 logic.randomMix = !logic.randomMix;
+                                if(logic.randomMix){
+                                  logic.selectedCategories.clear();
+                                  logic.selectedCategories = logic.pickRandomCategoryIds(logic.categories.length>=5?5:logic.categories.length);
+                                }
                                 logic.update();
                               },
                             ),
@@ -128,15 +149,16 @@ class GroupPlayScreen extends StatelessWidget {
                                   ),
                                 ),
                               ],
-                            ),
+                            ),*/
                             addHeight(24),
 
                             sectionTitle('Select Categories',
-                              subtitle: 'You can select up to 5 categories for the game.',
+                              subtitle: 'Choose up to 5 categories to play.',
                               counter: logic.selectedCategories.length,
                             ),
                             const SizedBox(height: 16),
-                            buildCategoryStack(context),
+                            logic.categories.isNotEmpty?buildCategoryStack(context,logic.randomMix)
+                                : Center(child: addText500('No categories found.')),
 
                             // const SizedBox(height: 80),
                           ],
@@ -166,8 +188,27 @@ class GroupPlayScreen extends StatelessWidget {
                         ? AppColors.primaryColor
                         : AppColors.buttonDisableColor,
                     onButtonTap: ctrl.selectedCategories.isNotEmpty ? () {
-                      // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                      Get.to(()=>GroupPlayFriendsScreen());
+
+
+                      showLoader(true);
+                      startGroupPlayApi(
+                          numberOfQuestions: 5,
+                          categoryId: ctrl.selectedCategories.join(','),
+                          randomMix: logic.randomMix==true?1:0,
+                          winnerTakeMode: logic.winnerTakes==true?1:0
+
+                      ).then((value){
+                        showLoader(false);
+                        if(value.status==true){
+                          Get.to(()=>GroupPlayFriendsScreen(
+                            questionsApi: value.data,
+                            gameData: value.gameData,
+
+                          ));
+                        } else if(value.status==false){
+                          CustomSnackBar().showSnack(Get.context!,message: '${value.message}',isSuccess: false);
+                        }
+                      });
                     } : () {},
 
                   ).marginOnly(
@@ -175,26 +216,6 @@ class GroupPlayScreen extends StatelessWidget {
                       bottom: 32, top: 7),
                 );
               })),
-      /*bottomSheet: GetBuilder<GmGroupPlayController>(
-        builder: (logic) {
-          return Container(
-            height: 90,
-            decoration: BoxDecoration(color: AppColors.whiteColor),
-            width: double.infinity,
-            child: AppButton(
-              buttonText: 'Start Game',
-              onButtonTap: ctrl.selectedCategories.isNotEmpty?(){
-
-                Get.to(()=>GroupPlayFriendsScreen());
-              }:(){},
-              buttonColor:
-                  ctrl.selectedCategories.isNotEmpty
-                      ? AppColors.primaryColor
-                      : AppColors.buttonDisableColor,
-            ).marginOnly(left: 16, right: 16, bottom: 24, top: 5),
-          );
-        },
-      ),*/
     );
   }
 
@@ -207,7 +228,8 @@ class GroupPlayScreen extends StatelessWidget {
             children: [
               addText400(
                 title,
-                fontSize: title == "Select Categories" ? 20 : 32,
+                // fontSize: title == "Select Categories" ? 20 : 26,
+                fontSize: 26,
                 fontFamily: 'Caprasimo',
                 height: title == "Select Categories" ?22:40,
                 color: AppColors.primaryColor,
@@ -376,7 +398,24 @@ class GroupPlayScreen extends StatelessWidget {
   }
 */
 
-  Widget buildCategoryStack(BuildContext context) {
+  Widget buildCategoryStack(BuildContext context, bool randomMix) {
+    final List<Color> bgColors = [
+      hexToColor("C8E6C9"),
+      hexToColor("FFE0B2"),
+      hexToColor("F8BBD0"),
+      hexToColor("B9C9FF"),
+      hexToColor("FFCDD2"),
+      hexToColor("E1BEE7"),
+    ];
+
+    final List<Color> borderColors = [
+      hexToColor("66BB6A"),
+      hexToColor("FF9800"),
+      hexToColor("F06292"),
+      hexToColor("4663D3"),
+      hexToColor("E57373"),
+      hexToColor("AB47BC"),
+    ];
     return SizedBox(
       height: ctrl.categories.length * 95.0,
       child: Stack(
@@ -384,9 +423,9 @@ class GroupPlayScreen extends StatelessWidget {
         ctrl.categories.asMap().entries.map((entry) {
           int index = entry.key;
           var category = entry.value;
-          bool isSelected = ctrl.selectedCategories.contains(
-            category['title'],
-          );
+          bool isSelected = ctrl.selectedCategories.contains(category.id,);
+          final bgColor = bgColors[index % bgColors.length];
+          final borderColor = borderColors[index % borderColors.length];
 
           return Positioned(
             top: index * 94.0, // Controls the overlap
@@ -395,23 +434,69 @@ class GroupPlayScreen extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 // ctrl.effectSound(sound: AppAssets.actionButtonTapSound);
-                if(category['isLock']==false){
-                  if (isSelected) {
-                    ctrl.selectedCategories.remove(category['title']);
+                if(randomMix==false){
+                if(category.paidStatus==0 || category.adPass){
+                  if (!randomMix && isSelected) {
+                    ctrl.selectedCategories.remove(category.id);
                   } else if (ctrl.selectedCategories.length < 5) {
-                    ctrl.selectedCategories.add(category['title']);
+                    ctrl.selectedCategories.add(category.id??-1);
                   }
                   ctrl.update();
-                } else{
-                  showReadyMoreSheet(context,onTapUpgrade: (){
+                }
+                else{
+                  showCategoryReadyMoreSheet(context,
+                      onTapUpgrade: (){
+                    Get.back();
+                    PremiumPlanCtrl controller = Get.isRegistered<PremiumPlanCtrl>()
+                        ? Get.find<PremiumPlanCtrl>()
+                        : Get.put(PremiumPlanCtrl());
+                    WidgetsBinding.instance.addPostFrameCallback((_)async {
+                      controller.setupPurchaseListener();
+                      await controller.initStoreInfo();
+
+                      controller.restoreSubscription();
+                    });
+                    Get.toNamed(AppRoutes.subscriptionScreen);
+                  },
+                      onTapDayPass: (){
+                    Get.back();
+                    showLoader(true);
+                    categoryOneDayPassApi(categoryId: category.id).then((pass){
+                      showLoader(false);
+                      if(pass.status==true){
+                        category.paidStatus=0;
+                        ctrl.update();
+
+                      } else if(pass.status==false){
+                        CustomSnackBar().showSnack(Get.context!,message: '${pass.message}',isSuccess: false);
+                      }
+                    });
+
+
+
+                  },
+                    onTap10MinFree: (){Get.back();
+                    Get.to(FreePassAdsScreen(game: 'groupPlay',catId: category.id))?.then((activePass){
+                      if(activePass!=null){
+                        int index = ctrl.categories.indexWhere((text)=> text.id==activePass);
+                        ctrl.categories[index].adPass=true;
+                        ctrl.update();
+                      }
+                    });
+                    },
+
+                  );
+
+
+                  /*showReadyMoreSheet(context,onTapUpgrade: (){
                     // ctrl.effectSound(sound: AppAssets.actionButtonTapSound);
                     Get.back();
                     Get.toNamed(AppRoutes.subscriptionScreen);
-                  });
-                }
+                  });*/
+                }}
 
               },
-              child: categoryCard(category, isSelected),
+              child: categoryCard(category, isSelected,backgroundColor: bgColor,borderColor: borderColor),
             ),
           );
         }).toList(),
@@ -419,19 +504,24 @@ class GroupPlayScreen extends StatelessWidget {
     );
   }
 
-  Widget categoryCard(Map<String, dynamic> category, bool isSelected) {
+  Widget categoryCard(Category category, bool isSelected,
+      {Color? backgroundColor,Color? borderColor}) {
     return Container(
       padding: EdgeInsets.only(left: 6,right: 6,top: 6), //
 
 
       // Main card
       decoration: BoxDecoration(
-        color: category['color'],
+        // color: hexToColor('${category.backgroundColor}'), // api
+        color: backgroundColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(12),
           topRight: Radius.circular(12),
         ),
-        border: Border(top: BorderSide(color: category['border'], width: 6)),
+        border: Border(top: BorderSide(
+            // color: hexToColor('${category.borderColor}'), // api
+            color: borderColor!,
+            width: 6)),
       ),
       child: Container(
         padding: EdgeInsets.only(left: 12,right: 24,top: 12,bottom: 40),
@@ -442,9 +532,12 @@ class GroupPlayScreen extends StatelessWidget {
             topRight: Radius.circular(10),
           ),
           border: Border(
-            top: BorderSide(color: category['border']),
-            left: BorderSide(color: category['border']),
-            right: BorderSide(color: category['border']),
+            // top: BorderSide(color: hexToColor('${category.borderColor}')),
+            // left: BorderSide(color: hexToColor('${category.borderColor}')),
+            // right: BorderSide(color: hexToColor('${category.borderColor}')),
+            top: BorderSide(color: borderColor),
+            left: BorderSide(color: borderColor),
+            right: BorderSide(color: borderColor),
           ),
         ),
         child: Row(
@@ -454,10 +547,13 @@ class GroupPlayScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  addText600(category['subtitle'], fontSize: 12,
+                  addText600(category.shortDescription??'', fontSize: 12,
                       color: AppColors.blackColor,height: 21.12),
                   // const SizedBox(height: 4),
-                  addText400(category['title'], fontSize: 20, fontFamily: 'Caprasimo', color: category['border'],height: 22),
+                  addText400(category.title??'', fontSize: 20, fontFamily: 'Caprasimo',
+                      // color: hexToColor('${category.borderColor}')
+                      color: borderColor
+                      ,height: 22),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -465,41 +561,46 @@ class GroupPlayScreen extends StatelessWidget {
 
             // Checkbox icon
 
-              category['isLock']==true?Container(
+              category.paidStatus != 1 || category.adPass
+                  ? Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                      color:
+                      isSelected
+                          ? AppColors.secondaryColor.withOpacity(0.8)
+                          : AppColors.buttonDisableColor,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                          color: isSelected?Colors.transparent : AppColors.textFieldHintColor)
+                  ),
+                  child:
+                  isSelected
+                      ? const Icon(
+                    Icons.check,
+                    size: 16,
+                    color: Colors.white,
+                  )
+                      : null,
+                ),
+              ).marginOnly(bottom: 16)
+                  : Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: Image.asset(AppAssets.lockIcon,height: 20,width: 20,color: category['border'],),
-              ).marginOnly(bottom: 16):Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.6),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                    color:
-                    isSelected
-                        ? AppColors.secondaryColor.withOpacity(0.8)
-                        : AppColors.buttonDisableColor,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                        color: isSelected?Colors.transparent : AppColors.textFieldHintColor)
+                child: Image.asset(AppAssets.lockIcon,height: 20,width: 20,
+                  // color: hexToColor('${category.borderColor}'),
+                  color: borderColor,
                 ),
-                child:
-                isSelected
-                    ? const Icon(
-                  Icons.check,
-                  size: 16,
-                  color: Colors.white,
-                )
-                    : null,
-              ),
-            ).marginOnly(bottom: 16),
+              ).marginOnly(bottom: 16),
           ],
         ),
       ),

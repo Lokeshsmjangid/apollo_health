@@ -1,16 +1,9 @@
 import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import 'like_question_bottom_sheet.dart';
 
 void showLeaveQuizSheet(BuildContext context,void Function() onButtonTap,{bool isWheelOfWellness = false}) {
   showModalBottomSheet(

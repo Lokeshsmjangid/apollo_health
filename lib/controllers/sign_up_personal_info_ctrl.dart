@@ -1,6 +1,7 @@
 import 'package:apollo/bottom_sheets/location_bottom_sheet.dart';
 import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/models/country_model.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,17 +19,43 @@ class SignUpPersonalInfoController extends GetxController{
   bool isButtonDisable = true;
   bool isDropdownOpen = false;
 
+
+
+  String? goBack;
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
+    // if(Get.arguments!=null){
+    //   email = Get.arguments['email'];
+    //   password = Get.arguments['password'];
+    // }
     if(Get.arguments!=null){
-      email = Get.arguments['email'];
-      password = Get.arguments['password'];
+      goBack = Get.arguments['goBack'];
     }
+    if (AuthData().isLogin) {
+      final user = AuthData().userModel;
+      firstName.text = user?.firstName??'';
+      lastName.text = user?.lastName??'';
+      location.text = user?.country??'';
+      countryFlag = user?.countryFlag??'';
+
+      if(user?.ageGroup!=null) {
+        Future.delayed(Duration(milliseconds: 800),(){
+        AgeGroupModel age = ageGroupList.firstWhere((e)=> e.age==user?.ageGroup);
+        ageGroup = age;
+        update();
+        if(firstName.text.isNotEmpty && lastName.text.isNotEmpty && ageGroup!=null && location.text.isNotEmpty){
+          isButtonDisable = false;
+          update();
+
+        }
+      });
+      }
+
+    }
+
   }
-
-
   AgeGroupModel? ageGroup;
   List<AgeGroupModel> ageGroupList = [
     AgeGroupModel(age: "13-20"),
@@ -40,6 +67,7 @@ class SignUpPersonalInfoController extends GetxController{
     AgeGroupModel(age: "70+"),
   ];
 
+  String countryFlag = '';
   void openLocationPicker(BuildContext context) async {
     Country selected = await showModalBottomSheet(
       context: context,
@@ -51,6 +79,7 @@ class SignUpPersonalInfoController extends GetxController{
     if (selected != null) {
       apolloPrint( message: "Selected Country: $selected");
       location.text = selected.name;
+      countryFlag = selected.emoji;
       if(firstName.text.isNotEmpty && lastName.text.isNotEmpty && ageGroup!=null){
         isButtonDisable = false;
 

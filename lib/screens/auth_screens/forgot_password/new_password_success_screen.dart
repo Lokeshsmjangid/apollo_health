@@ -95,7 +95,7 @@ class _NewPasswordSuccessScreenState extends State<NewPasswordSuccessScreen> {
       body: Stack(
         alignment: Alignment.center,
         children: [
-          Container(
+          SizedBox(
             width: width,
             child: Image.asset(
               AppAssets.successNPBg,

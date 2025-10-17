@@ -1,11 +1,8 @@
 import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -54,7 +51,7 @@ void showMedpardySheet(BuildContext context) {
                 ),
                 addHeight(24),
                 addText500(
-                  'Hosting a game night or a family gathering? This mode is built for Jeopardy-style group fun—just share your screen on a TV or play from your phone! No explanations, no HP, all competition.',
+                  'Hosting a game night or a gathering? This mode is built for Jeopardy-style group fun—play from your phone or share your screen on a TV!',
                   textAlign: TextAlign.center,
                   fontSize: 16,
                   height: 22

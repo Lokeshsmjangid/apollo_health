@@ -1,14 +1,18 @@
 
-import 'dart:convert';
-import 'dart:developer';
-
+import 'package:apollo/resources/app_routers.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 class LocalStorage {
-  static const IS_LOGIN = "IS_LOGIN";
-  static const USER_ACCESS_TOKEN = "USER_ACCESS_TOKEN";
+  static const USER_TOKEN = "USER_TOKEN";
+  static const USER_ID = "USER_ID";
   static const USER_DATA = "USER_DATA";
-  static const ROLE = "ROLE";
+  static const MUSIC_ON = "MUSIC_ON";
+  static const IS_PREMIUM = "IS_PREMIUM";
+  static const IS_PREMIUM_WELLNESS = "IS_PREMIUM_WELLNESS";
+  static const IS_PREMIUM_MEDPARDY = "IS_PREMIUM_MEDPARDY";
+  static const IS_PREMIUM_MEDLINGO = "IS_PREMIUM_MEDLINGO";
+
 
   final box = GetStorage();
 
@@ -36,8 +40,12 @@ class LocalStorage {
     return value ?? false;
   }
 
-  clearLocalStorage(){
+  clearLocalStorage({bool goToSignInScreen = true}){
     GetStorage localStorage = GetStorage();
     localStorage.erase();
+    if(goToSignInScreen){
+    Get.offAllNamed(AppRoutes.signInScreen);
+    }
+
   }
 }

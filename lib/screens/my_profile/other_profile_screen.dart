@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:apollo/bottom_sheets/badge_achieved_bottom_sheet.dart';
-import 'package:apollo/controllers/my_profile_ctrl.dart';
 import 'package:apollo/controllers/other_profile_ctrl.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/custom_widgets/online_status_dot_screen.dart';
+import 'package:apollo/resources/Apis/api_repository/add_friend_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
@@ -29,15 +34,44 @@ class OtherProfileScreen extends StatelessWidget {
               bottom: false,
               child: Column(
                 children: [
-                  // addHeight(58),
+                  addHeight(10),
 
 
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: backButton(
-                              onTap: (){
-                            Get.back();
-                          },backButtonColor: AppColors.whiteColor).marginOnly(left: 16)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: backButton(
+                                  onTap: (){Get.back();
+                              },backButtonColor: AppColors.whiteColor).marginOnly(left: 16)),
+
+
+                          logic.isMyFriend ==null || logic.isMyFriend==true?SizedBox.shrink():Align(
+                              alignment: Alignment.centerLeft,
+                              child: GestureDetector(
+                                onTap: (){
+                                  showLoader(true);
+                                  addFriendApi(userId: logic.profileModel.data?.id).then((value){
+                                    showLoader(false);
+                                    if(value.status==true){
+                                      logic.isMyFriend=true;
+                                      logic.update();
+                                    }else if(value.status==false){
+                                      CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.whiteColor,
+                                    borderRadius: BorderRadius.circular(6)
+                                  ),
+                                  child: addText400('Add',fontSize: 12,color: AppColors.blackColor).marginSymmetric(horizontal: 6,vertical: 4),
+                                ).marginOnly(right: 10),
+                              )),
+                        ],
+                      ),
 
 
                   addHeight(82),
@@ -58,16 +92,34 @@ class OtherProfileScreen extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             children: [
                               // addHeight(16),
+                               // name and premium user symbol
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  addText700('Leslie Alexander', fontSize: 26, color: AppColors.blackColor),
-                                  addWidth(4),
-                                  Image.asset(
-                                    AppAssets.premiumProfileIcon, height: 24,width: 24,),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        addText700(
+                                          titleCase(getTruncatedName('${logic.profileModel.data?.firstName ?? ''}',
+                                              '${logic.profileModel.data?.lastName ?? ''}')),
 
+                                          fontSize: 22,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          color: AppColors.blackColor,
+                                        ),
 
+                                        if(logic.profileModel.data?.subscription==1)
+                                        Image.asset(
+                                          AppAssets.premiumProfileIcon,
+                                          height: 19,
+                                          width: 19,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
 
@@ -75,19 +127,19 @@ class OtherProfileScreen extends StatelessWidget {
                               Align(
                                   alignment: Alignment.center,
                                   child: addText400(
-                                      'Middleburg, VA, USA • Joined August, 2025',
+                                      '${logic.profileModel.data?.country??''} • Joined ${logic.profileModel.data?.joinDate??''}',
                                       fontSize: 12, color: AppColors.textColor)),
-
                               addHeight(10),
+
                               Align(
                                   alignment: Alignment.center,
                                   child: GestureDetector(
                                     onTap: (){
                                       // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                                      Get.toNamed(AppRoutes.mutualFriendScreen);
+                                      Get.toNamed(AppRoutes.mutualFriendScreen,arguments: {'friend_id':logic.friendId});
                                     },
                                     child: addText500(
-                                        '3 Mutual Friends',
+                                        '${logic.profileModel.data?.mutualFriendCount??0} Mutual Friends',
                                         decoration: TextDecoration.underline,
                                         fontSize: 16, color: AppColors.primaryColor),
                                   )),
@@ -97,9 +149,9 @@ class OtherProfileScreen extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  _buildStatCard(AppAssets.friendsIcon, '21', 'Friends'),
+                                  _buildStatCard(AppAssets.friendsIcon, '${logic.profileModel.data?.friendCount??0}', 'Friends'),
                                   addWidth(13),
-                                  _buildStatCard(AppAssets.coinIcon, '448000', 'Total HP'),
+                                  _buildStatCard(AppAssets.coinIcon, '${logic.profileModel.data?.xp??0}', 'Total HP'),
                                 ],
                               ),
 
@@ -107,7 +159,7 @@ class OtherProfileScreen extends StatelessWidget {
 
                               Row(
                                 children: [
-                                  addText400('Highest Badge Achieved',fontSize: 20, height: 22,fontFamily: 'Caprasimo', color: AppColors.primaryColor),
+                                  addText400('Badges Achieved',fontSize: 20, height: 22,fontFamily: 'Caprasimo', color: AppColors.primaryColor),
                                   SizedBox(width: 6),
                                   GestureDetector(
                                       onTap: (){
@@ -120,22 +172,82 @@ class OtherProfileScreen extends StatelessWidget {
                               const SizedBox(height: 12),
 
                               // Badges
-                              ListView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: logic.badges.length,
-                                itemBuilder: (context, index) {
-                                  final badge = logic.badges[index];
-                                  return ListTile(
-                                    contentPadding: EdgeInsets.zero,
-                                    visualDensity: VisualDensity(vertical: -3),
-                                    leading: Image.asset(badge.icon,height: 52,width: 41,),
-                                    title: addText400(badge.title,fontSize: 16,height: 27.16,fontFamily: 'Caprasimo'),
-                                    subtitle: addText500(badge.description,fontSize: 16,height: 22,color: AppColors.blackColor),
-                                    trailing: addText400(badge.date,fontSize: 12),
-                                  );
-                                },
+
+                              SingleChildScrollView(
+                                // height: Platform.isIOS?170:130,
+                                child: logic.profileModel.data!=null && logic.profileModel.data!.badges!.isNotEmpty
+                                    ? ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  shrinkWrap: true,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemCount: logic.profileModel.data?.badges?.length,
+                                  itemBuilder: (context, index) {
+                                    String? image;
+                                    final badge = logic.profileModel.data?.badges?[index];
+                                    String badgeTitle = '${badge?.badge}'.toLowerCase();
+                                    switch (badge?.badge?.toLowerCase()) {
+                                      case 'health apprentice':
+                                        image = AppAssets.healthApprenticeBadge;
+                                        break;
+                                      case 'wellness watcher':
+                                        image = AppAssets.wellnessWatcherBadge;
+                                        break;
+                                      case 'health pro':
+                                        image = AppAssets.healthProBadge;
+                                        break;
+                                      case 'health whiz':
+                                        image = AppAssets.healthBadge;
+                                        break;
+                                      case 'grandmaster of health':
+                                        image = AppAssets.grandmasterOfHealthBadge;
+                                        break;
+                                    }
+                                    return ListTile(
+                                      contentPadding: EdgeInsets.zero,
+                                      visualDensity: VisualDensity(vertical: -3),
+                                      leading: image!=null? Image.asset(image,height: 52,width: 41,): SizedBox.shrink(),
+                                      title: addText400(badge?.badge??'',fontSize: 16,height: 27.16,fontFamily: 'Caprasimo'),
+                                      subtitle: addText500(badge?.description??'',fontSize: 16,height: 22,color: AppColors.blackColor),
+                                      trailing: addText400(badge?.createdAt??'',fontSize: 12),
+                                      onTap: (){
+                                        // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                                        // if(badge.title=="Health Apprentice"){
+                                        //   Get.to(HealthApprenticeBadgeScreen());
+                                        // }else if(badge.title=="Wellness Watcher"){
+                                        //   Get.to(WellnessWatcherBadgeScreen());
+                                        // } else if(badge.title=="Health Pro"){
+                                        //   Get.to(HealthProBadgeScreen());
+                                        // } else if(badge.title=="Health Whiz"){
+                                        //   Get.to(()=>HealthWhizBadgeScreen());
+                                        // } else if(badge.title=="Grandmaster of Health"){
+                                        //   Get.to(()=>GrandmasterHealthBadgeScreen());
+                                        // }
+                                      },
+                                    );
+                                  },
+                                )
+                                    : Center(child: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: 'No badges... ',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: 'yet.',
+                                        style: TextStyle(
+                                            fontStyle: FontStyle.italic, // Only "yet." is italic
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                ),
                               ),
 
                               addHeight(90)
@@ -151,80 +263,79 @@ class OtherProfileScreen extends StatelessWidget {
                             clipBehavior: Clip.none,
                             alignment: Alignment.center,
                             children: [
-                              CircleAvatar(
-                                  radius: 50, backgroundColor: AppColors.primaryColor,
-                                  child: CircleAvatar(
-                                    radius: 48,
-                                    backgroundImage: AssetImage(AppAssets.profileImg),
-                                    backgroundColor: AppColors.whiteColor,)),
+                              buildProfileImage(
+                                  networkImageUrl: logic.profileModel.data?.profileImage,),
+
                               Positioned(
-                                // top: 0,
                                 right: 0,
                                 bottom: 0,
 
                                 child: Container(
-                                    height: 25,width: 35,
-
+                                    width: 42,height: 28,
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: AppColors.whiteColor,width: 1.5),
-                                      borderRadius: BorderRadius.circular(6)
+                                        border: Border.all(color: AppColors.whiteColor,width: 2),
+                                        borderRadius: BorderRadius.circular(5)
 
                                     ),
-                                    child: Image.asset(AppAssets.flagIcon,fit: BoxFit.cover,cacheHeight: 25,cacheWidth: 35,)),
+                                    child: ClipRRect(
+                                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                                        borderRadius: BorderRadius.circular(3),
+                                        child: CachedImageCircle2(imageUrl: '${logic.profileModel.data?.countryFlag}',fit: BoxFit.cover,isCircular: false))),
                               ),
 
                               // for online offline
+                              if(logic.profileModel.data!=null && logic.profileModel.data!.onlineStatusVisible==1)
                               Positioned(
                                 top: 10,
                                 right: 10,
                                 // bottom: 0,
+                                child: OnlineStatusDot(lastActiveTime: DateTime.parse(logic.profileModel.data?.userActive??"")),
 
-                                child: Container(
+                                /*child: Container(
                                     height: 12,width: 12,
-
                                     decoration: BoxDecoration(
-                                      color: AppColors.green500Color,
-                                      shape: BoxShape.circle)),
+                                      color: logic.profileModel.data!.onlineStatusVisible==0?AppColors.redColor1:AppColors.green500Color,
+                                      shape: BoxShape.circle)),*/
                               ),
 
                               // badge achieved
-                              Positioned(
-                                top: -20,
-                                // bottom: 0,
+                              if(logic.profileModel.data!=null && logic.profileModel.data!.badgeAchived != null)
+                                Positioned(
+                                  top: -20,
+                                  // bottom: 0,
 
-                                child: Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
 
-                                    Container(
+                                      Container(
                                         decoration: BoxDecoration(
-                                          color: AppColors.yellowColor,
-                                          borderRadius: BorderRadius.circular(6),
+                                            color: AppColors.yellowColor,
+                                            borderRadius: BorderRadius.circular(6),
                                             boxShadow: [BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 4.0,
-                                )]
+                                              color: Colors.grey,
+                                              blurRadius: 4.0,
+                                            )]
 
                                         ),
-                                      child: addText400('Health Apprentice', fontFamily: 'Caprasimo', fontSize: 14,).marginSymmetric(horizontal: 14,vertical: 6),
-                                    ),
+                                        child: addText400('${logic.profileModel.data!.badgeAchived}', fontFamily: 'Caprasimo', fontSize: 14,).marginSymmetric(horizontal: 14,vertical: 6),
+                                      ),
+                                      Positioned(
+                                          left: -14,
+                                          top: 2,
 
-                                    Positioned(
-                                        left: -14,
-                                        top: 2,
+                                          bottom: 2,
+                                          child: Image.asset(AppAssets.premiumTagLeftIcon,height: 10,color: AppColors.yellowColor,)),
+                                      Positioned(
+                                          right: -14,
+                                          top: 2,
 
-                                        bottom: 2,
-                                        child: Image.asset(AppAssets.premiumTagLeftIcon,height: 10,color: AppColors.yellowColor,)),
-                                    Positioned(
-                                        right: -14,
-                                        top: 2,
+                                          bottom: 2,
+                                          child: Image.asset(AppAssets.premiumTagRightIcon,height: 10,color: AppColors.yellowColor,))
 
-                                        bottom: 2,
-                                        child: Image.asset(AppAssets.premiumTagRightIcon,height: 10,color: AppColors.yellowColor,))
-
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
@@ -275,6 +386,27 @@ class OtherProfileScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildProfileImage({
+    required String? networkImageUrl,
+    double size = 98,
+    Color borderColor = Colors.deepPurple, // Replace with AppColors.primaryColor if needed
+    double borderWidth = 2,
+  }) {
+    return Container(
+      height: size,
+      width: size,
+      decoration: BoxDecoration(
+        border: Border.all(color: borderColor, width: borderWidth),
+        shape: BoxShape.circle,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(1000),
+        child:CachedImageCircle2(imageUrl: networkImageUrl)
+
       ),
     );
   }

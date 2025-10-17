@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'app_color.dart';
 
-// font family
-// Gilroy and Montserrat
-
 TextStyle manropeTextStyle() {
   return const TextStyle(fontFamily: 'Manrope');
 }

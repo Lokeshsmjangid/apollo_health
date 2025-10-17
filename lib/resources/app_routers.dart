@@ -1,8 +1,13 @@
 
+import 'package:apollo/screens/app_subscriptions/premium_plan_screen.dart';
+import 'package:apollo/screens/app_subscriptions/subscription_screen.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_1/medpardy_1st_round_quiz_screen.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_1/medpardy_1st_round_screen.dart';
 import 'package:apollo/notifications_screen.dart';
 import 'package:apollo/screens/auth_screens/forgot_password/forgot_password_screen.dart';
 import 'package:apollo/screens/auth_screens/forgot_password/new_password_screen.dart';
 import 'package:apollo/screens/auth_screens/forgot_password/new_password_success_screen.dart';
+import 'package:apollo/screens/auth_screens/sign_up/email_verify_otp_screen.dart';
 import 'package:apollo/screens/auth_screens/sign_up/sign_up_disclaimer_screen.dart';
 import 'package:apollo/screens/auth_screens/sign_up/sign_up_personal_info.dart';
 import 'package:apollo/screens/auth_screens/sign_up/sign_up_screen.dart';
@@ -21,12 +26,17 @@ import 'package:apollo/screens/game_mode/group_play/group_play_screen.dart';
 import 'package:apollo/screens/game_mode/live_challenges/live_challenge_quiz_screen.dart';
 import 'package:apollo/screens/game_mode/live_challenges/live_challenge_result.dart';
 import 'package:apollo/screens/game_mode/live_challenges/live_challenge_result_precentage.dart';
+import 'package:apollo/screens/game_mode/live_challenges/live_challenge_round_four_screen.dart';
+import 'package:apollo/screens/game_mode/live_challenges/live_challenge_round_three_screen.dart';
+import 'package:apollo/screens/game_mode/live_challenges/live_challenge_round_two_screen.dart';
 import 'package:apollo/screens/game_mode/live_challenges/register_live_challenge_screen.dart';
 import 'package:apollo/screens/game_mode/live_challenges/timer_live_challenge_screen.dart';
-import 'package:apollo/screens/game_mode/medPardy/medpardy_board_screen.dart';
 import 'package:apollo/screens/game_mode/medPardy/medpardy_choose_friend_screen.dart';
-import 'package:apollo/screens/game_mode/medPardy/medpardy_second_round_board_screen.dart';
-import 'package:apollo/screens/game_mode/medPardy/quiz_medpardy_screen.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_2/medpardy_2nd_round_quiz_screen.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_2/medpardy_2nd_round_screen.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_3/medpardy_3rd_round_quiz_screen.dart';
+import 'package:apollo/screens/game_mode/medPardy/round_3/medpardy_3rd_round_screen.dart';
+import 'package:apollo/screens/game_mode/medlingo/medlingo.dart';
 import 'package:apollo/screens/game_mode/solo_play/quiz_screen.dart';
 import 'package:apollo/screens/game_mode/solo_play/quiz_screen_new.dart';
 import 'package:apollo/screens/game_mode/solo_play/solo_play_result.dart';
@@ -38,7 +48,6 @@ import 'package:apollo/screens/my_profile/my_friends_screen.dart';
 import 'package:apollo/screens/my_profile/my_profile_screen.dart';
 import 'package:apollo/screens/my_profile/other_profile_screen.dart';
 import 'package:apollo/screens/my_profile/play_request_screen.dart';
-import 'package:apollo/screens/my_profile/subscription_screen.dart';
 import 'package:apollo/screens/onboarding_screens/onboarding_screen.dart';
 import 'package:apollo/screens/settings/need_help_screen.dart';
 import 'package:apollo/screens/settings/settings_screen.dart';
@@ -50,8 +59,8 @@ import 'package:get/get.dart';
 import '../screens/auth_screens/forgot_password/forgot_password_otp_screen.dart';
 
 class AppRoutes {
+  static String splashMainScreen = '/';
   static String splashScreen = '/SPLASH_SCREEN';
-  static String splashMainScreen = '/MAIN_SPLASH_SCREEN';
   static String onboardingScreen = '/ONBOARDING_SCREEN';
   static String enterScreen = '/ENTER_SCREEN';
   static String signInScreen = '/SIGN_IN_SCREEN';
@@ -61,6 +70,7 @@ class AppRoutes {
   static String newPasswordSuccessScreen = '/NEW_PASSWORD_SUCCESS_SCREEN';
   static String createAccountScreen = '/CREATE_ACCOUNT_SCREEN';
   static String signUpPersonalInfoScreen = '/SIGN_UP_PERSONAL_INFO_SCREEN';
+  static String emailVerifyOtpScreen = '/EMAIL_VERIFY_OTP_SCREEN';
   static String signUpDisclaimerScreen = '/SIGN_UP_DISCLAIMER_SCREEN';
   static String homeScreen = '/Home_Screen';
   static String dashboardScreen = '/DASHBOARD_SCREEN';
@@ -94,6 +104,9 @@ class AppRoutes {
   static String liveChallengeResultScreen = '/LIVE_CHALLENGE_RESULT_SCREEN';
   static String liveChallengeResultPrecentageScreen = '/LIVE_CHALLENGE_RESULT_PRECENTAGE_SCREEN';
   static String liveChallengeQuizScreen = '/LIVE_CHALLENGE_QUIZ_SCREEN';
+  static String liveChallengeRoundTwoScreen = '/LIVE_CHALLENGE_ROUND_TWO_SCREEN';
+  static String liveChallengeRoundThreeScreen = '/LIVE_CHALLENGE_ROUND_THREE_SCREEN';
+  static String liveChallengeRoundFourScreen = '/LIVE_CHALLENGE_ROUND_FOUR_SCREEN';
   static String notificationsScreen = '/NOTIFICATIONS_SCREEN';
   static String settingsScreen = '/SETTINGS_SCREEN';
   static String myProfileScreen = '/MY_PROFILE_SCREEN';
@@ -112,6 +125,19 @@ class AppRoutes {
   static String dealsProductScreen = '/DEALS_PRODUCT_SCREEN';
   static String dealsServicesScreen = '/DEALS_SERVICES_SCREEN';
   static String dealsExperiencesScreen = '/DEALS_EXPERIENCES_SCREEN';
+
+  // Medpardy new
+  static String medpardy1stRoundScreen = '/MEDPARDY_FIRSTROUND_SCREEN';
+  static String medpardy1stRoundQuizScreen = '/MEDPARDY_FIRSTROUNDQUIZ_SCREEN';
+
+  static String medpardy2ndRoundScreen = '/MEDPARDY_SECONDROUND_SCREEN';
+  static String medpardy2ndRoundQuizScreen = '/MEDPARDY_SECONDROUNDQUIZ_SCREEN';
+
+  static String medpardy3rdRoundScreen = '/MEDPARDY_FINALROUND_SCREEN';
+  static String medpardy3rdRoundQuizScreen = '/MEDPARDY_FINALROUNDQUIZ_SCREEN';
+
+  // MedLingo
+  static String medLingoWordGameScreen = '/MEDLINGO_WORDGAME_SCREEN';
 
 
 
@@ -180,6 +206,11 @@ class AppRoutes {
     ),
 
     GetPage(
+      name: AppRoutes.emailVerifyOtpScreen,
+      page: () => EmailVerifyOtpScreen(),
+    ),
+
+    GetPage(
       name: AppRoutes.signUpDisclaimerScreen,
       page: () => SignUpDisclaimerScreen(),
     ),
@@ -226,25 +257,6 @@ class AppRoutes {
       page: () => GroupPlayResultScreen(),
     ),
 
-    // Medpardy
-
-    GetPage(
-      name: AppRoutes.medpardyChooseFriendScreen,
-      page: () => MedpardyChooseFriendScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.medpardyBoardScreen,
-      page: () => MedpardyBoardScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.medpardySecondRoundBoardScreen,
-      page: () => MedpardySecondRoundBoardScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.quizMedpardyScreen,
-      page: () => QuizMedpardyScreen(),
-    ),
-
     //live_challenges
     GetPage(
       name: AppRoutes.registerLiveChallengeScreen,
@@ -269,6 +281,21 @@ class AppRoutes {
     GetPage(
       name: AppRoutes.liveChallengeQuizScreen,
       page: () => LiveChallengeQuizScreen(),
+    ),
+
+    GetPage(
+      name: AppRoutes.liveChallengeRoundTwoScreen,
+      page: () => LiveChallengeRoundTwoScreen(),
+    ),
+
+    GetPage(
+      name: AppRoutes.liveChallengeRoundThreeScreen,
+      page: () => LiveChallengeRoundThreeScreen(),
+    ),
+
+    GetPage(
+      name: AppRoutes.liveChallengeRoundFourScreen,
+      page: () => LiveChallengeRoundFourScreen(),
     ),
 
     // Notifications
@@ -296,7 +323,8 @@ class AppRoutes {
 
     GetPage(
       name: AppRoutes.subscriptionScreen,
-      page: () => SubscriptionScreen(),
+      // page: () => SubscriptionScreen(),
+      page: () => PremiumPlanScreen(),
     ),
 
     GetPage(
@@ -365,8 +393,44 @@ class AppRoutes {
       page: () => DealsExperiencesScreen(),
     ),
 
+    // Medpardy
+
+    GetPage(
+      name: AppRoutes.medpardyChooseFriendScreen,
+      page: () => MedpardyChooseFriendScreen(),
+    ),
 
 
+    // Medpardy new
+    GetPage(
+      name: AppRoutes.medpardy1stRoundScreen,
+      page: () => Medpardy1stRoundScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.medpardy1stRoundQuizScreen,
+      page: () => Medpardy1stRoundQuizScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.medpardy2ndRoundScreen,
+      page: () => Medpardy2ndRoundScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.medpardy2ndRoundQuizScreen,
+      page: () => Medpardy2ndRoundQuizScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.medpardy3rdRoundScreen,
+      page: () => Medpardy3rdRoundScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.medpardy3rdRoundQuizScreen,
+      page: () => Medpardy3rdRoundQuizScreen(),
+    ),
 
+    // MedLingo
+    GetPage(
+      name: AppRoutes.medLingoWordGameScreen,
+      page: () => MedLingoWordGame(),
+    ),
   ];
 }

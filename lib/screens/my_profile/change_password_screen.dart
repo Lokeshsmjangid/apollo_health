@@ -1,18 +1,17 @@
 import 'package:apollo/controllers/change_password_ctrl.dart';
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_column_animation.dart';
 import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/resources/Apis/api_repository/change_password_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:get/get.dart';
-import 'package:get/get_utils/get_utils.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -40,10 +39,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           child: GetBuilder<ChangePasswordCtrl>(builder: (logic) {
             return Column(
               children: [
-                // addHeight(52),
+                addHeight(10),
                 // AppBar
-
-
                 backBar(
                   title: "Change Password",
                   backButtonColor: AppColors.blackColor,
@@ -105,15 +102,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                 logic.obscureOldPass = !logic.obscureOldPass;
                                                 logic.update();
                                               },
-                                              child: Container(
-                                                height: !logic.obscureOldPass
+                                              child: SizedBox(
+                                                height: logic.obscureOldPass
                                                     ? 24
                                                     : 16,
-                                                width: !logic.obscureOldPass
+                                                width: logic.obscureOldPass
                                                     ? 24
                                                     : 16,
                                                 child: Image.asset(
-                                                    logic.obscureOldPass ? AppAssets
+                                                    !logic.obscureOldPass ? AppAssets
                                                         .eyeIcon : AppAssets
                                                         .eyeOffIcon),
                                               )
@@ -149,10 +146,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                               logic.update();
                                             },
                                             child: SizedBox(
-                                              height: !logic.obscureNewPass ? 24 : 16,
-                                              width: !logic.obscureNewPass ? 24 : 16,
+                                              height: logic.obscureNewPass ? 24 : 16,
+                                              width: logic.obscureNewPass ? 24 : 16,
                                               child: Image.asset(
-                                                  logic.obscureNewPass ? AppAssets
+                                                  !logic.obscureNewPass ? AppAssets
                                                       .eyeIcon : AppAssets
                                                       .eyeOffIcon),
                                             ),
@@ -188,14 +185,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                 logic.update();
                                               },
                                               child: SizedBox(
-                                                height: !logic.obscureConfPass
+                                                height: logic.obscureConfPass
                                                     ? 24
                                                     : 16,
-                                                width: !logic.obscureConfPass
+                                                width: logic.obscureConfPass
                                                     ? 24
                                                     : 16,
                                                 child: Image.asset(
-                                                    logic.obscureConfPass ? AppAssets
+                                                    !logic.obscureConfPass ? AppAssets
                                                         .eyeIcon : AppAssets
                                                         .eyeOffIcon),
                                               )
@@ -211,8 +208,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                               : () {
                                             // effectSound(sound: AppAssets.actionButtonTapSound);
                                             if(formKey.currentState?.validate()??false){
-                                              CustomSnackBar().showSnack(context, message: 'Password changed successfully.');
-                                              Get.back();
+                                              showLoader(true);
+                                              changePasswordApi(oldPassword: logic.oldPassCtrl.text,password: logic.confPassCtrl.text).then((value){
+                                                showLoader(false);
+                                                if(value.status==true){
+                                                  CustomSnackBar().showSnack(Get.context!, message: 'Password changed successfully.');
+                                                  Get.back();
+                                                } else if(value.status==false){
+                                                  CustomSnackBar().showSnack(Get.context!, isSuccess: false,message: '${value.message}');
+                                                }
+                                              });
+
+
+
                                             }
                                           }
                                           ),

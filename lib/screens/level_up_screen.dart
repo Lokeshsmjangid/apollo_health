@@ -1,4 +1,5 @@
 import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:get/get.dart';
 class HowToLevelUpScreen extends StatelessWidget {
   const HowToLevelUpScreen({super.key});
 
-  final Color purple = const Color(0xFF7B3EFF);
 
   final List<Map<String, String>> tips = const [
     {
@@ -16,38 +16,49 @@ class HowToLevelUpScreen extends StatelessWidget {
     },
     {
       'title': '5-Day Streak',
-      'desc': 'Play daily for 5 days = 10% bonus on all scores.',
+      'desc': 'Play daily for 5 days and receive a 50 HP bonus on Day 5.',
+
     },
     {
       'title': 'Speed Bonus',
-      'desc': 'Answer in under 8 sec? Boom, +20% HP!',
+      'desc': 'Answer in under 5 sec? Boom, +10% HP every time!',
+    },
+    {
+      'title': 'Solo Play',
+      'desc': 'Try High Stakes mode: double points if right, lose value if wrong.',
     },
     {
       'title': 'Group Play',
-      'desc': 'Join a session, score 10% extra per game.',
+      'desc': 'Play your challengers and recieve a 25 HP bonus each day.',
+    },
+    {
+      'title': 'Group Play',
+      'desc': 'Try Winner-Take-All: winner scoops up everyone\'s points.',
     },
     {
       'title': 'Medpardy',
-      'desc': 'Play & earn a 10% bonus on next Solo or Group Play.',
+      'desc': 'Play & earn a 25 HP bonus each day.',
     },
-    {
-      'title': 'Wheel of Wellness Puzzle',
-      'desc': 'Spin daily, guess perfectly, and earn a 20% boost!',
-    },
-    {
-      'title': 'Live Challenge',
-      'desc': 'Scores are doubled. That’s a 100% bonus!',
-    },
+
+    // {
+    //   'title': 'Live Challenge',
+    //   'desc': 'Scores are doubled. That’s a 100% bonus!',
+    // },
     {
       'title': 'Apollo Spotlight',
-      'desc': 'Special themed events = +20% per game.',
+      'desc': 'Special-themed events = +20% per game.',
     },
+    // {
+    //   'title': 'Fewer Hints',
+    //   'desc': 'Tapping the Hand one costs HP, so use wisely!',
+    // },
   ];
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: purple,
+      backgroundColor: AppColors.primaryColor,
       body: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -98,7 +109,7 @@ class HowToLevelUpScreen extends StatelessWidget {
                               return Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                 Image.asset(AppAssets.starIcon,height: 18,width: 18,),
+                                 Image.asset(AppAssets.starIcon,height: 18,width: 18,).marginOnly(top: 6),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: RichText(

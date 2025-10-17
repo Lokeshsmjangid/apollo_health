@@ -1,20 +1,20 @@
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_column_animation.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/resources/Apis/api_repository/update_password_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/get_utils.dart';
 
-import 'new_password_success_screen.dart';
-
-class NewPasswordScreen extends StatefulWidget { const NewPasswordScreen({super.key});
+class NewPasswordScreen extends StatefulWidget {
+  String? rpToken;
+   NewPasswordScreen({super.key,this.rpToken});
 
   @override
   State<NewPasswordScreen> createState() => _NewPasswordScreenState();
@@ -27,9 +27,8 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
     await _audioPlayer.play(AssetSource(sound));
   }
 
-
-
-  bool obscureText = false;
+  bool obscureText = true;
+  bool obscureConText = true;
   bool isButtonDisable = true;
   final formKey = GlobalKey<FormState>();
   TextEditingController passController = TextEditingController();
@@ -90,11 +89,11 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                             obscureText = !obscureText;
                             setState(() {});
                           },
-                          child: obscureText
-                              ? Image.asset(AppAssets.eyeIcon,height: 24,
-                            width: 24,).marginAll(2)
-                              : Image.asset(AppAssets.eyeOffIcon,height: 24,
-                            width: 24,),
+                          child: SizedBox(
+                              height: obscureText?24:16,
+                              width:  obscureText?24:16,
+                              child: Image.asset(
+                                  !obscureText?AppAssets.eyeIcon:AppAssets.eyeOffIcon))
                         )),
                     addHeight(16),
 
@@ -103,7 +102,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                         child: addText500("Confirm Password",fontSize: 16,color: AppColors.textColor)).marginOnly(left: 12,bottom: 6),
                     CustomTextField(
                         hintText: 'Enter Password Again',
-                        obscureText: obscureText,
+                        obscureText: obscureConText,
                         controller: confirmController,
                         validator: (value) => validateField(
                             field: 'confirm password',
@@ -119,14 +118,14 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                         },
                         suffixIcon: GestureDetector(
                           onTap: (){
-                            obscureText = !obscureText;
+                            obscureConText = !obscureConText;
                             setState(() {});
                           },
-                          child: obscureText
-                              ? Image.asset(AppAssets.eyeIcon,height: 24,
-                            width: 24,).marginAll(2)
-                              : Image.asset(AppAssets.eyeOffIcon,height: 24,
-                              width: 24,),
+                          child: SizedBox(
+                              height: obscureConText?24:16,
+                              width:  obscureConText?24:16,
+                              child: Image.asset(
+                                  !obscureConText?AppAssets.eyeIcon:AppAssets.eyeOffIcon)),
                         )),
                     addHeight(30),
                     AppButton(
@@ -135,17 +134,23 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                       onButtonTap: isButtonDisable?(){}:(){
                       // effectSound(sound: AppAssets.actionButtonTapSound);
                         if(formKey.currentState?.validate()??false) {
-                          Get.offAllNamed(AppRoutes.newPasswordSuccessScreen);
+                          showLoader(true);
+                          updatePasswordApi( rpToken: widget.rpToken,password: confirmController.text).then((value){
+                            showLoader(false);
+                            if(value.status==true){
+                              CustomSnackBar().showSnack(Get.context!,isSuccess: true,message: '${value.message}');
+                              Get.offAllNamed(AppRoutes.newPasswordSuccessScreen);
+                            } else if(value.status==false){
+                              CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
+                            }
+                          });
+
                         }
                     },),
 
 
 
                     addHeight(40),
-
-
-
-
                   ],
                 ),
               ),

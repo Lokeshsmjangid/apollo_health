@@ -1,28 +1,49 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:apollo/bottom_sheets/location_bottom_sheet.dart';
 import 'package:apollo/models/country_model.dart';
+import 'package:apollo/resources/Apis/api_repository/profile_update_repo.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/utils.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import 'sign_up_personal_info_ctrl.dart';
 
 class EditProfileController extends GetxController{
 
-  final AudioPlayer audioPlayer = AudioPlayer();
-  Future<void> effectSound({required String sound}) async {
+  TextEditingController firstName = TextEditingController();
+  TextEditingController lastName = TextEditingController();
+  TextEditingController emailCtrl = TextEditingController();
+  TextEditingController locationCtrl = TextEditingController();
+  String? profileImage;
+  String? countryFlag;
 
-    await audioPlayer.play(AssetSource(sound));
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    if(AuthData().isLogin){
+      final user = AuthData().userModel;
+      firstName.text = user?.firstName??'';
+      lastName.text = user?.lastName??'';
+      emailCtrl.text = user?.email??'';
+      locationCtrl.text = user?.country??'';
+      countryFlag = user?.countryFlag??'';
+      profileImage = user?.profileImage??'';
+      Future.delayed(Duration(milliseconds: 800),(){
+        AgeGroupModel age = ageGroupList.firstWhere((e)=> e.age==user?.ageGroup);
+        ageGroup = age;
+        update();
+      });
 
+    }
   }
-
-  TextEditingController firstName = TextEditingController(text: 'Zain');
-  TextEditingController lastName = TextEditingController(text: 'Vaccaro');
-  TextEditingController emailCtrl = TextEditingController(text: 'test@gmail.com');
-  TextEditingController locationCtrl = TextEditingController(text: 'USA ');
 
   AgeGroupModel? ageGroup;
   List<AgeGroupModel> ageGroupList = [
@@ -34,8 +55,9 @@ class EditProfileController extends GetxController{
     AgeGroupModel(age: "61-70"),
     AgeGroupModel(age: "70+"),
   ];
+
   void openLocationPicker(BuildContext context) async {
-    Country selected = await showModalBottomSheet(
+    final Country? selected = await showModalBottomSheet<Country>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -43,11 +65,13 @@ class EditProfileController extends GetxController{
     );
 
     if (selected != null) {
-      apolloPrint( message: "Selected Country: $selected");
+      apolloPrint(message: "Selected Country: $selected");
       locationCtrl.text = selected.name;
+      countryFlag = selected.emoji;
       update();
     }
   }
+
   List<File?> selectedFile = [];
   void showCameraGalleryDialog(BuildContext context) async {
     showDialog(
@@ -88,12 +112,34 @@ class EditProfileController extends GetxController{
     if (image != null) {
       selectedFile.clear();
       // Handle the selected image
-      print('Image selected: ${image.path}');
+      apolloPrint(message: 'Image selected: ${image.path}');
       selectedFile.add(File(image.path)) ;
       update();
+      showLoader(true);
+      profileUpdateApi(
+          firstName: firstName.text, lastName: lastName.text,
+          ageGroup: '${ageGroup?.age}', country: locationCtrl.text,countryFlag: '$countryFlag',
+        image: selectedFile[0]
+
+      ).then((value){
+        showLoader(false);
+        if(value.status==true){
+          LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.data));
+          AuthData().getLoginData();
+          LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.data!.subscription==1?true:false);
+          profileImage = value.data?.profileImage;
+          update();
+        }
+      });
     } else {
-      print('No image selected.');
+      apolloPrint(message: 'No image selected.');
     }
+  }
+
+  String formatDate(int timestamp) {
+    // timestamp = milliseconds
+    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    return DateFormat("dd MMM yyyy, hh:mm a").format(dt);
   }
 
 }

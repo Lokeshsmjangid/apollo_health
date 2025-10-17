@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_repository/register_disclaimer_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
@@ -165,6 +170,7 @@ class _SignUpDisclaimerScreenState extends State<SignUpDisclaimerScreen> {
                       title: "Disclaimer",
                       backButtonColor: AppColors.blackColor,
                       titleColor: AppColors.blackColor,
+                      isBack: false,
                       onTap: () => Get.back(),
                     ),
                     SizedBox(height: 12),
@@ -222,10 +228,20 @@ class _SignUpDisclaimerScreenState extends State<SignUpDisclaimerScreen> {
                           : AppColors.buttonDisableColor,
                       onButtonTap: () {
                         if (isAcknowledge) {
-                          // effectSound(sound: AppAssets.actionButtonTapSound);
-                          Get.offAll(()=>DashBoardScreen()); // or whatever the next route is
+                          showLoader(true);
+                          registerDisclaimerApi(disclaimerStatus: isAcknowledge==true?1:0).then((value){
+                            showLoader(false);
+                            if(value.status==true){
+                              LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.data));
+                              AuthData().getLoginData();
+                              Get.offAll(()=>DashBoardScreen());
+                              CustomSnackBar().showSnack(Get.context!, message: 'You’ve successfully logged in.');
+                            }
+                          });
+
                         } else {
-                          showToastError('"Please acknowledge the disclaimer first."');
+                          // showToastError('"Please acknowledge the disclaimer first."');
+                          CustomSnackBar().showSnack(context,isSuccess: false,message: '"Please acknowledge the disclaimer first."');
                         }
                       },
                     ),

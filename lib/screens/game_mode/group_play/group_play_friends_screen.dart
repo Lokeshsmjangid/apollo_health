@@ -1,18 +1,25 @@
 import 'dart:io';
-
-import 'package:apollo/bottom_sheets/group_play_request_bottom_sheet.dart';
 import 'package:apollo/controllers/group_play_frinds_ctrl.dart';
 import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/custom_widgets/online_status_dot_screen.dart';
+import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
+import 'package:apollo/resources/Apis/api_repository/send_play_request_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'group_challengers_screen.dart';
+
 class GroupPlayFriendsScreen extends StatefulWidget {
-  const GroupPlayFriendsScreen({super.key});
+  List<SoloPlayQuestion>? questionsApi;
+  GameData? gameData;
+
+  GroupPlayFriendsScreen({super.key,this.questionsApi,this.gameData});
 
   @override
   State<GroupPlayFriendsScreen> createState() => _GroupPlayFriendsScreenState();
@@ -21,10 +28,12 @@ class GroupPlayFriendsScreen extends StatefulWidget {
 class _GroupPlayFriendsScreenState extends State<GroupPlayFriendsScreen> {
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
+      resizeToAvoidBottomInset: false,
       body: GetBuilder<GroupPlayFriendsCtrl>(builder: (logic) {
         return Stack(
           children: [
@@ -39,14 +48,16 @@ class _GroupPlayFriendsScreenState extends State<GroupPlayFriendsScreen> {
               child: Column(
                 children: [
                   // addHeight(52),
+                  addHeight(10),
                   backBar(
+                    trailing: true,
                     title: "Group Play",
                     onTap: () {
                       Get.back();
                     },
                   ).marginSymmetric(horizontal: 16),
-
                   const SizedBox(height: 24),
+
                   Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
@@ -55,16 +66,24 @@ class _GroupPlayFriendsScreenState extends State<GroupPlayFriendsScreen> {
                     ),
                     child: Row(
                       children: [
-                        buildTabButton("Friends", logic.isFriendsTab, () {
-                          // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                        buildTabButton("My Friends", logic.isFriendsTab, () {
                           logic.isFriendsTab = true;
+                          logic.page = 1;
+                          logic.friendModel.data = [];
+                          // logic.selectedPlayers.clear();
+                          logic.searchCtrl.clear();
                           logic.update();
+                          logic.getFriendList(Page: 1);
                         }),
                         buildTabButton(
                             "Global Players", !logic.isFriendsTab, () {
-                          // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                           logic.isFriendsTab = false;
+                          logic.page = 1;
+                          logic.friendModel.data = [];
+                          // logic.selectedPlayers.clear();
+                          logic.searchCtrl.clear();
                           logic.update();
+                          logic.getFriendList(Page: 1);
                         }),
                       ],
                     ),
@@ -80,55 +99,90 @@ class _GroupPlayFriendsScreenState extends State<GroupPlayFriendsScreen> {
                         borderRadius: BorderRadius.vertical(
                             top: Radius.circular(16)),
                       ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            // Search Bar
-                            TextField(
-                              decoration: InputDecoration(
-                                  hintText: 'Search by name',
-                                  prefixIcon: const Icon(
-                                      Icons.search, color: Color(0xff67656B)),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  hintStyle: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                      color: Color(0xff67656B)),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 0),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                    borderSide: BorderSide(
-                                        color: AppColors.primaryColor),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                    borderSide: BorderSide(
-                                        color: AppColors.primaryColor),
-                                  )
+                      child: Column(
+                        children: [
+                          // Search Bar
+                          TextField(
+                            autocorrect: false,
+                            controller: logic.searchCtrl,
+                            onChanged: (val){
+                              logic.page = 1;
+                              logic.debounce.run((){
+                                logic.getFriendList(search: val, Page: 1);
+                              });
+                            },
+                            decoration: InputDecoration(
+                                hintText: 'Search by name',
+                                prefixIcon: const Icon(Icons.search, color: Color(0xff67656B)),
+                                filled: true,
+                                fillColor: Colors.white,
+                                hintStyle: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    color: Color(0xff67656B)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 0),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide(
+                                      color: AppColors.primaryColor),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide(
+                                      color: AppColors.primaryColor),
+                                ),
 
-                              ),
+
                             ),
-                            addHeight(24),
-                            ...List.generate(growable: true,
-                                logic.players.length, (index) {
-                                  final player = logic.players[index];
-                                  final isSelected = logic.selectedPlayers
-                                      .contains(
-                                      player['name']);
+                          ),
+                          addHeight(10),
+
+                          Expanded(
+                              child: logic.isDataLoading
+                                  ? buildCpiLoader()
+                                  : logic.friendModel.data !=null && logic.friendModel.data!.isNotEmpty
+                                  ? ListView.builder(
+                                controller: logic.paginationScrollController,
+                                padding: EdgeInsets.only(bottom: 20),
+                                physics: BouncingScrollPhysics(),
+                                itemCount: logic.friendModel.data!.length + (logic.isPageLoading ? 1 : 0),
+                                itemBuilder: (context, index) {
+                                  if (logic.isPageLoading && index == logic.friendModel.data!.length) {
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height: 16,
+                                              width: 16,
+                                              child: CircularProgressIndicator(strokeWidth: 1),
+                                            ),
+                                            addWidth(10),
+                                            addText400('Loading...')
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  final player = logic.friendModel.data![index];
+                                  final isSelected = logic.selectedPlayers.contains(player.id);
                                   return GestureDetector(
                                     onTap: () {
-                                      // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                                      setState(() {
+                                      if(player.selfAccountStatus==0) {
+                                        setState(() {
                                         if (isSelected) {
-                                          logic.selectedPlayers.remove(
-                                              player['name']);
-                                        } else {
-                                          logic.selectedPlayers.add(
-                                              player['name']);
+                                          logic.selectedPlayers.remove(player.id);
+                                        } else if( logic.selectedPlayers.length<9){
+                                          logic.selectedPlayers.add(player.id!);
+                                        } else{
+                                          CustomSnackBar().showSnack(context,isSuccess: false,message: 'You can play a Battle with up to 10 friends.');
                                         }
                                       });
+                                      }
                                     },
                                     child: Container(
                                       margin: const EdgeInsets.only(bottom: 2),
@@ -143,181 +197,115 @@ class _GroupPlayFriendsScreenState extends State<GroupPlayFriendsScreen> {
                                         children: [
                                           Stack(
                                             children: [
-                                              CircleAvatar(
-                                                radius: 25,
-                                                backgroundImage: NetworkImage(
-                                                    player['avatar']),
+                                              Container(
+                                                height: 50,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.yellow10Color,
+                                                    shape: BoxShape.circle
+                                                ),
+                                                child:player.selfAccountStatus==0
+                                                    ? CachedImageCircle2(imageUrl: player.profileImage,isCircular: true)
+                                                    : apolloAvatar()
+                                                    // apolloAvatar(),
                                               ),
 
+                                              if(player.selfAccountStatus==0)
                                               Positioned(
-                                                // top: 2,
+// top: 2,
                                                 right: 0,
                                                 bottom: 0,
-                                                child: Image.asset(
-                                                  AppAssets.flag1Icon,
-                                                  height: 20, width: 24,),
+                                                child: player.countryFlag!=null?Container(
+                                                  width: 22,height: 15,
+                                                  decoration: BoxDecoration(
+// border: Border.all(color: AppColors.whiteColor,width: 1.5),
+                                                      borderRadius: BorderRadius.circular(2)
+
+                                                  ),
+                                                  child: ClipRRect(
+                                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                                    borderRadius: BorderRadius.circular(2),
+                                                    child: Image.network('${player.countryFlag}',fit: BoxFit.cover),
+                                                  ),):SizedBox.shrink(),
                                               ),
 
-                                              if(player['isOnline'])
+                                              if(player.onlineStatusVisible==1 && (player.userActive!=null && player.userActive!.isNotEmpty))
                                               Positioned(
-                                                top: 0,
-                                                right: 0,
-                                                // bottom: 0,
-                                                child: Container(
-                                                  height: 12, width: 12,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                    color: Color(0xff41A43C)
-                                                ),
-                                                ),
-                                              ),
+                                                    top: 2,
+                                                    right: 0,
+                                                    // bottom: 0,
+                                                    child: OnlineStatusDot(lastActiveTime: DateTime.parse("${player.userActive}"))),
                                             ],
                                           ),
                                           addWidth(12),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment
-                                                  .start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 addText600(
-                                                  player['name'],
+                                            player.selfAccountStatus==1 || player.selfAccountStatus==2?"Apollo User":
+                                                  getTruncatedName(player.firstName??'',player.lastName??""),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
                                                   fontSize: 16,
                                                 ),
+
+                                                if(player.selfAccountStatus==0)
                                                 addHeight(2),
-                                                addText400('${player['hp']}',
-                                                    fontSize: 12),
+                                                if(player.selfAccountStatus==0)
+                                                addText400('${player.xp} HP', fontSize: 12),
                                               ],
                                             ),
                                           ),
                                           Checkbox(
-                                            // shape: const CircleBorder(),
                                             visualDensity: VisualDensity(
                                                 horizontal: -4, vertical: -4),
                                             shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius
-                                                    .circular(4)),
+                                                borderRadius: BorderRadius.circular(4)),
                                             value: isSelected,
-                                            side: MaterialStateBorderSide
-                                                .resolveWith((states) {
+                                            side: MaterialStateBorderSide.resolveWith((states) {
                                               if (!states.contains(
                                                   MaterialState.selected)) {
                                                 return BorderSide(
-                                                    color: AppColors
-                                                        .primaryColor
-                                                        .withOpacity(0.8),
+                                                    color: player.selfAccountStatus==0
+                                                        ? AppColors.primaryColor.withOpacity(0.8)
+                                                        : AppColors.apolloGreyColor,
                                                     width: 1); // border color when unchecked
                                               }
                                               return null;
                                             }),
                                             onChanged: (val) {
-                                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                               setState(() {
-                                                if (val == true) {
-                                                  logic.selectedPlayers.add(
-                                                      player['name']);
-                                                } else {
-                                                  logic.selectedPlayers.remove(
-                                                      player['name']);
+                                                if(player.selfAccountStatus==0){
+                                                  if (isSelected) {
+                                                    logic.selectedPlayers.remove(player.id);
+                                                  }
+                                                  else if( logic.selectedPlayers.length<9){
+                                                    logic.selectedPlayers.add(player.id!);
+                                                  }
+                                                  else{
+                                                    CustomSnackBar().showSnack(context,isSuccess: false,message: 'You can play a Battle with up to 10 friends.');
+                                                  }
                                                 }
+
                                               });
                                             },
-                                            activeColor: AppColors.primaryColor
-                                                .withOpacity(0.8),
+                                            activeColor: player.selfAccountStatus==0
+                                                ? AppColors.primaryColor.withOpacity(0.8)
+                                                : AppColors.apolloGreyColor,
 
                                           ),
                                         ],
                                       ),
                                     ),
                                   );
-                                })
-                            /*ListView.builder(
-                              itemCount: logic.players.length,
-                              itemBuilder: (context, index) {
+                                },
+                              )
+                                  : Center(child: addText500(logic.isFriendsTab ?'No friends found':'No players found')))
 
-                                return GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      if (isSelected) {
-                                        logic.selectedPlayers.remove(player['name']);
-                                      } else {
-                                        logic.selectedPlayers.add(player['name']);
-                                      }
-                                    });
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 6),
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: isSelected ? const Color(0xFFFFF1C1) : Colors
-                                          .transparent,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Stack(
-                                          children: [
-                                            CircleAvatar(
-                                              radius: 25,
-                                              backgroundImage: NetworkImage(
-                                                  player['avatar']),
-                                            ),
-                                            Positioned(
-                                              top: 2,
-                                              right: 0,
-                                              // bottom: 0,
-                                              child: CircleAvatar(
-                                                radius: 6,
-                                                backgroundColor: Colors.green,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        addWidth(12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              addText600(
-                                                player['name'],
-                                                fontSize: 16,
-                                              ),
-                                              addText400('${player['hp']}',fontSize: 12),
-                                            ],
-                                          ),
-                                        ),
-                                        Checkbox(
-                                          // shape: const CircleBorder(),
-                                          visualDensity: VisualDensity(horizontal: -4,vertical: -4),
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                                          value: isSelected,
-                                          side: MaterialStateBorderSide.resolveWith((states) {
-                                            if (!states.contains(MaterialState.selected)) {
-                                              return BorderSide(color: AppColors.primaryColor.withOpacity(0.8), width: 1); // border color when unchecked
-                                            }
-                                            return null;
-                                          }),
-                                          onChanged: (val) {
-                                            setState(() {
-                                              if (val == true) {
-                                                logic.selectedPlayers.add(player['name']);
-                                              } else {
-                                                logic.selectedPlayers.remove(player['name']);
-                                              }
-                                            });
-                                          },
-                                          activeColor: AppColors.primaryColor.withOpacity(0.8),
 
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),*/
-                          ],
-                        ).marginOnly(left: 16, right: 16, top: 24),
-                      ),
+                        ],
+                      ).marginOnly(left: 16, right: 16, top: 24),
                     ),
                   ),
                   // Bottom Start Game Button
@@ -363,15 +351,33 @@ class _GroupPlayFriendsScreenState extends State<GroupPlayFriendsScreen> {
             child: AppButton(
               buttonText: 'Invite to Game',
               onButtonTap: logic.selectedPlayers.isNotEmpty ? () {
-                // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                // Get.toNamed(AppRoutes.gMQuizScreen);
+                showLoader(true);
+                sendPlayRequestApi(groupGameId: widget.gameData?.id,receiverId: logic.selectedPlayers.join(',')).then((value){
+                  showLoader(false);
+                  if(value.status==true){
+                    // CustomSnackBar().showSnack(Get.context!,isSuccess: true,message: 'Group Play request sent.');
+                    Get.off(()=>GroupChallengersScreen(questionsApi: widget.questionsApi,gameData: widget.gameData));
+                  }else if(value.status==false){
+                    CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
+                  }
+                });
 
-                if (logic.isFriendsTab) {
-                  Get.offNamed(AppRoutes.groupChallengersScreen);
-                } else {
-                  showGroupPlayRequestSheet(context);
+                /*showGroupPlayRequestSheet(context,onButtonTap: (){
+                    Get.back();
+                    showLoader(true);
+                    sendPlayRequestApi(groupGameId: widget.gameData?.id,receiverId: logic.selectedPlayers.join(',')).then((value){
+                      showLoader(false);
+                      if(value.status==true){
+                        Get.off(()=>GroupChallengersScreen(questionsApi: widget.questionsApi,gameData: widget.gameData));
+                      }else if(value.status==false){
+                        CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
+                      }
+                    });
+
+
+                  });*/
                 }
-              } : () {},
+             : () {},
               buttonColor:
               logic.selectedPlayers.isNotEmpty
                   ? AppColors.primaryColor
@@ -380,31 +386,6 @@ class _GroupPlayFriendsScreenState extends State<GroupPlayFriendsScreen> {
           );
         }),
       ),
-    );
-  }
-
-  Widget buildTabButton(String text, bool isSelected, VoidCallback onTap) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 0),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFFFD700) : Colors.transparent,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          alignment: Alignment.center,
-          child: addText600(
-            text,
-            fontSize: 16,
-            height: 22,
-            // color: isSelected ? Colors.black : Colors.grey,
-            color: AppColors.blackColor,
-          ),
-        ),
-      ),
-
     );
   }
 }

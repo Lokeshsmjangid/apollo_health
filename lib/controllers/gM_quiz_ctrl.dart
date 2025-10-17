@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:ui';
+import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/utils.dart';
@@ -10,27 +12,65 @@ import 'package:get/get.dart';
 import '../models/questions_model.dart';
 
 class GMQuizCtrl extends GetxController{
+// group play waiting timer for waiting screen
+  int groupPlayRemainingSeconds = 100; // initial countdown value
+  Timer? waitingTimer;
+  void startTimer() {
+    waitingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (groupPlayRemainingSeconds > 0) {
 
+          groupPlayRemainingSeconds--;
+        update();
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+
+
+  int? qId;
   String? fromScreen;
   int currentIndex = 0;
   final CardSwiperController cardSwiperController = CardSwiperController();
   bool isLastQ = false;
   bool shouldStopAllTimers = false;
 
+
+  List<SoloPlayQuestion> questionsApi =[];
+  GameData? gameData;
+
+
+
+
+  bool? isPlayRequest;
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
     if(Get.arguments!=null) {
+      isPlayRequest = Get.arguments['isPlayRequest'];
       fromScreen = Get.arguments['screen'];
+      questionsApi = Get.arguments['questions'];
+      gameData = Get.arguments['gameData'];
       apolloPrint(message: 'OnQuiz:::Screen:::$fromScreen');
+      Future.microtask((){
+        startTimer();
+      });
     }
+  }
+
+
+  @override
+  void dispose() {
+    waitingTimer?.cancel();
+    super.dispose();
   }
 
   List<Question> questions = [
     Question(
         question:
-        "What do probiotics help with?",
+        "What are the potential health benefits of using probiotics?",
         options: ["Gut health", "Hair", "Hearing", "Vision"],
         explanation: 'Probiotics are beneficial bacteria that promote a healthy gut microbiome, aiding digestion and nutrient absorption. They can help prevent digestive disorders. (Source: National Institutes of Health)',
         funFact: 'Yogurt isn\'t just tasty — it\'s a probiotic powerhouse for your gut! 🥄🥛',
@@ -77,7 +117,7 @@ class GMQuizCtrl extends GetxController{
   ];
 
   Color getOptionColor(int qIndex, int optIndex) {
-    final question = questions[qIndex];
+    final question = questionsApi[qIndex];
     if (!question.isAnswered) return AppColors.purpleLightColor;
 
     if (optIndex == question.correctIndex) {
@@ -87,6 +127,8 @@ class GMQuizCtrl extends GetxController{
     }
     return AppColors.purpleLightColor; // Others remain default
   }
+
+
 
 }
 

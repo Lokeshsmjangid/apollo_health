@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.apollomedgames.app",
+      "sha256_cert_fingerprints": [
+        "FB:AB:9A:CA:64:09:69:C8:D5:3B:F3:F5:EB:6F:0B:81:A1:FE:9F:4E:0D:AC:DF:EC:AD:13:95:60:7E:7B:5B:49"
+      ]
+    }
+  }
+]

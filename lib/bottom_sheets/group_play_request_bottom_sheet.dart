@@ -1,19 +1,14 @@
 import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-void showGroupPlayRequestSheet(BuildContext context) {
+void showGroupPlayRequestSheet(BuildContext context,{void Function()? onButtonTap}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-
+    // isDismissible: false,
     backgroundColor: Colors.transparent,
     builder: (context) => SafeArea(
       bottom: Platform.isIOS?false:true,
@@ -61,10 +56,11 @@ void showGroupPlayRequestSheet(BuildContext context) {
                 ),
                 addHeight(28),
                 AppButton(
-                  onButtonTap: ()async{
-                    Get.back();
-                    Get.toNamed(AppRoutes.groupPlayRequestScreen);
-                  },
+                  onButtonTap: onButtonTap,
+
+                    // Get.back();
+                    // Get.toNamed(AppRoutes.groupPlayRequestScreen);
+
                   buttonText: 'Got It',buttonColor: AppColors.secondaryColor,),
                 addHeight(16),
 

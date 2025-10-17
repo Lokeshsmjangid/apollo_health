@@ -1,24 +1,47 @@
-import 'package:apollo/models/leaderboard_users_model.dart';
-import 'package:apollo/resources/app_assets.dart';
+
+import 'package:apollo/resources/Apis/api_models/leaderbord_model.dart';
+import 'package:apollo/resources/Apis/api_repository/leaderboard_repo.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:get/get.dart';
 
-class LeaderboardController extends GetxController{
+class LeaderboardController extends GetxController {
   bool isWeeklyTab = true;
 
-  List<LeaderboardUser> leaderboardUsers = [
-    LeaderboardUser(rank: 4, name: "Madenyn Dias", flag: AppAssets.lFlag4Icon, hp: 590, change: -1),
-    LeaderboardUser(rank: 5, name: "Zain Vaccaro", flag: AppAssets.lFlag5Icon, hp: 448, change: -1, highlight: true),
-    LeaderboardUser(rank: 6, name: "Rafael Bagas", flag: AppAssets.lFlag6Icon, hp: 443, change: 1),
-    LeaderboardUser(rank: 7, name: "Ted Putri", flag: AppAssets.lFlag7Icon, hp: 380, change: 2),
 
-    LeaderboardUser(rank: 8, name: "Zain Vaccaro", flag: AppAssets.lFlag5Icon, hp: 448, change: -1, highlight: true),
-    LeaderboardUser(rank: 9, name: "Rafael Bagas", flag: AppAssets.lFlag6Icon, hp: 443, change: 1),
-    LeaderboardUser(rank: 10, name: "Ted Putri", flag: AppAssets.lFlag7Icon, hp: 380, change: 2),
+  List<LeaderBoard> podiumUsers = []; // Podium ke liye top 3 users
 
-    LeaderboardUser(rank: 11, name: "Zain Vaccaro", flag: AppAssets.lFlag5Icon, hp: 448, change: -1, highlight: true),
-    LeaderboardUser(rank: 12, name: "Rafael Bagas", flag: AppAssets.lFlag6Icon, hp: 443, change: 1),
-    LeaderboardUser(rank: 13, name: "Ted Putri", flag: AppAssets.lFlag7Icon, hp: 380, change: 2),
-  ];
 
+  List<LeaderBoard> restUsers = []; //  users not available in podium
+
+  bool isDataLoading = false;
+
+  LeaderBoardModel model = LeaderBoardModel();
+
+  @override
+  void onInit() {
+    super.onInit();
+    Future.microtask((){
+      getLeaderBoardData();
+    });
+  }
+
+  getLeaderBoardData() async {
+    isDataLoading = true;
+    update();
+    showLoader(true);
+
+    // API call
+    await leaderBoardApi(isWeeklyTab: isWeeklyTab).then((value) {
+      model = value;
+
+      final allUsers = model.data ?? [];
+
+      podiumUsers = allUsers.take(3).toList(); // take only 3 for podium
+      restUsers = allUsers.length > 3 ? allUsers.sublist(3) : []; // restUsers
+
+      isDataLoading = false;
+      update();
+      showLoader(false);
+    });
+  }
 }
-

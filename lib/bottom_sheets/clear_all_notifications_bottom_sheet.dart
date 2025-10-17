@@ -1,13 +1,10 @@
 import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 
 void showClearAllNotificationsSheet(BuildContext context,void Function()? onClear) {
   showModalBottomSheet(
@@ -51,16 +48,24 @@ void showClearAllNotificationsSheet(BuildContext context,void Function()? onClea
                 addHeight(4),*/
                 addHeight(8),
 
+                addText400(
+                  'Clear All Notifications?',
+                  textAlign: TextAlign.center,
+                  fontSize: 32,height: 40,fontFamily: 'Caprasimo',color: AppColors.primaryColor
+                ),
+                addHeight(8),
+
+
                 addText500(
-                  'Are you sure you want to clear all notifications? This action cannot be undone and all your notifications will be permanently removed.',
+                  'This can’t be undone. To delete individually, swipe on a notification.',
                   textAlign: TextAlign.center,
                   fontSize: 16,
                 ),
                 addHeight(28),
                 AppButton(
                   onButtonTap: onClear,
-                  buttonText: 'Clear',buttonColor: AppColors.secondaryColor,),
-                addHeight(10),
+                  buttonText: 'Yes',buttonColor: AppColors.secondaryColor,),
+                /*addHeight(10),
 
                 AppButton(
                   onButtonTap: () async{
@@ -68,7 +73,7 @@ void showClearAllNotificationsSheet(BuildContext context,void Function()? onClea
                     // await _audioPlayer.play(AssetSource(AppAssets.actionButtonTapSound));
                     Get.back();
                   },
-                  buttonText: 'Cancel',buttonColor: AppColors.whiteColor,buttonTxtColor: AppColors.primaryColor),
+                  buttonText: 'Cancel',buttonColor: AppColors.whiteColor,buttonTxtColor: AppColors.primaryColor),*/
                 addHeight(16),
 
               ],

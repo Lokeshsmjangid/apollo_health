@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const primaryColor = Color(0xff7B47CC);
   static const secondaryColor = Color(0xff7a47cc);
+  static const secondaryColor70 = Color(0XFFF3EBFFB2);
   static const primaryLightColor = Color(0xffDED1F3);
+  static const apolloGreyColor = Color(0xffDCDCDC);
   static const bottomSheetBGColor = Color(0XFFddd0f2);
   static const bottomSheetBorderColor = Color(0xffcbacfa);
   static const greenColor = Color(0xff00BA00);
@@ -17,14 +19,17 @@ class AppColors {
   static const brownColor = Color(0XFFC58219);
   static const green500Color = Color(0XFF3EA072);
   static const pink500Color = Color(0XFFAD559C);
+  static const orangeColor = Color(0XFFFF7700);
   static const redColor = Color(0xffFF351A);
   static const redColor1 = Color(0xffFF0D0D);
   static const yellowColor = Color(0xffFFD93B);
   static const yellow10Color = Color(0xffFFF4C5);
+  static const yellow150Color = Color(0xffFFCD83);
   static const correctAnsColor = Color(0XFF66E58A);
   static const wrongAnsColor = Color(0XFFFF9182);
 
   static const purpleLightColor = Color(0XFFF3EBFF);
+  static const purple100Color = Color(0XFFDDCFF2);
   static const buttonDisableColor = Color(0xff8B8397);
 
   // TextField

@@ -1,6 +1,7 @@
 
-import 'package:apollo/bottom_sheets/sign_out_bottom_sheet.dart';
 import 'package:apollo/controllers/settings_ctrl.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_repository/notifications_update_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/text_utility.dart';
@@ -30,7 +31,7 @@ class NotificationSettingsScreen extends StatelessWidget {
                 bottom: false,
                 child: Column(
                   children: [
-                    // addHeight(52),
+                    addHeight(10),
                     backBar(
                       title: "Notifications",
                       onTap: () {
@@ -50,7 +51,7 @@ class NotificationSettingsScreen extends StatelessWidget {
                         child: ListView(
                           padding: EdgeInsets.zero,
                           children: [
-                            toggleTile(
+                            /*toggleTile(
                               'All notifications',
                               logic.allNotifications, () {
                               // logic.effectSound(sound: AppAssets.actionButtonTapSound);
@@ -64,15 +65,32 @@ class NotificationSettingsScreen extends StatelessWidget {
                                 logic.frEmail = false;
                                 logic.dsPush = false;
                                 logic.dsEmail = false;
+                              } else{
+                                logic.ddPush = true;
+                                logic.ddEmail = true;
+                                logic.luPush = true;
+                                logic.luEmail = true;
+                                logic.frPush = true;
+                                logic.frEmail = true;
+                                logic.dsPush = true;
+                                logic.dsEmail = true;
                               }
                               logic.update();
+                              logic.deBounce.run((){
+                                notificationsUpdateApi(all: logic.allNotifications?1:0).then((value){
+                                  if(value.status==true){
+                                    CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                                  }
+                                });
+                              });
+
                             },
                             ),
 
 
                             addHeight(16),
-                            divider(),
-                            addHeight(24),
+                            divider(),*/
+                            // addHeight(24),
 
                             sectionTitle('Daily Dose '),
                             addHeight(10),
@@ -83,79 +101,162 @@ class NotificationSettingsScreen extends StatelessWidget {
                               // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                               logic.ddPush = !logic.ddPush;
                               logic.update();
+                              logic.deBounce.run((){
+                                notificationsUpdateApi(dailyDosePush: logic.ddPush?1:0).then((value){
+                                  if(value.status==true){
+                                    logic.allNotifications = value.data!.allNotification==1?true:false;
+                                    logic.update();
+                                    CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                                  }
+                                });
+                              });
                             },
                             ),
-                            toggleTile(
-                              'Email',
-                              logic.ddEmail, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              logic.ddEmail = !logic.ddEmail;
-                              logic.update();
-                            },
-                            ),
+                            // toggleTile(
+                            //   'Email',
+                            //   logic.ddEmail, () {
+                            //   // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                            //   logic.ddEmail = !logic.ddEmail;
+                            //   logic.update();
+                            //   logic.deBounce.run((){
+                            //     notificationsUpdateApi(dailyDoseEmail: logic.ddEmail?1:0).then((value){
+                            //       if(value.status==true){
+                            //         CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                            //       }
+                            //     });
+                            //   });
+                            // },
+                            // ),
+
+                            // addHeight(18),
+                            // sectionTitle('Live Event Update'),
+                            // addHeight(10),
+                            //
+                            // toggleTile(
+                            //   'Push',
+                            //   logic.luPush, () {
+                            //   // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                            //   logic.luPush = !logic.luPush;
+                            //   logic.update();
+                            //   logic.deBounce.run((){
+                            //     notificationsUpdateApi(liveEventPush: logic.luPush?1:0).then((value){
+                            //       if(value.status==true){
+                            //         CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                            //       }
+                            //     });
+                            //   });
+                            // },
+                            // ),
+                            // toggleTile(
+                            //   'Email',
+                            //   logic.luEmail, () {
+                            //   // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                            //   logic.luEmail = !logic.luEmail;
+                            //   logic.update();
+                            //   logic.deBounce.run((){
+                            //     notificationsUpdateApi(liveEventEmail: logic.luEmail?1:0).then((value){
+                            //       if(value.status==true){
+                            //         CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                            //       }
+                            //     });
+                            //   });
+                            // },
+                            // ),
 
                             addHeight(18),
-                            sectionTitle('Live Event Update'),
-                            addHeight(10),
-
-                            toggleTile(
-                              'Push',
-                              logic.luPush, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              logic.luPush = !logic.luPush;
-                              logic.update();
-                            },
-                            ),
-                            toggleTile(
-                              'Email',
-                              logic.luEmail, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              logic.luEmail = !logic.luEmail;
-                              logic.update();
-                            },
-                            ),
-
-                            addHeight(18),
-                            sectionTitle('Friend/Group Play Request'),
+                            sectionTitle('Group Play Request'),
                             addHeight(10),
 
                             toggleTile(
                               'Push',
                               logic.frPush, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                               logic.frPush = !logic.frPush;
                               logic.update();
-                            },
-                            ),
-                            toggleTile(
-                              'Email',
-                              logic.frEmail, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              logic.frEmail = !logic.frEmail;
-                              logic.update();
+                              logic.deBounce.run((){
+                                notificationsUpdateApi(newProductsPush: logic.frPush?1:0).then((value){
+                                  if(value.status==true){
+                                    logic.allNotifications = value.data!.allNotification==1?true:false;
+                                    logic.update();
+                                    CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                                  }
+                                });
+                              });
                             },
                             ),
 
+                            // toggleTile(
+                            //   'Email',
+                            //   logic.frEmail, () {
+                            //   logic.frEmail = !logic.frEmail;
+                            //   logic.update();
+                            //   logic.deBounce.run((){
+                            //     notificationsUpdateApi(newProductsEmail: logic.frEmail?1:0).then((value){
+                            //       if(value.status==true){
+                            //         CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                            //       }
+                            //     });
+                            //   });
+                            // },
+                            // ),
+
                             addHeight(18),
-                            sectionTitle('Daily Streak Reminder'),
+                            sectionTitle('Friend Request'),
                             addHeight(10),
 
                             toggleTile(
                               'Push',
-                              logic.dsPush, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              logic.dsPush = !logic.dsPush;
+                              logic.friendRequestPush, () {
+                              logic.friendRequestPush = !logic.friendRequestPush;
                               logic.update();
+                              logic.deBounce.run((){
+                                notificationsUpdateApi(newFriendPush: logic.friendRequestPush?1:0).then((value){
+                                  if(value.status==true){
+                                    logic.allNotifications = value.data!.allNotification==1?true:false;
+                                    logic.update();
+                                    CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+
+                                  }
+                                });
+                              });
+
                             },
                             ),
+
+                            addHeight(18),
+                            sectionTitle('System Notifications'),
+                            addHeight(10),
+
                             toggleTile(
-                              'Email',
-                              logic.dsEmail, () {
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              logic.dsEmail = !logic.dsEmail;
+                              'Push',
+                              logic.systemNotificationPush, () {
+                              logic.systemNotificationPush = !logic.systemNotificationPush;
                               logic.update();
+                              logic.deBounce.run((){
+                                notificationsUpdateApi(systemNotificationPush: logic.systemNotificationPush?1:0).then((value){
+                                  if(value.status==true){
+                                    logic.allNotifications = value.data!.allNotification==1?true:false;
+                                    logic.update();
+                                    CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                                  }
+                                });
+                              });
                             },
                             ),
+                            // toggleTile(
+                            //   'Email',
+                            //   logic.dsEmail, () {
+                            //   // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                            //   logic.dsEmail = !logic.dsEmail;
+                            //   logic.update();
+                            //   logic.deBounce.run((){
+                            //     notificationsUpdateApi(dailyStreakEmail: logic.dsEmail?1:0).then((value){
+                            //       if(value.status==true){
+                            //         CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                            //       }
+                            //     });
+                            //   });
+                            // },
+                            // ),
 
 
                             const SizedBox(height: 34),

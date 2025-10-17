@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:apollo/resources/utils.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,6 +12,8 @@ class ForgotPasswordOtpCtrl extends GetxController{
   String hasErrorText = '';
   bool enabledButton = false;
   String? email;
+  String? passwordResetToken;
+  String? otp;
 
   RxInt timerVal = 0.obs ;
   Timer? _timer;
@@ -29,6 +31,8 @@ class ForgotPasswordOtpCtrl extends GetxController{
     super.onInit();
     if(Get.arguments!=null){
       email = Get.arguments['email'];
+      passwordResetToken = Get.arguments['password_reset_token'];
+      otp = Get.arguments['otp'];
     }
   }
 
@@ -47,13 +51,15 @@ class ForgotPasswordOtpCtrl extends GetxController{
 
 
   onButtonTap(value){
-    print("OTP changed: $value");
+    apolloPrint(message: "OTP changed: $value");
     if (value.length >= 5) {
       enabledButton = true;
       hasError = false;
       hasErrorText = '';
       update();
-    }else if(value.isEmpty){
+
+
+    }else if(value.isEmpty || value==0){
       enabledButton = false;
       hasError = true;
       hasErrorText = 'OTP Required';

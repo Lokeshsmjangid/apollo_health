@@ -25,7 +25,7 @@ class _AppButtonState extends State<AppButton> {
         decoration: BoxDecoration(
             color: widget.buttonColor??AppColors.primaryColor,
             borderRadius: BorderRadius.circular(1000)),
-        child: Center(child: addText500(widget.buttonText,color: widget.buttonTxtColor??AppColors.whiteColor,fontSize: 16)),
+        child: Center(child: addText500(widget.buttonText,color: widget.buttonTxtColor??AppColors.whiteColor,fontSize: 16,textAlign: TextAlign.center)),
       ),
     );
   }

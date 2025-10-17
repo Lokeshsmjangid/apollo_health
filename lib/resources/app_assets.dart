@@ -22,6 +22,7 @@ class AppAssets {
   static const String soloPlayImg1Svg = "assets/images/solo_play111.png";
   static const String groupPlayImg = "assets/images/group_play.png";
   static const String groupPlayImg1 = "assets/images/group_play1.png";
+  static const String groupPlayImg2 = "assets/images/group_play2.png";
   static const String medpardyImg = "assets/images/medpardy.png";
   static const String medpardyImg1 = "assets/images/medpardy1.png";
   static const String wheelOfWellnessImg = "assets/images/wheel_of_wellness.png";
@@ -29,7 +30,15 @@ class AppAssets {
   static const String profileImg = "assets/images/profile.jpeg";
   static const String handLineImg = "assets/images/hand_Line.svg";
   static const String liveChallengeSvgImg = "assets/images/live_chalenge_cover.svg";
+  static const String medlingoSvgImg = "assets/images/medlingo.svg";
+  static const String medlingoMAskotSvgImg = "assets/images/medlingo_maskot.svg";
+  static const String medlingoCoverImg = "assets/images/medlingo_cover.png";
   static const String soloPlayResultImg = "assets/images/solo_play_result_bg.png";
+
+
+  // empty
+  static const String friendRequestEmpty = "assets/images/fr_empty.svg";
+  static const String mutualFriendEmpty = "assets/images/mf_empty.svg";
 
   // Spin
   static const String spinIndicatorImg = "assets/images/spin_indicator.svg";
@@ -44,8 +53,12 @@ class AppAssets {
 
 
   static const String dealsFrame1Img = "assets/images/deals_product_frame.png";
+  // static const String dealsFrame1Img = "assets/Lottie/d_products.jpg";
+  static const String dealsFrame1ImgSvg = "assets/images/deals_product_frame.svg";
   static const String dealsFrame2Img = "assets/images/deals_services_frame.png";
+  static const String dealsFrame2ImgSvg = "assets/images/deals_services_frame.svg";
   static const String dealsFrame3Img = "assets/images/deals_erperience_frame.png";
+  static const String dealsFrame3ImgSvg = "assets/images/deals_erperience_frame.svg";
 
   static const String dealsProductImg = "assets/images/deals_product_dance.svg";
   static const String dealsServiceImg = "assets/images/deals_services_dance.svg";
@@ -117,10 +130,21 @@ class AppAssets {
 
 
   // icons
+  static const String homeFriendCircleIcon = "assets/icons/home_friend_circle.svg";
+  static const String binIcon = "assets/icons/Bin.svg";
+  static const String fileIcon = "assets/icons/File-Document.svg";
+
+  static const String dealShareIcon = "assets/icons/share_deal.svg";
+  static const String ticketIcon = "assets/icons/Ticket.svg";
+
+  static const String medlingoSuffleIcon = "assets/icons/suffle_icon.svg";
+
+
   static const String backIcon = "assets/icons/back_icon.png";
   static const String closeIcon = "assets/icons/Close-Circle.png";
   static const String circleQuestionIcon = "assets/icons/Circle-Question.png";
-  static const String shareIcon = "assets/icons/Share.png";
+  // static const String shareIcon = "assets/icons/Share.png";
+  static const String shareIcon = "assets/icons/Share-Export.png";
   static const String checkCircleGreenIcon = "assets/icons/Circle-Check.png";
   static const String tagIcon = "assets/icons/Tag.png";
   static const String newsIcon = "assets/icons/News.png";
@@ -155,6 +179,7 @@ class AppAssets {
   static const String eyeIcon = "assets/icons/eye.png";
   static const String eyeOffIcon = "assets/icons/Eye_Off.png";
   static const String upArrowIcon = "assets/icons/up_arrow.svg";
+  static const String forwardArrowIcon = "assets/icons/arrow_forward.svg";
   static const String downArrowIcon = "assets/icons/down_arrow.svg";
   static const String clockIcon = "assets/icons/Clock.png";
   static const String timerIcon = "assets/icons/Timer.png";
@@ -207,10 +232,12 @@ class AppAssets {
   static const String circleInfoIcon = "assets/icons/Circle-Info.png";
   static const String bellIcon = "assets/icons/Bell.png";
   static const String waveCheckIcon = "assets/icons/Wavy-Check.svg";
+  static const String waveCheckFillIcon = "assets/icons/Wavy-Check-fill.svg";
   static const String flagIcon = "assets/icons/flag.png";
   static const String lockIcon = "assets/icons/Lock.png";
   static const String starIcon = "assets/icons/Star.png";
   static const String mailIcon = "assets/icons/mail.svg";
+  static const String messageIcon = "assets/icons/Message.svg";
   static const String exitIcon = "assets/icons/Exit.svg";
 
 

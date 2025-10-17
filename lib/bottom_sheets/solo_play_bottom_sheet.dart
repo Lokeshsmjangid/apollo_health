@@ -1,11 +1,7 @@
 import 'dart:io';
-
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -56,11 +52,18 @@ void showSoloPlaySheet(BuildContext context) {
                 ),
                 addHeight(20),
                 addText500(
-                  'Play at your own pace and focus on learning. Master medical concepts with quizzes backed by trusted sources—plus fun facts to make it stick.',
+                  'Play at your own pace and master medical concepts—plus fun facts to make it stick.',
                   textAlign: TextAlign.center,
                   fontSize: 16,
                   height: 22
-                ),
+                ).marginSymmetric(horizontal: 10),
+                /*addHeight(20),
+                addText500(
+                  'Need help? Tap the “Hand” to eliminate 2 wrong answers—costs 50% of the value.',
+                  textAlign: TextAlign.center,
+                  fontSize: 16,
+                  height: 22
+                ),*/
                 addHeight(28),
                 AppButton(buttonText: 'Got It',buttonColor: AppColors.secondaryColor,onButtonTap: () async{
                   Get.back();

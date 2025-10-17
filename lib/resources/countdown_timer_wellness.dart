@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:apollo/Dialogues/transparent_dialogue.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:flutter/material.dart';
 
@@ -10,60 +9,78 @@ class CountdownTimerWidgetWellness extends StatefulWidget {
   String? correctWord;
   final int duration; // Number of minutes or seconds
   final bool isInSecondsMode; // true = seconds, false = minutes
+  final void Function(int secondsLeft)? onTick;
 
   CountdownTimerWidgetWellness({
     Key? key,
     required this.duration,
     this.isInSecondsMode = false,
-    this.correctWord
+    this.correctWord,
+    this.onTick,
   }) : super(key: key);
 
   @override
   CountdownTimerWidgetWellnessState createState() => CountdownTimerWidgetWellnessState();
 }
 
-class CountdownTimerWidgetWellnessState extends State<CountdownTimerWidgetWellness> {
+class CountdownTimerWidgetWellnessState extends State<CountdownTimerWidgetWellness> with WidgetsBindingObserver {
   late int _secondsLeft;
-  Timer? _timer;
+  Timer? timer;
   bool _isRunning = false;
+  late DateTime _endTime;
 
   @override
   void initState() {
     super.initState();
-    _resetTimer();
-  }
-
-  void _resetTimer() {
-    _secondsLeft = widget.isInSecondsMode
-        ? widget.duration
-        : widget.duration * 60;
-    _isRunning = false;
-    _timer?.cancel();
-    setState(() {});
+    _secondsLeft = widget.isInSecondsMode ? widget.duration : widget.duration * 60;
+    WidgetsBinding.instance.addObserver(this);
+    // startTimer();
   }
 
   void startTimer() {
-    if (_isRunning) return;
+    _secondsLeft = widget.isInSecondsMode ? widget.duration : widget.duration * 60;
+    _endTime = DateTime.now().add(Duration(seconds: _secondsLeft));
     _isRunning = true;
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_secondsLeft == 0) {
-        timer.cancel();
-        _isRunning = false;
-        showDialog(
-          useSafeArea: false,
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return DialogScreen(showText: 'gameOver',correctAnswer: widget.correctWord);
-          },
-        );
-      } else {
-        setState(() {
-          _secondsLeft--;
-        });
-      }
-    });
+
+    timer?.cancel();
+    timer = Timer.periodic(Duration(seconds: 1), _onTick);
     setState(() {});
+  }
+
+  void _onTick(Timer timer) {
+    final now = DateTime.now();
+    if (now.isAfter(_endTime)) {
+      timer.cancel();
+      _isRunning = false;
+      setState(() {
+        _secondsLeft = 0;
+      });
+      if (widget.onTick != null) widget.onTick!(0);
+    } else {
+      setState(() {
+        _secondsLeft = _endTime.difference(now).inSeconds;
+      });
+      if (widget.onTick != null) widget.onTick!(_secondsLeft);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      timer?.cancel();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_isRunning && _secondsLeft > 0) {
+        timer?.cancel();
+        timer = Timer.periodic(Duration(seconds: 1), _onTick);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    timer?.cancel();
+    super.dispose();
   }
 
   String get _timeString {
@@ -74,12 +91,6 @@ class CountdownTimerWidgetWellnessState extends State<CountdownTimerWidgetWellne
       final seconds = (_secondsLeft % 60).toString().padLeft(2, '0');
       return '$minutes:$seconds';
     }
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   @override

@@ -1,53 +1,136 @@
+import 'dart:convert';
 import 'dart:ui';
 
-import 'package:audioplayers/audioplayers.dart';
+import 'package:apollo/resources/Apis/api_models/settings_customization_model.dart';
+import 'package:apollo/resources/Apis/api_repository/settings_customization_repo.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/debouncer.dart';
+import 'package:apollo/resources/local_storage.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsCtrl extends GetxController{
-  final AudioPlayer audioPlayer = AudioPlayer();
-  Future<void> effectSound({required String sound}) async {
+  SettingsCustomizationModel model = SettingsCustomizationModel();
+  final deBounce = Debouncer(milliseconds: 1000);
 
-    await audioPlayer.play(AssetSource(sound));
+  bool music = false;
+  bool onlineStatus = false;
+
+  // Notification Settings
+  bool allNotifications = false;
+
+  // daily-Dose
+  bool ddPush = false;
+  bool ddEmail = false;
+
+  // Live-update
+  bool luPush = false;
+  bool luEmail = false;
+
+  // Group-request
+  bool frPush = false;
+  bool frEmail = false;
+
+  // daily-streak
+  bool dsPush = false;
+  bool dsEmail = false;
+
+  // friend-request
+  bool friendRequestPush = false;
+
+  // System Notification
+  bool systemNotificationPush = false;
+
+
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    loadVersion();
+    Future.microtask((){
+      fetchSettings();
+    });
 
   }
 
-  bool music = true;
-  bool onlineStatus = true;
+  fetchSettings() async{
+    showLoader(true);
+    await getSettingsCustomizationApi().then((value){
+      model = value;
+      showLoader(false);
+      if(model.data!=null){
+        music = value.data!.musicEnabled==1?true:false;
+        allNotifications = value.data!.allNotification==1?true:false;
+        onlineStatus = value.data!.onlineStatusVisible==1?true:false;
+        ddPush = value.data!.dailyDosePush==1?true:false;
+        ddEmail = value.data!.dailyDoseEmail==1?true:false;
+        luPush = value.data!.liveEventPush==1?true:false;
+        luEmail = value.data!.liveEventEmail==1?true:false;
 
+        frPush = value.data!.newProductsPush==1?true:false;
+        frEmail = value.data!.newProductsEmail==1?true:false;
+        dsPush = value.data!.dailyStreakPush==1?true:false;
+        dsEmail = value.data!.dailyStreakEmail==1?true:false;
+        friendRequestPush = value.data!.newFriendPush==1?true:false;
+        systemNotificationPush = value.data!.systemNotificationPush==1?true:false;
 
+      }
+      if(model.userData!=null){
+        LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.userData));
+        LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.userData!.subscription==1?true:false);
+        AuthData().getLoginData();
+      }
 
-  // Notification Settings
-  bool allNotifications = true;
+      update();
 
-  // daily-Dose
-  bool ddPush = true;
-  bool ddEmail = true;
+    });
+  }
 
-  // Live-update
-  bool luPush = true;
-  bool luEmail = true;
+  fetchSettings1() async{
 
-  // friend-request
-  bool frPush = true;
-  bool frEmail = true;
+    await getSettingsCustomizationApi().then((value){
+      model = value;
+      if(model.data!=null){
+        music = value.data!.musicEnabled==1?true:false;
+        allNotifications = value.data!.allNotification==1?true:false;
+        onlineStatus = value.data!.onlineStatusVisible==1?true:false;
+        ddPush = value.data!.dailyDosePush==1?true:false;
+        ddEmail = value.data!.dailyDoseEmail==1?true:false;
+        luPush = value.data!.liveEventPush==1?true:false;
+        luEmail = value.data!.liveEventEmail==1?true:false;
 
-  // daily-streak
-  bool dsPush = true;
-  bool dsEmail = true;
+        frPush = value.data!.newProductsPush==1?true:false;
+        frEmail = value.data!.newProductsEmail==1?true:false;
+        dsPush = value.data!.dailyStreakPush==1?true:false;
+        dsEmail = value.data!.dailyStreakEmail==1?true:false;
 
-
-
-  // final List<SupportOption> supportOptions = [
-  //   SupportOption(
-  //     title: 'Submit a Quiz Topic',
-  //     subtitle: 'Got a health topic in mind? Message us. It could be in our next feature!',
-  //     color: Colors.pink[100]!,
-  //   ),
-  //   SupportOption(title: 'Rate Us', color: Colors.blue[100]!),
-  //   SupportOption(title: 'Support', color: Colors.green[100]!),
-  //   SupportOption(title: 'Privacy & Terms', color: Colors.orange[200]!),
-  //   SupportOption(title: 'Sign out', color: Colors.red[100]!),
-  // ];
+      }
+      if(model.userData!=null){
+        LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.userData));
+        AuthData().getLoginData();
+        LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.userData!.subscription==1?true:false);
+      }
+      update();
+    });
+  }
+  String appVersion = '';
+  void loadVersion() async {
+    appVersion = await getAppVersion();
+    update();
+  }
+  Future<String> getAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      print('Version: ${info.version}');
+      print('Build number: ${info.buildNumber}');
+      return 'Version: ${info.version} (${info.buildNumber})';
+    } catch (e) {
+      print('Failed to get app version: $e');
+      return 'Version info not available';
+    }
+  }
 
 }
 

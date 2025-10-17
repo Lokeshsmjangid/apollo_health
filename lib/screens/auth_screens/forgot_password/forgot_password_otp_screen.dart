@@ -1,13 +1,15 @@
 import 'package:apollo/controllers/forgot_password_otp_ctrl.dart';
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_repository/forgot_password_repo.dart';
+import 'package:apollo/resources/Apis/api_repository/verify_otp_repo.dart';
 import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/get_utils.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import 'new_password_screen.dart';
@@ -47,7 +49,7 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
                       Align(
                           alignment: Alignment.centerLeft,
                           child: addText500(
-                              "We sent a reset link to ${logic.email}. Enter the 5-digit code that was sent to your email.",
+                              "For security, a 5-digit verification code was sent to ${logic.email}. Enter the code to proceed.",
                               fontSize: 16, color: AppColors.blackColor,height: 22)),
                       addHeight(16),
 
@@ -112,7 +114,7 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
                           // Enable fill colors
                           showCursor: logic.hasError ? true : false,
                           onCompleted: (v) {
-                            print("Completed OTP entry: $v");
+                            apolloPrint(message: "Completed OTP entry: $v");
 
                             // setState(() {
                             //   logic.hasError = false;
@@ -170,20 +172,21 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
                               if (logic.timerVal.value < 1) {
                                 logic.startATimerFunc();
                                 logic.update();
-                                // showLoader(true);
-                                // resendPhoneOTPApi(mobileNumber: logic.phone_number)
-                                //     .then((value) {
-                                //   showLoader(false);
-                                //   if (value.status == true) {
-                                //     logic.pinController.clear();
-                                //     logic.startATimerFunc();
-                                //     showToast('${value.message}');
-                                //     logic.otp = value.otp.toString();
-                                //     logic.update();
-                                //   } else if (value.status == false) {
-                                //     showToastError('${value.message}');
-                                //   }
-                                // });
+                                showLoader(true);
+                                forgotPasswordApi(email: logic.email,type:'resend').then((value) {
+                                  showLoader(false);
+                                  if (value.status == true) {
+                                    logic.pinController.clear();
+                                    logic.startATimerFunc();
+                                    CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                                    logic.otp = value.data?.otp.toString();
+                                    logic.passwordResetToken = value.data?.passwordResetToken.toString();
+                                    logic.update();
+
+                                  } else if (value.status == false) {
+                                    CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
+                                  }
+                                });
                               }
                             },
                             child: addText500(
@@ -203,8 +206,18 @@ class ForgotPasswordOtpScreen extends StatelessWidget {
                       AppButton(
                         buttonText: 'Verify Code',
                         onButtonTap: logic.enabledButton == true ? () {
-                          // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                          Get.to(NewPasswordScreen());
+
+                          showLoader(true);
+                          verifyOtpApi( rpToken: logic.passwordResetToken,otp: logic.pinController.text).then((value){
+                            showLoader(false);
+                            if(value.status==true){
+                              CustomSnackBar().showSnack(Get.context!,isSuccess: true,message: '${value.message}');
+                              Get.off(NewPasswordScreen(rpToken: logic.passwordResetToken,));
+                            } else if(value.status==false){
+                              CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
+                            }
+                          });
+
                         } : () {
                           logic.onButtonTap(logic.pinController.text.length);
                         },

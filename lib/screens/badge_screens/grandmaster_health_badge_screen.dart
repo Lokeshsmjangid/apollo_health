@@ -1,20 +1,12 @@
 import 'dart:io';
-
-import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
 import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/screens/badge_screens/health_pro_badge_screen.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
-
-import 'health_apprentice_badge_screen.dart';
-import 'health_whiz_badge_screen.dart';
-import 'wellness_watcher_badge_screen.dart';
 
 class GrandmasterHealthBadgeScreen extends StatefulWidget {
   const GrandmasterHealthBadgeScreen({super.key});
@@ -59,7 +51,7 @@ class _GrandmasterHealthBadgeScreenState extends State<GrandmasterHealthBadgeScr
             child: null,
           ),
 
-          Container(
+          SizedBox(
             width: double.infinity,
             child: Image.asset(
               AppAssets.notificationsBg,
@@ -68,7 +60,7 @@ class _GrandmasterHealthBadgeScreenState extends State<GrandmasterHealthBadgeScr
           ),
 
           // if(result! > 60)
-            Container(
+            SizedBox(
               width: double.infinity,
               child: Image.asset(
                 "assets/Lottie/party.gif",
@@ -95,7 +87,7 @@ class _GrandmasterHealthBadgeScreenState extends State<GrandmasterHealthBadgeScr
               Image.asset(AppAssets.grandmasterOfHealthBadge,height: 279,width: 294,),
 
               Spacer(),
-              addText400("Grandmaster of Health Madelyn",
+              addText400("Grandmaster of Health ${AuthData().userModel?.firstName}",
 
                 fontSize: 38,
                 height: 43,

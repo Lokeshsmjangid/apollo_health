@@ -1,26 +1,34 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:apollo/bottom_sheets/badge_achieved_bottom_sheet.dart';
 import 'package:apollo/bottom_sheets/camera_gallery_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/deactive_account_bottom_sheet.dart';
 import 'package:apollo/bottom_sheets/delete_account_bottom_sheet.dart';
 import 'package:apollo/controllers/edit_profile_ctrl.dart';
 import 'package:apollo/controllers/my_profile_ctrl.dart';
 import 'package:apollo/controllers/settings_ctrl.dart';
 import 'package:apollo/controllers/sign_up_personal_info_ctrl.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/custom_widgets/custom_dropdown.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/resources/Apis/api_constant.dart';
+import 'package:apollo/resources/Apis/api_repository/profile_update_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
+import 'package:apollo/screens/app_subscriptions/subscription_ctrl.dart';
+import 'package:apollo/screens/app_subscriptions/subscription_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'change_password_screen.dart';
-import 'subscription_screen.dart';
 
 
 class EditProfileScreen extends StatelessWidget {
@@ -30,7 +38,6 @@ class EditProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      // backgroundColor: AppColors.primaryColor,
       body: SizedBox.expand(
         child: Stack(
           children: [
@@ -49,12 +56,15 @@ class EditProfileScreen extends StatelessWidget {
                 bottom: false,
                 child: Column(
                   children: [
+                    addHeight(10),
                     backBar(
+                      trailing: true,
                       title: "Edit Profile",
                       onTap: () {
                         Get.back();
                       },
                     ).marginSymmetric(horizontal: 16),
+
                     addHeight(90),
                     Expanded(
                       child: Stack(
@@ -98,19 +108,32 @@ class EditProfileScreen extends StatelessWidget {
                                 ),
                                 addHeight(20),
 
-                                buildSupportOption(
+                                /*buildSupportOption(
                                   onTap: () {
-                                    // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                                    Get.to(SubscriptionScreen());
+                                    Get.to(()=>SubscriptionScreen())?.then((val){
+                                      logic.update();
+                                    });
                                   },
                                   SupportOption(
                                     title: 'Subscription',
-                                    subtitle: 'Starter Plan',
+                                    // title: 'Subscription ${AuthData().userModel?.subscription}',
+                                    subtitle:
+                                    // AuthData().userModel?.subscription==1
+                                    AuthData().userModel?.subscriptionDetail?.planId == "monthly_plan"
+                                        ? "Premium - Monthly"
+                                        : AuthData().userModel?.subscriptionDetail?.planId == "yearly_plan"
+                                        ? "Premium - Annual"
+                                        : "Starter Plan",
+
+
+
+
+
                                     color: AppColors.settingTxtColor1,
                                     colorBG: AppColors.settingTxtColorBG1,
                                   ),
                                 ),
-                                addHeight(20),
+                                addHeight(20),*/
                                 // Now start the scrollable area
                                 Expanded(
                                   child: RawScrollbar(
@@ -119,18 +142,16 @@ class EditProfileScreen extends StatelessWidget {
                                     thickness: 4,
                                     thumbVisibility: true,
                                     child: LayoutBuilder(
-                                        builder: (context, constraints)
-                                         {
-                                      return SingleChildScrollView(
-                                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-                                        child: ConstrainedBox(
-                                          constraints: BoxConstraints(
+                                        builder: (context, constraints) {
+                                          return SingleChildScrollView(
+                                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+                                        child: ConstrainedBox( constraints: BoxConstraints(
                                             minHeight: constraints.maxHeight,
                                           ),
                                           child: IntrinsicHeight(
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                                              // padding: EdgeInsets.zero,
+
                                               children: [
                                                 sectionTitle('Personal Info'),
                                                 Align(
@@ -139,10 +160,13 @@ class EditProfileScreen extends StatelessWidget {
                                                       "First Name", fontSize: 16,
                                                       color: AppColors.textColor),
                                                 ).marginOnly(left: 12, bottom: 6),
+
                                                 CustomTextField(
                                                   controller: logic.firstName,
                                                   hintText: 'Enter First Name',
+                                                  textCapitalization: TextCapitalization.words,
                                                 ),
+
                                                 addHeight(20),
                                                 Align(
                                                   alignment: Alignment.centerLeft,
@@ -150,10 +174,13 @@ class EditProfileScreen extends StatelessWidget {
                                                       "Last Name", fontSize: 16,
                                                       color: AppColors.textColor),
                                                 ).marginOnly(left: 12, bottom: 6),
+
                                                 CustomTextField(
                                                   controller: logic.lastName,
                                                   hintText: 'Enter Last Name',
+                                                  textCapitalization: TextCapitalization.words,
                                                 ),
+
                                                 addHeight(20),
                                                 Align(
                                                   alignment: Alignment.centerLeft,
@@ -161,18 +188,18 @@ class EditProfileScreen extends StatelessWidget {
                                                       "Age", fontSize: 16,
                                                       color: AppColors.textColor),
                                                 ).marginOnly(left: 12, bottom: 6),
-                                                CustomDropdownButton2<
-                                                    AgeGroupModel>(
+
+                                                CustomDropdownButton2<AgeGroupModel>(
                                                   hintText: "Age Group",
                                                   items: logic.ageGroupList ?? [],
                                                   value: logic.ageGroup,
-                                                  displayText: (age) => "${age
-                                                      .age}",
+                                                  displayText: (age) => "${age.age}",
                                                   onChanged: (value) {
                                                     logic.ageGroup = value;
                                                     logic.update();
                                                   },
                                                 ),
+
                                                 addHeight(20),
                                                 Align(
                                                   alignment: Alignment.centerLeft,
@@ -180,6 +207,7 @@ class EditProfileScreen extends StatelessWidget {
                                                       "Country", fontSize: 16,
                                                       color: AppColors.textColor),
                                                 ).marginOnly(left: 12, bottom: 8),
+
                                                 CustomTextField(
                                                   controller: logic.locationCtrl,
                                                   readOnly: true,
@@ -191,11 +219,11 @@ class EditProfileScreen extends StatelessWidget {
                                                       color: AppColors
                                                           .blackColor),
                                                   onTap: () {
-                                                    // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                                     logic.openLocationPicker(context);
                                                   },
                                                 ),
                                                 addHeight(20),
+
                                                 sectionTitle('Account Settings'),
                                                 Align(
                                                   alignment: Alignment.centerLeft,
@@ -203,43 +231,54 @@ class EditProfileScreen extends StatelessWidget {
                                                       "Email", fontSize: 16,
                                                       color: AppColors.textColor),
                                                 ).marginOnly(left: 12, bottom: 8),
+
                                                 CustomTextField(
                                                   controller: logic.emailCtrl,
                                                   hintText: 'Enter your email',
+                                                  readOnly: true,
                                                 ),
                                                 addHeight(14),
+
                                                 buildSupportOption2(
                                                   needLeadingIcon: false,
                                                   SupportOption(
                                                     title: 'Change Password',
-                                                    color: AppColors
-                                                        .settingTxtColor3,
-                                                    colorBG: AppColors
-                                                        .settingTxtColorBG3,
+                                                    color: AppColors.settingTxtColor3,
+                                                    colorBG: AppColors.settingTxtColorBG3,
                                                   ),
                                                   onTap: () {
-                                                    // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+
                                                     Get.to(() => ChangePasswordScreen());
                                                   },
-                                                ),
-                                                addHeight(10),
+                                                ), addHeight(10),
+
                                                 divider(),
                                                 addHeight(10),
                                                 buildSupportOption2(
                                                   needLeadingIcon: false,
                                                   SupportOption(
-                                                    title: 'Delete Account',
-                                                    color: AppColors
-                                                        .settingTxtColor5,
-                                                    colorBG: AppColors
-                                                        .settingTxtColorBG5,
+                                                    title: 'Deactivate Account',
+                                                    color: AppColors.settingTxtColor5,
+                                                    colorBG: AppColors.settingTxtColorBG1,
                                                   ),
                                                   onTap: () {
-                                                    // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                                                    showDeleteAccountRequestSheet(context);
+                                                    showDeActiveAccountRequestSheet(context);
                                                   },
                                                 ),
-                                                addHeight(32),
+
+                                                addHeight(10),
+                                                buildSupportOption2(
+                                                  needLeadingIcon: false,
+                                                  SupportOption(
+                                                    title: 'Delete Account',
+                                                    color: AppColors.settingTxtColor5,
+                                                    colorBG: AppColors.settingTxtColorBG5,
+                                                  ),
+                                                  onTap: () {
+                                                    showDeleteAccountRequestSheet(context);
+                                                  },
+                                                ), addHeight(32),
+
                                               ],
                                             ).marginOnly(right: 12),
                                           ),
@@ -252,54 +291,32 @@ class EditProfileScreen extends StatelessWidget {
                             ),
                           ),
 
-                          // profile image (unchanged)
+                          // profile image
                           Positioned(
                             top: -84,
                             child: Stack(
                               clipBehavior: Clip.none,
                               alignment: Alignment.center,
                               children: [
-                                if(logic.selectedFile.isNotEmpty)
-                                Container(
-                                    height: 98,width: 98,
-                                    // clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: AppColors.primaryColor,width: 2),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(1000),
-                                        child: Image.file(File(logic.selectedFile[0]!.path.toString()),fit: BoxFit.cover)),
-                                  ),
-                                if(logic.selectedFile.isEmpty)
-                                CircleAvatar(
-                                  radius: 50,
-                                  backgroundColor: AppColors.primaryColor,
-                                  child: CircleAvatar(
-                                    radius: 48,
-                                    backgroundImage: AssetImage(AppAssets.profileImg),
-                                    backgroundColor: AppColors.whiteColor,
-                                  ),
-                                ),
+                                buildProfileImage(
+                                    networkImageUrl: logic.profileImage, //'https://apollomedgames.com/public/user.png'
+                                    selectedFiles: logic.selectedFile),
                                 Positioned(
+                                  // top: 0,
                                   right: 0,
-                                  bottom: 0,
+                                  bottom: -4,
+
                                   child: Container(
-                                    height: 25,
-                                    width: 35,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: AppColors.whiteColor,
-                                          width: 1.5),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Image.asset(
-                                      AppAssets.flagIcon,
-                                      fit: BoxFit.cover,
-                                      cacheHeight: 25,
-                                      cacheWidth: 35,
-                                    ),
-                                  ),
+                                      width: 42,height: 28,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: AppColors.whiteColor,width: 2),
+                                          borderRadius: BorderRadius.circular(5)
+
+                                      ),
+                                      child: ClipRRect(
+                                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                                          borderRadius: BorderRadius.circular(3),
+                                          child: Image.network(AuthData().userModel?.countryFlag??ApiUrls.emptyImgUrl,fit: BoxFit.cover))),
                                 ),
                               ],
                             ),
@@ -315,6 +332,43 @@ class EditProfileScreen extends StatelessWidget {
           ],
         ),
       ),
+
+      bottomNavigationBar: MediaQuery.removePadding(
+          context: context,
+          removeBottom: Platform.isIOS ? true : false,
+          removeTop: true,
+          child: GetBuilder<EditProfileController>(
+              builder: (logic) {
+                return BottomAppBar(
+                  padding: EdgeInsets.zero,
+                  color: AppColors.whiteColor,
+                  child: AppButton(
+                    buttonText: 'Save',
+                    buttonColor: AppColors.primaryColor,
+                    onButtonTap: () {
+                      showLoader(true);
+                      profileUpdateApi(
+                          firstName: logic.firstName.text, lastName: logic.lastName.text,
+                          ageGroup: '${logic.ageGroup?.age}',
+                          country: logic.locationCtrl.text, countryFlag: '${logic.countryFlag}',
+
+                      ).then((value){
+                        showLoader(false);
+                        if(value.status==true){
+                          CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                          Get.find<MyProfileCtrl>().updateProfile = true;
+                          Get.find<MyProfileCtrl>().update();
+                          LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.data));
+                          AuthData().getLoginData();
+                          LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.data!.subscription==1?true:false);
+                          logic.profileImage = value.data?.profileImage;
+                          logic.update();
+                        }
+                      });
+                    },
+
+                  ).marginOnly(left: 16, right: 16, bottom: 34),
+                );})),
     );
   }
 
@@ -362,8 +416,7 @@ class EditProfileScreen extends StatelessWidget {
   }
 
   Widget buildSupportOption(SupportOption option,
-      {VoidCallback? onTap, bool needLeadingIcon = true, bool needLeadingTrailing = true,}) {
-    return GestureDetector(
+      {VoidCallback? onTap, bool needLeadingIcon = true, bool needLeadingTrailing = true,}) { return GestureDetector(
       onTap: onTap,
       child: Container(
         // margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
@@ -409,12 +462,10 @@ class EditProfileScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+    ); }
 
   Widget buildSupportOption2(SupportOption option,
-      {VoidCallback? onTap, bool needLeadingIcon = true, bool needLeadingTrailing = true,}) {
-    return GestureDetector(
+      {VoidCallback? onTap, bool needLeadingIcon = true, bool needLeadingTrailing = true,}) { return GestureDetector(
       onTap: onTap,
       child: Container(
         // margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
@@ -460,8 +511,31 @@ class EditProfileScreen extends StatelessWidget {
           ],
         ),
       ),
+    );}
+
+  Widget buildProfileImage({
+    required String? networkImageUrl,
+    required List<File?> selectedFiles,
+    double size = 98,
+    Color borderColor = Colors.deepPurple, // Replace with AppColors.primaryColor if needed
+    double borderWidth = 2,
+  }) { return Container(
+      height: size,
+      width: size,
+      decoration: BoxDecoration(
+        border: Border.all(color: borderColor, width: borderWidth),
+        shape: BoxShape.circle,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(1000),
+        child: (selectedFiles.isEmpty || selectedFiles[0] == null)
+            ? CachedImageCircle2(imageUrl: networkImageUrl)
+            : Image.file(
+          selectedFiles[0]!,
+          fit: BoxFit.cover,
+        ),
+      ),
     );
+
   }
 }
-
-

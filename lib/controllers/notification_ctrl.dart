@@ -1,11 +1,12 @@
 import 'package:apollo/models/notifications_model.dart';
-import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/Apis/api_models/notification_model.dart';
+import 'package:apollo/resources/Apis/api_repository/notification_list_repo.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class NotificationsCtrl extends GetxController{
-
+  NotificationResponseModel model = NotificationResponseModel();
   bool isDataLoading = false;
 
   final AudioPlayer audioPlayer = AudioPlayer();
@@ -90,13 +91,16 @@ class NotificationsCtrl extends GetxController{
   void onInit() {
     scaleController = PageController();
     super.onInit();
-    Future.microtask((){
-      isDataLoading = true;
+    getNotificationData();
+  }
+
+
+  getNotificationData() async {
+    isDataLoading=true;
+    await notificationListApi().then((value){
+      model = value;
+      isDataLoading=false;
       update();
-      Future.delayed(Duration(seconds: 3),(){
-        isDataLoading = false;
-        update();
-      });
     });
   }
 

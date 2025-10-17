@@ -1,11 +1,8 @@
 import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -57,7 +54,7 @@ void showGroupPlaySheet(BuildContext context) {
                 ),
                 addHeight(20),
                 addText500(
-                  'Bring the heat! Battle up to 5 friends or global challengers for the top spot—no explanations shown, just pure competition.',
+                  'Bring the heat! Battle up to 10 friends or global challengers for the top spot—no explanations shown, just pure competition.',
                   textAlign: TextAlign.center,
                   fontSize: 16,height: 22
                 ),

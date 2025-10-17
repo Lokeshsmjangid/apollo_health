@@ -1,10 +1,8 @@
 import 'dart:io';
 
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -54,11 +52,18 @@ void showWheelOfWellnessSheet(BuildContext context) {
                 ),
                 addHeight(20),
                 addText500(
-                  'Spin to win HP! Guess the medical word one letter at a time—too many misses, and it\'s gone. Stuck? Spend 10 HP to reveal a letter and get a second chance!',
+                  'Spin the wheel to earn HP! Crack the medical word letter by letter. ',
                   textAlign: TextAlign.center,
                   fontSize: 16,
                   height: 22
                 ),
+                /*addHeight(20),
+                addText500(
+                  'Need help? Tap the "Hand" to reveal one correct letter for 50 HP. (Only once per puzzle!)',
+                  textAlign: TextAlign.center,
+                  fontSize: 16,
+                  height: 22
+                ),*/
                 addHeight(28),
                 AppButton(
                   onButtonTap: () async{

@@ -1,12 +1,9 @@
 
-
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 
 class CustomDropdownButton2<T> extends StatelessWidget {
   final String hintText;
@@ -48,7 +45,8 @@ class CustomDropdownButton2<T> extends StatelessWidget {
         )).toList(),
         value: value,
         onChanged: onChanged,
-        iconStyleData: IconStyleData(icon: SvgPicture.asset('$icon',width: 8,height: 8,color: AppColors.blackColor,)),
+        iconStyleData: IconStyleData(icon: (icon != null && icon!.isNotEmpty)
+            ? SvgPicture.asset('$icon', width: 8, height: 8, color: AppColors.blackColor) : SizedBox.shrink()),
         menuItemStyleData: const MenuItemStyleData(
             padding: EdgeInsets.all(16),
             height: 50),

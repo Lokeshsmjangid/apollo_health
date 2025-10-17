@@ -1,36 +1,50 @@
+import 'dart:async';
 import 'dart:ui';
 
-import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/utils.dart';
-import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:get/get.dart';
 
-import '../models/questions_model.dart';
-
 class LiveChallengeQuizCtrl extends GetxController{
+  // live challeng waiting screen time round -1
+  int round1RemainingSeconds=0; // initial countdown value
+  Timer? waitingTimer;
 
   int currentIndex = 0;
   bool shouldStopAllTimers = false;
   bool isLastQ = false;
   final CardSwiperController cardSwiperController = CardSwiperController();
 
+  int? livePlayId;
+  int? countParticipants;
+  List<SoloPlayQuestion> questionsApi =[];
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    // if(Get.arguments!=null) {
-    //   fromScreen = Get.arguments['screen'];
-    //   apolloPrint(message: 'OnQuiz:::Screen:::$fromScreen');
-    // }
+    if(Get.arguments!=null) {
+      livePlayId = Get.arguments['live_play_id'];
+      countParticipants = Get.arguments['count_participants'];
+      questionsApi = Get.arguments['questions'];
+      apolloPrint(message: 'OnQuiz:::Screen:::$livePlayId');
+      if(questionsApi.isNotEmpty){
+        Future.microtask((){
+          round1RemainingSeconds = questionsApi.length*10;
+          update();
+          startTimer();
+        });
+      }
+    }
   }
 
-  List<Question> questions = [
+
+  /*List<Question> questions = [
     Question(
       question:
-      "What do probiotics help with?",
+      "What are the potential health benefits of using probiotics?",
       options: ["Gut health", "Hair", "Hearing", "Vision"],
         explanation: 'Probiotics are beneficial bacteria that promote a healthy gut microbiome, aiding digestion and nutrient absorption. They can help prevent digestive disorders. (Source: National Institutes of Health)',
         funFact: 'Yogurt isn\'t just tasty — it\'s a probiotic powerhouse for your gut! 🥄🥛',
@@ -75,10 +89,28 @@ class LiveChallengeQuizCtrl extends GetxController{
         flipKey: GlobalKey<FlipCardState>()
     ),
     // Add more questions as needed
-  ];
+  ];*/
+  void startTimer() {
+    waitingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (round1RemainingSeconds > 0) {
+          round1RemainingSeconds--;
+        update();
+        apolloPrint(message: 'round1RemainingSeconds::$round1RemainingSeconds');
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    waitingTimer?.cancel();
+    super.dispose();
+  }
 
   Color getOptionColor(int qIndex, int optIndex) {
-    final question = questions[qIndex];
+    final question = questionsApi[qIndex];
     if (!question.isAnswered) return AppColors.purpleLightColor;
 
     if (optIndex == question.correctIndex) {

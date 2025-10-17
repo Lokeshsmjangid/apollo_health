@@ -1,6 +1,12 @@
 
 import 'package:apollo/bottom_sheets/daily_dose_bottom_sheet.dart';
-import 'package:apollo/notifications_screen.dart';
+import 'package:apollo/bottom_sheets/signup_gift_bottom_sheet.dart';
+import 'package:apollo/resources/Apis/api_repository/daily_dose_repo.dart';
+import 'package:apollo/resources/Apis/api_repository/signup_bonus_repo.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/local_storage.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:apollo/screens/app_subscriptions/subscription_ctrl.dart';
 import 'package:apollo/screens/dashboard/all_category_screen.dart';
 import 'package:apollo/screens/dashboard/home_screen.dart';
 import 'package:apollo/screens/dashboard/leaderboard_screen.dart';
@@ -10,15 +16,13 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../resources/unilink.dart';
+
 class BottomBarController extends GetxController{
 
+  // SubscriptionCtrl subscriptionCtrl = Get.find<SubscriptionCtrl>();
   final AudioPlayer _audioPlayer = AudioPlayer();
-  Future<void> effectSound({required String sound}) async {
-
-    await _audioPlayer.play(AssetSource(sound));
-
-  }
-
+  Future<void> effectSound({required String sound}) async { await _audioPlayer.play(AssetSource(sound));}
 
   int selectedIndex = 0;
   List<Widget> widgetOptions = <Widget>[
@@ -29,13 +33,49 @@ class BottomBarController extends GetxController{
     MyProfileScreen(),
   ];
 
-
   @override
-  void onInit() {
+  void onInit() async{
     // TODO: implement onInit
     super.onInit();
-    Future.delayed(Duration(milliseconds: 5000),(){
-      showDailyDoseSheet(Get.context!);
+    apolloPrint(message: 'bottom called ctrl');
+    if(AuthData().isLogin){
+      // await AppLinksService.init();
+      // getDailyDose();
+      // getSignUpBonus();
+      loadInitApis();
+    }
+  }
+  Future<void> loadInitApis() async {
+    try {
+      final results = await Future.wait([
+
+      getDailyDose(),
+      getSignUpBonus()     // Replace with your second API
+
+      ] as Iterable<Future>);
+
+    } catch (e) {
+      print('Init load error: $e');
+    }
+  }
+
+
+  getDailyDose() async{
+    await dailyDoseApi().then((value){
+      if(value.status==true && value.data!=null){
+        showDailyDoseSheet(Get.context!,catName: value.data?.categoryName??"", desc: value.data?.description??"",);
+      }
+    });
+  }
+  getSignUpBonus() async{
+    await signUpBonusApi().then((value){
+      if(value.status==true){
+        Future.delayed(Duration(seconds: 3),(){
+          if(Get.context!=null) {
+            showSignUpGiftBottomSheet(Get.context!);
+          }
+        });
+      }
     });
   }
 }

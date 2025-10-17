@@ -1,15 +1,21 @@
 
+import 'dart:io';
+
 import 'package:apollo/bottom_sheets/sign_out_bottom_sheet.dart';
 import 'package:apollo/controllers/settings_ctrl.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_repository/settings_update_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:apollo/screens/cms_pages/cms_page.dart';
+import 'package:apollo/screens/cms_pages/cms_page_webview.dart';
+import 'package:apollo/screens/my_profile/hp_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:share_plus/share_plus.dart';
 
 import 'notification_settings_screen.dart';
 
@@ -35,6 +41,7 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     // addHeight(52),
+                    addHeight(10),
                     backBar(
                       title: "Settings",
                       onTap: () {
@@ -66,6 +73,15 @@ class SettingsScreen extends StatelessWidget {
                               // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                     logic.music = !logic.music;
                                 logic.update();
+                                    logic.deBounce.run((){
+                                      settingsUpdateApi(musicEnabled: logic.music?1:0).then((value){
+                                        if(value.status==true){
+                                          AuthData().musicONOFF = logic.music;
+                                          CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                                          logic.fetchSettings1();
+                                        }
+                                      });
+                                    });
                               },
                             ),
                             toggleTile(
@@ -74,6 +90,14 @@ class SettingsScreen extends StatelessWidget {
                               // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                 logic.onlineStatus = !logic.onlineStatus;
                                 logic.update();
+                                logic.deBounce.run((){
+                                  settingsUpdateApi(onlineStatusVisible: logic.onlineStatus?1:0).then((value){
+                                    if(value.status==true){
+                                      CustomSnackBar().showSnack(Get.context!,message: '${value.message}');
+                                    }
+                                  });
+                                });
+
                               },
                             ),
 
@@ -97,56 +121,72 @@ class SettingsScreen extends StatelessWidget {
                                   // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                   Get.to(CmsScreen(appBar: 'About Us'));
                                 }),
+                            // SizedBox(height: 10,),
+                            //
+                            // buildSupportOption(SupportOption(
+                            //     title: 'HP History',
+                            //     color: AppColors.settingTxtColor4,
+                            //     colorBG: AppColors.settingTxtColorBG4),
+                            //     onTap: (){
+                            //       Get.to(()=>HpHistoryScreen());
+                            //     }),
 
                             SizedBox(height: 24,),
                             sectionTitle('Feedback & Support'),
 
-                            // SizedBox(height: 2,),
                             buildSupportOption(SupportOption(
                                 title: 'Submit a Quiz Topic',
                                 // subtitle: 'Got a health topic in mind? Message us—it could be in our next feature!',
                                 color: AppColors.settingTxtColor2,
-                                colorBG: AppColors.settingTxtColorBG2),
-                                onTap: (){
-                                  // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                                colorBG: AppColors.settingTxtColorBG2), onTap: (){
                               Get.toNamed(AppRoutes.submitTopicScreen);
                                 }),
                             SizedBox(height: 10,),
+
                             buildSupportOption(SupportOption(
                                 title: 'Support',
                                 color: AppColors.settingTxtColor4,
-                                colorBG: AppColors.settingTxtColorBG4),onTap: (){
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                                colorBG: AppColors.settingTxtColorBG4), onTap: (){
                               Get.toNamed(AppRoutes.needHelpScreen);
                             }),
-
-                            SizedBox(height: 10,),
+                            SizedBox(height: 10),
 
                             buildSupportOption(SupportOption(
                                 title: 'Rate Us',
                                 color: AppColors.settingTxtColor3,
-                                colorBG: AppColors.settingTxtColorBG3)),
+                                colorBG: AppColors.settingTxtColorBG3,
+                            ),onTap: (){
+                              if(Platform.isIOS){
+                                launchURL(url: "https://apps.apple.com/us/app/apollo-medgames/id6751579578");
+
+                              }else{
+                                launchURL(url: "https://play.google.com/store/apps/details?id=com.apollomedgames.app");
+                              }
+                            }),
                             SizedBox(height: 10),
 
-                            buildSupportOption(SupportOption(
+                            buildSupportOption(
+                                SupportOption(
                                 title: 'Privacy Policy',
                                 color: AppColors.settingTxtColor1,
                                 colorBG: AppColors.settingTxtColorBG1,
 
-                            ),onTap: (){
-                              // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              Get.to(CmsScreen(appBar: 'Privacy Policy'));
+                            ),
+                                onTap: (){Get.to(CmsScreen(appBar: 'Privacy Policy'));
+                              // Get.to(CmsView());
                             }),
-                            SizedBox(height: 10,),
+                            SizedBox(height: 10),
 
                             buildSupportOption(SupportOption(
                                 title: 'Terms & Conditions',
                                 color: AppColors.settingTxtColor5,
-                                colorBG: AppColors.settingTxtColorBG5),
-                                onTap: (){
+                                colorBG: AppColors.settingTxtColorBG5), onTap: (){
                               // logic.effectSound(sound: AppAssets.actionButtonTapSound);
-                              Get.to(CmsScreen(appBar: 'Terms'));}),
-
+                              Get.to(CmsScreen(appBar: 'T & C'));}),
+                            SizedBox(height: 10),
+                            
+                            addText500(logic.appVersion),
+                            SizedBox(height: 10),
                             const SizedBox(height: 30),
                           ],
                         ),

@@ -1,21 +1,22 @@
+import 'dart:convert';
 import 'dart:developer';
-
-import 'package:apollo/bottom_sheets/location_bottom_sheet.dart';
 import 'package:apollo/controllers/sign_up_personal_info_ctrl.dart';
 import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_column_animation.dart';
 import 'package:apollo/custom_widgets/custom_dropdown.dart';
 import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/resources/Apis/api_repository/register_personal_info_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/get_utils.dart';
 
 class SignUpPersonalInfoScreen extends StatefulWidget {
   const SignUpPersonalInfoScreen({super.key});
@@ -54,8 +55,14 @@ class _SignUpPersonalInfoScreenState extends State<SignUpPersonalInfoScreen> {
                 backButtonColor: AppColors.blackColor,
                 titleColor: AppColors.blackColor,
                 onTap: () {
+                  if(logic.goBack=='splash'){
+                    LocalStorage().clearLocalStorage(goToSignInScreen: false);
+                    Get.offAllNamed(AppRoutes.createAccountScreen); // yahaa AppRoutes.createAccountScreen ye lagani hai
+                  }else{
                   Get.back();
+                  }
                 },
+                isCancel: true
               ),
               Expanded(child: SingleChildScrollView(
                 child: Form(
@@ -72,6 +79,7 @@ class _SignUpPersonalInfoScreenState extends State<SignUpPersonalInfoScreen> {
                       CustomTextField(
                         hintText: 'Enter First Name',
                         controller: logic.firstName,
+                        textCapitalization: TextCapitalization.words,
                         onChanged: (val) {
                           if (logic.firstName.text.isNotEmpty &&
                               logic.lastName.text.isNotEmpty &&
@@ -95,6 +103,7 @@ class _SignUpPersonalInfoScreenState extends State<SignUpPersonalInfoScreen> {
                       CustomTextField(
                         hintText: 'Enter Last Name',
                         controller: logic.lastName,
+                        textCapitalization: TextCapitalization.words,
                         onChanged: (val) {
                           if (logic.firstName.text.isNotEmpty &&
                               logic.lastName.text.isNotEmpty &&
@@ -213,9 +222,34 @@ class _SignUpPersonalInfoScreenState extends State<SignUpPersonalInfoScreen> {
             buttonText: 'Next',
             buttonColor: logic.isButtonDisable?AppColors.buttonDisableColor:AppColors.primaryColor,
             onButtonTap: logic.isButtonDisable?(){}:() {
-            // effectSound(sound: AppAssets.actionButtonTapSound);
+
               if(formKey.currentState?.validate()??false) {
-                Get.toNamed(AppRoutes.signUpDisclaimerScreen);
+
+                // apolloPrint(message: '${logic.firstName.text}-${logic.lastName.text}');
+                // apolloPrint(message: '${logic.ageGroup?.age}');
+                // apolloPrint(message: logic.location.text);
+                // apolloPrint(message: logic.countryFlag);
+
+                showLoader(true);
+                registerPersonalInfoApi(
+                    firstName: logic.firstName.text,lastName: logic.lastName.text,
+                    ageGroup: logic.ageGroup?.age,
+                    country: logic.location.text,
+                    countryFlag: logic.countryFlag).then((value){
+                  showLoader(false);
+                  if(value.status==true){
+                    LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.data));
+                    AuthData().getLoginData();
+                   if(AuthData().userModel?.googleId != null || AuthData().userModel?.appleId != null ){
+                     Get.offAllNamed(AppRoutes.signUpDisclaimerScreen);
+                   }else{
+                     Get.toNamed(AppRoutes.emailVerifyOtpScreen,arguments: {
+                       'password_reset_token':value.data?.passwordResetToken,
+                       'otp':value.data?.otp.toString(),
+                     });
+                   }
+                  }
+                });
               }
           },).marginOnly(left: 16, right: 16, bottom: 30),
         );

@@ -3,14 +3,11 @@ import 'dart:io';
 import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
-
-import 'grandmaster_health_badge_screen.dart';
 
 class HealthWhizBadgeScreen extends StatefulWidget {
   const HealthWhizBadgeScreen({super.key});
@@ -54,7 +51,7 @@ class _HealthWhizBadgeScreenState extends State<HealthWhizBadgeScreen> {
             child: null,
           ),
 
-          Container(
+          SizedBox(
             width: double.infinity,
             child: Image.asset(
               AppAssets.notificationsBg,
@@ -62,7 +59,7 @@ class _HealthWhizBadgeScreenState extends State<HealthWhizBadgeScreen> {
             ),
           ),
 
-          Container(
+          SizedBox(
             width: double.infinity,
             child: Image.asset(
               "assets/Lottie/party.gif",
@@ -89,7 +86,7 @@ class _HealthWhizBadgeScreenState extends State<HealthWhizBadgeScreen> {
               Image.asset(AppAssets.healthBadge,height: 279,width: 294,),
 
               Spacer(),
-              addText400("Health Whiz Madelyn",
+              addText400("Health Whiz ${AuthData().userModel?.firstName}",
 
                 fontSize: 38,
                 height: 43,

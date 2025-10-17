@@ -1,5 +1,5 @@
-import 'dart:ui';
 
+import 'package:apollo/resources/Apis/api_models/category_model.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
 enum QuestionCount { five, ten }
@@ -13,12 +13,35 @@ class GmGroupPlayController extends GetxController{
   }
 
 
+  List<Category> categories = [];
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    if(Get.arguments!=null){
+      categories = Get.arguments['categories'];
+    }
+  }
+
+  List<int> selectedCategories = [];
+
+  List<int> pickRandomCategoryIds(int count) {
+    // Filter only free categories (paidstatus == 0)
+    List<Category> tempList = categories.where((cat) => cat.paidStatus == 0).toList();
+    tempList.shuffle();
+    return tempList
+        .take(count)
+        .map((cat) => cat.id)
+        .whereType<int>() // Ensures only non-null ints
+        .toList();
+  }
+
   QuestionCount selectedCount = QuestionCount.five; // default
   bool showExplanation = true;
   bool winnerTakes = false;
   bool randomMix = false;
 
-  List<String> selectedCategories = ['Lub Dub Nation', 'Plastic Perception', 'Medical Pop Culture', 'Skin Deep', 'Snooze Control'];
+ /* List<String> selectedCategories = ['Lub Dub Nation', 'Plastic Perception', 'Medical Pop Culture', 'Skin Deep', 'Snooze Control'];
 
   final List<Map<String, dynamic>> categories = [
     {'title': 'Lub Dub Nation', 'subtitle': 'Heart Health', 'color': Color(0xFFB9C9FF), 'border': Color(0xFF4663D3),'isLock':false},
@@ -59,6 +82,6 @@ class GmGroupPlayController extends GetxController{
     {'title': 'Rare & Remarkable', 'subtitle': 'Strange But True Cases', 'color': Color(0xFFB9C9FF), 'border': Color(0xFF4663D3),'isLock':true},
 
 
-  ];
+  ];*/
 
 }

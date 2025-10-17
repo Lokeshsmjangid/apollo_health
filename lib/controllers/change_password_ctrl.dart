@@ -9,9 +9,9 @@ class ChangePasswordCtrl extends GetxController{
 
 
 
-  bool obscureOldPass = false;
-  bool obscureNewPass = false;
-  bool obscureConfPass = false;
+  bool obscureOldPass = true;
+  bool obscureNewPass = true;
+  bool obscureConfPass = true;
   bool isButtonDisable = true;
 
 

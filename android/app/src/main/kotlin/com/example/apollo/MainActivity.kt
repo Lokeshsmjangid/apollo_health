@@ -1,4 +1,4 @@
-package com.example.apollo
+package com.apollomedgames.app
 
 import io.flutter.embedding.android.FlutterActivity
 
