@@ -81,25 +81,23 @@ class _FrontCardState extends State<FrontCard> {
     apolloPrint(message: "🔹 Loading Unity Banner Ad...");
     apolloPrint(message: "🔹 Platform: ${Platform.operatingSystem}");
     apolloPrint(message: "🔹 Placement ID: $placementId");
-    UnityAds.load(
-      placementId: Platform.isAndroid
-          ? ApiUrls.unityBannerAndroid
-          : ApiUrls.unityBannerIOS,
-      onComplete: (placementId) {
-        apolloPrint(message: "✅ Banner Ad Loaded Successfully!");
-        apolloPrint(message: "✅ Placement ID: $placementId");
-        setState(() => isBannerLoaded = true);
-      },
-
-      onFailed: (placementId, error, message) {
-        apolloPrint(message: "❌ Banner Load Failed!");
-        apolloPrint(message: "❌ Placement ID: $placementId");
-        apolloPrint(message: "❌ Error Type: $error");        // e.g., 'NO_FILL', 'NETWORK_ERROR'
-        apolloPrint(message: "❌ Error Message: $message");  // detailed explanation
-        apolloPrint(message: "❌ Platform: ${Platform.operatingSystem}");
-        apolloPrint(message: "❌ Check your Unity Dashboard & Ad Unit IDs");
-      },
-    );
+    // UnityAds.load(
+    //   placementId: placementId,
+    //   onComplete: (placementId) {
+    //     apolloPrint(message: "✅ Banner Ad Loaded Successfully!");
+    //     apolloPrint(message: "✅ Placement ID: $placementId");
+    //     setState(() => isBannerLoaded = true);
+    //   },
+    //
+    //   onFailed: (placementId, error, message) {
+    //     apolloPrint(message: "❌ Banner Load Failed!");
+    //     apolloPrint(message: "❌ Placement ID: $placementId");
+    //     apolloPrint(message: "❌ Error Type: $error");        // e.g., 'NO_FILL', 'NETWORK_ERROR'
+    //     apolloPrint(message: "❌ Error Message: $message");  // detailed explanation
+    //     apolloPrint(message: "❌ Platform: ${Platform.operatingSystem}");
+    //     apolloPrint(message: "❌ Check your Unity Dashboard & Ad Unit IDs");
+    //   },
+    // );
   }
 
   // BannerAd? _bannerAd;
@@ -504,7 +502,8 @@ class _FrontCardState extends State<FrontCard> {
                 }),
 
                 // Banner ad placeholder
-                if (isBannerLoaded)
+
+                if(!AuthData().isPremium)
                   Container(
                     alignment: Alignment.center,
                     margin: const EdgeInsets.only(top: 20, bottom: 35),

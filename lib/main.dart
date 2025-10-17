@@ -1,24 +1,21 @@
-
 import 'dart:io';
-import 'package:advertising_id/advertising_id.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:unity_ads_plugin/unity_ads_plugin.dart';
-import 'resources/Apis/api_constant.dart';
 import 'resources/app_color.dart';
 import 'resources/app_routers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'resources/Apis/api_constant.dart';
 import 'resources/dependencies.dart' as de;
 import 'package:scaled_app/scaled_app.dart';
+import 'package:apollo/resources/utils.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:apollo/resources/unilink.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:advertising_id/advertising_id.dart';
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 import 'package:apollo/resources/notification_service.dart';
-
-
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 var referralCode = "";
 bool unityAdsInitialized = false;
@@ -40,6 +37,7 @@ Future<void> main() async{
       appId: '1:1029679126997:android:49144c4a734ee7c5d1855c',
       messagingSenderId: '1029679126997',
       projectId: 'apollo-medgames'));}
+
   await de.init();
   await GetStorage.init();
 
@@ -47,12 +45,12 @@ Future<void> main() async{
   initMessaging();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
+
   /// ---------------- Initialize Unity Ads Globally ----------------
   await _initializeUnityAdsGlobal();
   // MobileAds.instance.initialize();
   runApp(const MyApp());
 }
-
 Future<void> _initializeUnityAdsGlobal() async {
   final gameId = Platform.isAndroid
       ? ApiUrls.gameIdAndroid
@@ -81,14 +79,12 @@ Future<void> _initializeUnityAdsGlobal() async {
     },
   );
 }
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
-
 class _MyAppState extends State<MyApp> {
   /// when use of ads make myapp to stateless
   String adId = "Fetching...";
@@ -109,7 +105,8 @@ class _MyAppState extends State<MyApp> {
         apolloPrint(message: "Tracking authorization status: $status");
 
         id = await AppTrackingTransparency.getAdvertisingIdentifier();
-      } else {
+      }
+      else {
         id = await AdvertisingId.id(true); // true = limit ad tracking
       }
 
@@ -118,14 +115,14 @@ class _MyAppState extends State<MyApp> {
       });
 
       apolloPrint(message: "Advertising ID: $id");
-    } catch (e) {
+    }
+    catch (e) {
       setState(() {
         adId = "Error: $e";
       });
       apolloPrint(message: "Error fetching ad ID: $e");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -158,15 +155,10 @@ class _MyAppState extends State<MyApp> {
             child: child!,
           );
         })
-    );
-  }
-}
-
-
+    );}}
 
 // command to generate SHA key
 // keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 // firebase hosting for dynamic link---> levicon-carpooling-32563.web.app
 // share url var url = '${ApiUrls.domain}refer/?promo-id=${ctrl.communityID}&promo-type=community';
-
 // add to xcode associate domain-> applinks:apollomedgames.com

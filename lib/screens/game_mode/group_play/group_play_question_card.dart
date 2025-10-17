@@ -73,19 +73,19 @@ class _GroupPlayQuestionCardState extends State<GroupPlayQuestionCard> {
     //   onComplete: () => print('✅ Unity Ads Initialized'),
     //   onFailed: (error, message) => print('❌ Unity Init Failed: $error | $message'),
     // );
-
-    UnityAds.load(
-      placementId: Platform.isAndroid
-          ? ApiUrls.unityBannerAndroid
-          : ApiUrls.unityBannerIOS,
-      onComplete: (placementId) {
-        print("✅ Banner Ad Loaded: $placementId");
-        setState(() => isBannerLoaded = true);
-      },
-      onFailed: (placementId, error, message) {
-        print("❌ Banner Load Failed: $message");
-      },
-    );
+    final placementId = Platform.isAndroid
+        ? ApiUrls.unityBannerAndroid
+        : ApiUrls.unityBannerIOS;
+    // UnityAds.load(
+    //   placementId: placementId,
+    //   onComplete: (placementId) {
+    //     print("✅ Banner Ad Loaded: $placementId");
+    //     setState(() => isBannerLoaded = true);
+    //   },
+    //   onFailed: (placementId, error, message) {
+    //     print("❌ Banner Load Failed: $message");
+    //   },
+    // );
   }
 
   // BannerAd? _bannerAd;
@@ -486,7 +486,7 @@ class _GroupPlayQuestionCardState extends State<GroupPlayQuestionCard> {
                 }),
 
                 // Banner ad placeholder container
-                if (isBannerLoaded)
+                if(!AuthData().isPremium)
                   Container(
                     alignment: Alignment.center,
                     margin: const EdgeInsets.only(top: 20, bottom: 35),
