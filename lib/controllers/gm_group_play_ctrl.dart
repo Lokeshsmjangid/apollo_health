@@ -1,5 +1,6 @@
 
 import 'package:apollo/resources/Apis/api_models/category_model.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
 enum QuestionCount { five, ten }
@@ -8,7 +9,9 @@ class GmGroupPlayController extends GetxController{
   final AudioPlayer audioPlayer = AudioPlayer();
   Future<void> effectSound({required String sound}) async {
 
-    await audioPlayer.play(AssetSource(sound));
+// if(AuthData().musicONOFF) {
+  await audioPlayer.play(AssetSource(sound));
+// }
 
   }
 

@@ -1,7 +1,6 @@
+import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -38,8 +37,6 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-
-
   Future<void> _playConfettiSound({required String sound}) async {
     await _audioPlayer.play(AssetSource(sound));
   }
@@ -49,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen> {
     _audioPlayer.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {

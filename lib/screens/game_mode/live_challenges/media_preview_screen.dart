@@ -1,15 +1,14 @@
-import 'dart:async';
-import 'package:apollo/resources/Apis/api_models/live_challenge_final_result.dart';
 import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
 import 'package:apollo/resources/Apis/api_repository/live_challenges_final_result_repo.dart';
+import 'package:apollo/resources/Apis/api_models/live_challenge_final_result.dart';
+import 'live_challenge_result_with_country_score.dart';
 import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/auth_data.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
-
+import 'package:flutter/material.dart';
 import 'live_challenge_result.dart';
-import 'live_challenge_result_with_country_score.dart';
+import 'package:get/get.dart';
+import 'dart:async';
 
 class MediaPreviewScreen extends StatefulWidget {
   final String url;

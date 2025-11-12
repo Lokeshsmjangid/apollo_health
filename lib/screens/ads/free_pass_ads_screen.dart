@@ -1,17 +1,17 @@
-import 'dart:async';
 import 'dart:io';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'dart:async';
+import 'package:get/get.dart';
 import 'package:apollo/main.dart';
-import 'package:apollo/resources/Apis/api_repository/start_medlingo_repo.dart';
-import 'package:apollo/resources/Apis/api_repository/start_solo_play_repo.dart';
+import 'package:flutter/material.dart';
+import 'package:apollo/resources/utils.dart';
 import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/custom_loader.dart';
-import 'package:apollo/resources/Apis/api_constant.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/game_mode/wheel_of_wellness/wheel_of_wellness_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+import 'package:apollo/resources/Apis/api_constant.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_repository/start_medlingo_repo.dart';
+import 'package:apollo/resources/Apis/api_repository/start_solo_play_repo.dart';
+import 'package:apollo/screens/game_mode/wheel_of_wellness/wheel_of_wellness_screen.dart';
 
 /*class FreePassAdsScreen extends StatefulWidget {
   String? game;
@@ -289,7 +289,7 @@ class FreePassAdsScreenState extends State<FreePassAdsScreen> {
 
 /// above code for applovin
 
-class FreePassAdsScreen extends StatefulWidget {
+/*class FreePassAdsScreen extends StatefulWidget {
   final String? game;
   final int? catId;
 
@@ -453,5 +453,192 @@ class FreePassAdsScreenState extends State<FreePassAdsScreen> {
       ),
     );
   }
+}*/
+
+/// above code comment on diwali
+
+
+class FreePassAdsScreen extends StatefulWidget {
+  final String? game;
+  final int? catId;
+
+  const FreePassAdsScreen({super.key, this.game, this.catId});
+
+  @override
+  FreePassAdsScreenState createState() => FreePassAdsScreenState();
+}
+
+class FreePassAdsScreenState extends State<FreePassAdsScreen> {
+  bool _isAdReady = false;
+  bool _hasShownAd = false;
+  bool canPop = false;
+  bool _navigated = false;
+  bool _adFinished = false;
+  Timer? _timeoutTimer;
+
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (unityAdsInitialized) {
+        _loadUnityInterstitial();
+      } else {
+        _navigateAfterAd();
+      }
+    });
+  }
+
+  void _loadUnityInterstitial() {
+    final placementId = Platform.isAndroid
+        ? ApiUrls.unityInterstitialAndroid
+        : ApiUrls.unityInterstitialIOS;
+
+    // Timeout fallback — prevents freeze if Unity never responds
+    _timeoutTimer = Timer(const Duration(seconds: 8), () {
+      if (!_navigated) {
+        print("⏰ Ad load timeout — skipping to next screen");
+        _navigateAfterAd();
+      }
+    });
+
+    UnityAds.load(
+      placementId: placementId,
+      onComplete: (id) {
+        print("✅ Unity Interstitial Loaded: $id");
+        _timeoutTimer?.cancel();
+        setState(() => _isAdReady = true);
+        _showInterstitialAd(); // show immediately once ready
+      },
+      onFailed: (id, error, message) {
+        print("❌ Unity Interstitial Load Failed: $message");
+        _timeoutTimer?.cancel();
+        _navigateAfterAd();
+      },
+    );
+  }
+
+  void _showInterstitialAd() {
+    if (_isAdReady && !_hasShownAd) {
+      _hasShownAd = true;
+      final placementId = Platform.isAndroid
+          ? ApiUrls.unityInterstitialAndroid
+          : ApiUrls.unityInterstitialIOS;
+
+      UnityAds.showVideoAd(
+        placementId: placementId,
+        onStart: (id) {
+          print("▶️ Ad Started");
+          _timeoutTimer?.cancel();
+        },
+        onClick: (id) => print("🖱 Ad Clicked"),
+        onSkipped: (id) {
+          print("⏭ Ad Skipped");
+          _navigateAfterAd();
+        },
+        onComplete: (id) {
+          print("✅ Ad Completed");
+          _navigateAfterAd();
+        },
+        onFailed: (id, error, message) {
+          print("❌ Ad Failed to Show: $message");
+          _navigateAfterAd();
+        },
+      );
+    } else {
+      print("⚠️ Interstitial not ready — continuing");
+      _navigateAfterAd();
+    }
+  }
+
+  void _navigateAfterAd() {
+    if (_navigated) return; // Prevent multiple calls
+    _navigated = true;
+    _adFinished = true;
+    setState(() {});
+    _timeoutTimer?.cancel();
+    print("➡️ Moving ahead after ad (or failure)");
+
+    if (widget.game == 'category') {
+      apolloPrint(message: 'coming here → ${widget.game} && ${widget.catId}');
+      Get.back();
+      showLoader(true);
+      startSoloPlayApi(
+        categoryId: '${widget.catId}',
+        numberOfQuestions: 5,
+        showExplanation: 1,
+        highStakesMode: 0,
+        randomMix: 0,
+      ).then((value) {
+        showLoader(false);
+        if (value.status == true &&
+            value.data != null &&
+            value.data!.isNotEmpty) {
+          Get.offNamed(AppRoutes.quizScreenNew, arguments: {
+            'screen': 'soloPlay',
+            'questions': value.data,
+            'gameData': value.gameData
+          });
+        } else {
+          CustomSnackBar().showSnack(Get.context!,
+              message: '${value.message}', isSuccess: false);
+        }
+      });
+    } else if (widget.game == 'medpardy') {
+      Get.offNamed(AppRoutes.medpardyChooseFriendScreen);
+    }
+    else if (widget.game == 'wow') {
+      Get.off(WheelOfWellnessScreen());
+    }
+    else if (widget.game == 'medlingo') {
+      showLoader(true);
+      startMedLingoApi().then((val) {
+        showLoader(false);
+        if (val.status == true && val.data != null) {
+          Get.offNamed(AppRoutes.medLingoWordGameScreen, arguments: {
+            'word': val.data!.hiddenTerm!.toUpperCase(),
+            'imageUrl': val.data!.imageUrl ?? '',
+            'gameData': val.data
+          });
+        } else {
+          if (mounted) setState(() => canPop = true);
+          Get.back();
+          CustomSnackBar().showSnack(Get.context!,
+              message: '${val.message}', isSuccess: false);
+        }
+      });
+    }
+    else if (widget.game == 'soloPlay' || widget.game == 'groupPlay') {
+      if (mounted) setState(() => canPop = true);
+      Get.back(result: widget.catId);
+    }
+    else {
+      print("⚠️ Unknown game type — returning to previous screen");
+      Get.back();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: canPop,
+      child: Scaffold(
+        backgroundColor: Colors.black87,
+        body: Center(
+          child: _adFinished
+              ? const Text(
+            'Preparing your game...',
+            style: TextStyle(color: Colors.white, fontSize: 24),
+          )
+              : const Text(
+            'Your Ad is loading...',
+            style: TextStyle(color: Colors.white, fontSize: 24),
+          ),
+
+        ),
+      ),
+    );
+  }
+
 }
 

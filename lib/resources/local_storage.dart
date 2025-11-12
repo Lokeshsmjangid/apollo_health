@@ -46,6 +46,5 @@ class LocalStorage {
     if(goToSignInScreen){
     Get.offAllNamed(AppRoutes.signInScreen);
     }
-
   }
 }

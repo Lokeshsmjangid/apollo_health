@@ -9,6 +9,7 @@ import 'package:apollo/resources/Apis/api_repository/category_one_dp_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/category_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/start_solo_play_repo.dart';
 import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/app_assets.dart';
@@ -204,6 +205,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ),
         ),
       actions: [
+        if(AuthData().userModel?.roleId != 4)
       IconButton(
       visualDensity: VisualDensity(horizontal: -4, vertical: -4),
       onPressed: () async {

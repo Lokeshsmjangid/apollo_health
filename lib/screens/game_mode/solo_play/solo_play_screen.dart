@@ -1,25 +1,24 @@
-import 'dart:io';
-
-import 'package:apollo/bottom_sheets/category_ready_more_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/high_stack_mode_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/unlock_premium_hsm_bottom_sheet.dart';
-import 'package:apollo/controllers/gm_solo_play_ctrl.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/resources/Apis/api_models/category_model.dart';
 import 'package:apollo/resources/Apis/api_repository/category_one_dp_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/start_solo_play_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/bottom_sheets/category_ready_more_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/unlock_premium_hsm_bottom_sheet.dart';
+import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
+import 'package:apollo/bottom_sheets/high_stack_mode_bottom_sheet.dart';
+import 'package:apollo/resources/Apis/api_models/category_model.dart';
+import 'package:apollo/screens/ads/free_pass_ads_screen.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/controllers/gm_solo_play_ctrl.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/ads/free_pass_ads_screen.dart';
-import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io';
 
 class SoloPlayScreen extends StatelessWidget {
   SoloPlayScreen({super.key});

@@ -21,7 +21,6 @@ class _GrandmasterHealthBadgeScreenState extends State<GrandmasterHealthBadgeScr
   @override
   void initState() {
     super.initState();
-    // Play audio if result > 60
 
       _playConfettiSound(sound: AppAssets.confettiWave);
   }

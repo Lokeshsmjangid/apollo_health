@@ -49,7 +49,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 title: "Create an Account",
                 backButtonColor: AppColors.blackColor,
                 titleColor: AppColors.blackColor,
-                isBack: false,
+                isBack: true,
                 onTap: () {
                   Get.back();
                 },
@@ -68,11 +68,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                               child: addText500("Email", fontSize: 16,
                                   color: AppColors.textColor)).marginOnly(
                               left: 12, bottom: 6),*/
+
                           CustomTextField(
+                            hintText: 'Enter Email',
                             controller: logic.emailCtrl,
                             keyboardType: TextInputType.emailAddress,
-                            validator: (value) => validateField(field: 'email', value: logic.emailCtrl.text),
-                            hintText: 'Enter Email',
                             onChanged: (val){
                               if(logic.emailCtrl.text.isNotEmpty && logic.passCtrl.text.isNotEmpty && logic.confPassCtrl.text.isNotEmpty && isAcknowledge){
                                 logic.isButtonDisable=false;
@@ -82,6 +82,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                 logic.update();
                               }
                             },
+                            validator: (value) => validateField(field: 'email', value: logic.emailCtrl.text),
                           ),
                           addHeight(20),
 
@@ -90,12 +91,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                               child: addText500("Password", fontSize: 16,
                                   color: AppColors.textColor)).marginOnly(
                               left: 12, bottom: 6),*/
+
                           CustomTextField(
                               hintText: 'Enter Password',
-                              obscureText: logic.obscurePass,
                               controller: logic.passCtrl,
-                              helperText: "Use at least 8 characters with one uppercase letter, one number, and one special character.",
+                              obscureText: logic.obscurePass,
                               validator: (value) => validateField(field: 'password', value: logic.passCtrl.text),
+                              helperText: "Use at least 8 characters with one uppercase letter, one number, and one special character.",
                               onChanged: (val){
                               if(logic.emailCtrl.text.isNotEmpty && logic.passCtrl.text.isNotEmpty && logic.confPassCtrl.text.isNotEmpty && isAcknowledge){
                                 logic.isButtonDisable=false;
@@ -126,10 +128,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                   color: AppColors.textColor)).marginOnly(
                               left: 12, bottom: 6),*/
                           CustomTextField(
-                              hintText: 'Enter Password Again',
-                              obscureText: logic.obscureCPass,
                               controller: logic.confPassCtrl,
-                              validator: (value) => validateField(field: 'Confirm Password', value: logic.passCtrl.text,originalPassword: logic.confPassCtrl.text),
+                              obscureText: logic.obscureCPass,
+                              hintText: 'Enter Password Again',
                               onChanged: (val){
                                 if(logic.emailCtrl.text.isNotEmpty && logic.passCtrl.text.isNotEmpty && logic.confPassCtrl.text.isNotEmpty && isAcknowledge){
                                   logic.isButtonDisable=false;
@@ -139,6 +140,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                   logic.update();
                                 }
                               },
+                              validator: (value) => validateField(field: 'Confirm Password', value: logic.passCtrl.text,originalPassword: logic.confPassCtrl.text),
                               suffixIcon: GestureDetector(
                                   onTap: (){
                                     logic.onTapSuffix(isPass: false);
@@ -150,15 +152,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                           !logic.obscureCPass?AppAssets.eyeIcon:AppAssets.eyeOffIcon))
 
                               )),
-
                           addHeight(20),
+
                           CustomTextField(
                               hintText: 'Referral Code (Optional)',
                               controller: logic.referralCtrl,
 
                           ),
-
-
                           addHeight(20),
                           // addHeight(76),
 
@@ -234,6 +234,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             ],
                           ),
                           addHeight(14),
+
                           AppButton(
                             buttonText: 'Sign up',
                             buttonColor: logic.isButtonDisable?AppColors.buttonDisableColor:AppColors.primaryColor,
@@ -264,7 +265,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                     });
                                   }
                                 });}}),
-
                           addHeight(20),
 
                           Row(
@@ -473,6 +473,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             }),
                           if(Platform.isIOS)
                             addHeight(16),
+
                           socialButton(label: 'Sign in with Google',labelIcon: AppAssets.googleIcon,onPressed: (){
                             showLoader(true);
                             logic.signInWithGoogle().then((googleData){
@@ -538,8 +539,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             ],
                           ),
                           addHeight(40),
-
-
                         ],
                       ),
                     ),

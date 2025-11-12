@@ -120,8 +120,6 @@ class _HealthWhizBadgeScreenState extends State<HealthWhizBadgeScreen> {
               onButtonTap: (){
             // _playConfettiSound(sound: AppAssets.actionButtonTapSound);
                 Get.back();
-
-
               },
               buttonColor: AppColors.whiteColor,buttonTxtColor: AppColors.primaryColor),
         ).marginOnly(left: 16,right: 16,bottom: 35),

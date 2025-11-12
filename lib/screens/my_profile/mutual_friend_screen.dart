@@ -1,14 +1,13 @@
 import 'package:apollo/controllers/group_play_frinds_ctrl.dart';
 import 'package:apollo/controllers/mutual_friend_ctrl.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
 
 class MutualFriendScreen extends StatelessWidget {
 

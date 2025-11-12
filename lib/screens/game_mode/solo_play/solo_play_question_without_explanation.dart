@@ -1,30 +1,29 @@
-import 'dart:io';
 
-import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
-import 'package:apollo/controllers/gM_quiz_ctrl.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/custom_widgets/linear_progress_segment.dart';
-import 'package:apollo/resources/Apis/api_constant.dart';
 import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
-import 'package:apollo/resources/Apis/api_repository/quit_solo_play_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/solo_play_result_repo.dart';
+import 'package:apollo/resources/Apis/api_repository/quit_solo_play_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/submit_answer_repo.dart';
+import 'package:apollo/screens/game_mode/group_play/group_play_result.dart';
+import 'package:apollo/screens/game_mode/solo_play/solo_play_result.dart';
+import 'package:apollo/custom_widgets/linear_progress_segment.dart';
+import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
+import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/resources/Apis/api_constant.dart';
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+import 'package:apollo/resources/countdown_timer.dart';
+import 'package:apollo/controllers/gM_quiz_ctrl.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/auth_data.dart';
-import 'package:apollo/resources/countdown_timer.dart';
-import 'package:apollo/resources/custom_loader.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
-import 'package:apollo/screens/game_mode/group_play/group_play_result.dart';
-import 'package:apollo/screens/game_mode/solo_play/solo_play_result.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:unity_ads_plugin/unity_ads_plugin.dart';
+import 'dart:io';
 
 class SoloPlayQuestionWithoutExplanation extends StatefulWidget {
   final SoloPlayQuestion question;
@@ -128,7 +127,9 @@ class _SoloPlayQuestionWithoutExplanationState extends State<SoloPlayQuestionWit
   // }
 
   Future<void> _playConfettiSound({required String sound}) async {
-    await _audioPlayer.play(AssetSource(sound));
+    // if(AuthData().musicONOFF) {
+      await _audioPlayer.play(AssetSource(sound));
+    // }
   }
 
   @override

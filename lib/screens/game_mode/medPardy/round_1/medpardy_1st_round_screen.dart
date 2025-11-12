@@ -1,21 +1,21 @@
-import 'package:apollo/controllers/MedPardy_Ctrls/medpardy_1st_round_ctrl.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/models/medpardy_board_cells.dart';
-import 'package:apollo/models/medpardy_players_model.dart';
-import 'package:apollo/resources/Apis/api_models/category_model.dart';
 import 'package:apollo/resources/Apis/api_repository/medpardy_start_game_repo.dart';
-import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/controllers/MedPardy_Ctrls/medpardy_1st_round_ctrl.dart';
+import 'package:apollo/resources/Apis/api_models/category_model.dart';
+import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
 import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/custom_widgets/jeo_pardy_border.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/models/medpardy_players_model.dart';
+import 'package:apollo/models/medpardy_board_cells.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/jeo_pardy_border.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/text_utility.dart';
 
 
 class Medpardy1stRoundScreen extends StatefulWidget {

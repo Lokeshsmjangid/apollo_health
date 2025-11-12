@@ -1,22 +1,20 @@
-
-import 'dart:io';
+import 'package:apollo/resources/Apis/api_repository/blurStatusProfile_repo.dart';
+import 'package:apollo/screens/app_subscriptions/premium_plan_screen.dart';
+import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
 import 'package:apollo/bottom_sheets/badge_achieved_bottom_sheet.dart';
+import 'package:apollo/screens/my_profile/hp_history_screen.dart';
 import 'package:apollo/controllers/edit_profile_ctrl.dart';
 import 'package:apollo/controllers/my_profile_ctrl.dart';
-import 'package:apollo/resources/Apis/api_repository/blurStatusProfile_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/ads/ads_example.dart';
-import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
-import 'package:apollo/screens/app_subscriptions/premium_plan_screen.dart';
-import 'package:apollo/screens/my_profile/hp_history_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:get/get.dart';
+import 'dart:io';
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({super.key});
@@ -69,13 +67,16 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     //     _hpRect = _getWidgetRect(_hpKey);
     //   });
     // });
-    WidgetsBinding.instance.addPostFrameCallback((_)async {
+
+    if(AuthData().userModel?.roleId != 4) {
+      WidgetsBinding.instance.addPostFrameCallback((_)async {
       planCtrl.setupPurchaseListener();
       await planCtrl.initStoreInfo();
       // await planCtrl.checkSubscription();
 
       planCtrl.restoreSubscription();
     });
+    }
   }
 
   // Rect? _getWidgetRect(GlobalKey key) {
@@ -171,7 +172,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 ).marginAll(6),
                               ),
                             ),
-                            GestureDetector(
+
+                            AuthData().userModel?.roleId == 4
+                                ? SizedBox.shrink()
+                                : GestureDetector(
                               onTap: (){
                                 Get.toNamed(AppRoutes.editProfileScreen)?.then((val) {
                                   if (logic.updateProfile) {
@@ -253,6 +257,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                         '${AuthData().userModel?.country??""} • Joined ${logic.profileModel.data?.joinDate??''}',
                                         fontSize: 12, color: AppColors.textColor)),
                                 // addHeight(2),
+
+
+                                if(AuthData().userModel?.roleId !=4)
                                 Align(
                                     alignment: Alignment.center,
                                     child: GestureDetector(
@@ -281,6 +288,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                             fontSize: 14, color: AppColors.primaryColor,decoration: TextDecoration.underline),
                                       ),
                                     )),
+
                                 addHeight(10),
 
                                Expanded(

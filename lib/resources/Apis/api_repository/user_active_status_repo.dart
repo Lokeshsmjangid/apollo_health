@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:apollo/resources/Apis/api_models/common_model.dart';
 import 'package:apollo/resources/Apis/api_models/user_active_model.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;

@@ -15,14 +15,11 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-
-
-
 // solo play 
 - quit pe questions repeat honge
 
 // Group play Rules 
-- agar sabhi players ne join kr liya to gamee instat start ho jayega
+- agar sabhi players ne join kr Liya to game instant start ho jayega
 
 // Notification
  - Android 13+ runtime permission
@@ -35,7 +32,11 @@ samples, guidance on mobile development, and a full API reference.
 // What is the name of your State or Province?-->rajasthan
 // What is the two-letter country code for this unit?-->91
 
-
 // Current version
 // flutter.versionName=1.0.0
-//flutter.versionCode=1
+// flutter.versionCode=1
+
+// Game Sound
+// HomeSound : If the music toggle is turned off, only the home screen sound will be muted — all other sounds will remain on.
+
+// New Feature (Institutional login) - All game access for 30Min

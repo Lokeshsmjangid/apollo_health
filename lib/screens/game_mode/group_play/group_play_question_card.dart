@@ -20,7 +20,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 import 'group_play_waiting_screen.dart';
 
@@ -117,7 +117,9 @@ class _GroupPlayQuestionCardState extends State<GroupPlayQuestionCard> {
   // }
 
   Future<void> _playConfettiSound({required String sound}) async {
-    await _audioPlayer.play(AssetSource(sound));
+    // if(AuthData().musicONOFF) {
+      await _audioPlayer.play(AssetSource(sound));
+    // }
   }
 
   @override

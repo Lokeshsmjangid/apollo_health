@@ -283,23 +283,6 @@ class _DealsServicesScreenState extends State<DealsServicesScreen> {
                                                         color: Color(0XFF9AACFF),
                                                       ),
                                                     ),
-
-
-                                                    /*GestureDetector(
-                                                      onTap: (){
-                                                        Share.share('Hi! Just spotted a great health deal on the Apollo app. Grab your discount here:\n${product.url}');
-
-                                                      },
-                                                      child: Container(
-                                                          height: 28,
-                                                          width: 28,
-                                                          padding: EdgeInsets.all(4),
-                                                          decoration: BoxDecoration(
-                                                            // color: Colors.green,
-                                                              shape: BoxShape.circle
-                                                          ),
-                                                          child: SvgPicture.asset(AppAssets.dealShareIcon,color: Color(0XFF9AACFF),)),
-                                                    )*/
                                                   ],
                                                 ),
                                                 addText600('${product.title}',fontSize: 16),
@@ -315,13 +298,7 @@ class _DealsServicesScreenState extends State<DealsServicesScreen> {
                                 },
                               ) : Center(child: addText500('No active oﬀers at the moment.\nStay tuned for fresh finds!',textAlign: TextAlign.center)),
                             ),
-                            // AppButton(
-                            //   buttonText: 'Start Free 7-Day Trial',
-                            // onButtonTap: (){},
-                            //
-                            //
-                            // ).marginSymmetric(horizontal: 16),
-                            // addHeight(36),
+
                           ],
                         ),
                       ),

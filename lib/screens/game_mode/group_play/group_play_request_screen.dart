@@ -1,15 +1,14 @@
+import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'group_challengers_screen.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/controllers/group_play_request_ctrl.dart';
 import 'package:apollo/resources/Apis/api_repository/play_request_accept_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/play_request_decline_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/custom_loader.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import 'group_challengers_screen.dart';
 
 class GroupPlayRequestScreen extends StatelessWidget {
 

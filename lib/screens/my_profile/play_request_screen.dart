@@ -1,17 +1,16 @@
 
-import 'package:apollo/controllers/app_push_nottification.dart';
-import 'package:apollo/controllers/play_request_ctrl.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/resources/Apis/api_repository/accept_friend_request_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/controllers/app_push_nottification.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/controllers/play_request_ctrl.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
 
 class PlayRequestScreen extends StatefulWidget {
 

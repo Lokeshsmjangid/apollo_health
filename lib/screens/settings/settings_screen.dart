@@ -1,23 +1,19 @@
-
-import 'dart:io';
-
-import 'package:apollo/bottom_sheets/sign_out_bottom_sheet.dart';
-import 'package:apollo/controllers/settings_ctrl.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/resources/Apis/api_repository/settings_update_repo.dart';
+import 'package:apollo/bottom_sheets/sign_out_bottom_sheet.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/screens/cms_pages/cms_page.dart';
+import 'package:apollo/controllers/settings_ctrl.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/auth_data.dart';
-import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/cms_pages/cms_page.dart';
-import 'package:apollo/screens/cms_pages/cms_page_webview.dart';
-import 'package:apollo/screens/my_profile/hp_history_screen.dart';
+import 'notification_settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io';
 
-import 'notification_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -40,19 +36,17 @@ class SettingsScreen extends StatelessWidget {
                 bottom: false,
                 child: Column(
                   children: [
-                    // addHeight(52),
+
                     addHeight(10),
                     backBar(
-                      title: "Settings",
-                      onTap: () {
+                        title: "Settings", onTap: () {
                         Get.back();
-                      },
-                      isLogout: true,
-                      onTapLogout: (){
-                        // logic.effectSound(sound: AppAssets.actionButtonTapSound);
+                      }, isLogout: false,
+                        trailing: true, onTapLogout: (){
+
                         showSignOutRequestSheet(context);
-                      }
-                    ).marginSymmetric(horizontal: 16),
+                      }).marginSymmetric(horizontal: 16),
+
                     addHeight(24),
                     Expanded(
                       child: Container(
@@ -66,7 +60,9 @@ class SettingsScreen extends StatelessWidget {
                         child: ListView(
                           padding: EdgeInsets.zero,
                           children: [
+
                             sectionTitle('Customization '),
+
                             toggleTile(
                               'Music',
                               logic.music, () {
@@ -84,6 +80,7 @@ class SettingsScreen extends StatelessWidget {
                                     });
                               },
                             ),
+
                             toggleTile(
                               'Online Status',
                               logic.onlineStatus, () {
@@ -100,8 +97,8 @@ class SettingsScreen extends StatelessWidget {
 
                               },
                             ),
+                            SizedBox(height: 24),
 
-                            SizedBox(height: 24,),
                             buildSupportOption(
                                 SupportOption(
                                     title: 'Notifications',
@@ -110,10 +107,10 @@ class SettingsScreen extends StatelessWidget {
                                 onTap: (){
                                   // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                   Get.to(()=>NotificationSettingsScreen());}),
+                            SizedBox(height: 10),
 
-                            SizedBox(height: 10,),
-
-                            buildSupportOption(SupportOption(
+                            buildSupportOption(
+                                SupportOption(
                                 title: 'About Us',
                                 color: AppColors.settingTxtColor3,
                                 colorBG: AppColors.settingTxtColorBG3),
@@ -121,41 +118,38 @@ class SettingsScreen extends StatelessWidget {
                                   // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                                   Get.to(CmsScreen(appBar: 'About Us'));
                                 }),
-                            // SizedBox(height: 10,),
-                            //
-                            // buildSupportOption(SupportOption(
-                            //     title: 'HP History',
-                            //     color: AppColors.settingTxtColor4,
-                            //     colorBG: AppColors.settingTxtColorBG4),
-                            //     onTap: (){
-                            //       Get.to(()=>HpHistoryScreen());
-                            //     }),
+                            SizedBox(height: 24),
 
-                            SizedBox(height: 24,),
                             sectionTitle('Feedback & Support'),
 
-                            buildSupportOption(SupportOption(
+                            buildSupportOption(
+                                SupportOption(
                                 title: 'Submit a Quiz Topic',
                                 // subtitle: 'Got a health topic in mind? Message us—it could be in our next feature!',
                                 color: AppColors.settingTxtColor2,
-                                colorBG: AppColors.settingTxtColorBG2), onTap: (){
+                                colorBG: AppColors.settingTxtColorBG2),
+                                onTap: (){
                               Get.toNamed(AppRoutes.submitTopicScreen);
                                 }),
-                            SizedBox(height: 10,),
+                            SizedBox(height: 10),
 
-                            buildSupportOption(SupportOption(
+                            buildSupportOption(
+                                SupportOption(
                                 title: 'Support',
                                 color: AppColors.settingTxtColor4,
-                                colorBG: AppColors.settingTxtColorBG4), onTap: (){
+                                colorBG: AppColors.settingTxtColorBG4),
+                                onTap: (){
                               Get.toNamed(AppRoutes.needHelpScreen);
                             }),
                             SizedBox(height: 10),
 
-                            buildSupportOption(SupportOption(
+                            buildSupportOption(
+                                SupportOption(
                                 title: 'Rate Us',
                                 color: AppColors.settingTxtColor3,
                                 colorBG: AppColors.settingTxtColorBG3,
-                            ),onTap: (){
+                            ),
+                                onTap: (){
                               if(Platform.isIOS){
                                 launchURL(url: "https://apps.apple.com/us/app/apollo-medgames/id6751579578");
 
@@ -177,30 +171,35 @@ class SettingsScreen extends StatelessWidget {
                             }),
                             SizedBox(height: 10),
 
-                            buildSupportOption(SupportOption(
+                            buildSupportOption(
+                                SupportOption(
                                 title: 'Terms & Conditions',
                                 color: AppColors.settingTxtColor5,
-                                colorBG: AppColors.settingTxtColorBG5), onTap: (){
+                                colorBG: AppColors.settingTxtColorBG5),
+                                onTap: (){
                               // logic.effectSound(sound: AppAssets.actionButtonTapSound);
                               Get.to(CmsScreen(appBar: 'T & C'));}),
                             SizedBox(height: 10),
+
+                            buildSupportOption(
+                                SupportOption(
+                                title: 'Sign Out',
+                                color: AppColors.settingTxtColor5,
+                                colorBG: AppColors.settingTxtColorBG5),
+                                onTap: (){
+                              showSignOutRequestSheet(context);
+                            }),
+                            SizedBox(height: 10),
                             
                             addText500(logic.appVersion),
-                            SizedBox(height: 10),
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 40),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
+                    )
+                  ]))]);}));
   }
+
   Widget sectionTitle(String title, {String? subtitle, int? counter}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -316,7 +315,6 @@ class SettingsScreen extends StatelessWidget {
                     color: option.color
                   ),
                   if (option.subtitle != null) ...[
-                    // const SizedBox(height: 4),
                     addText400(
                       option.subtitle!, fontSize: 12,color: AppColors.blackColor
                     ),
@@ -326,11 +324,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(width: 11),
             Icon(Icons.arrow_forward_ios_sharp,size: 16,color: option.color,)
-          ],
+          ]
         ),
       ),
     );
   }
-
 
 }

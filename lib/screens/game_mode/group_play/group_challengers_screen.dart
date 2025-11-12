@@ -1,16 +1,17 @@
 import 'dart:async';
-import 'package:apollo/controllers/group_challengers_ctrl.dart';
-import 'package:apollo/custom_widgets/flow_line_effect.dart';
-import 'package:apollo/resources/Apis/api_models/friend_list_model.dart';
-import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
-import 'package:apollo/resources/Apis/api_repository/group_challengers_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/controllers/home_ctrl.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/custom_widgets/flow_line_effect.dart';
+import 'package:apollo/controllers/group_challengers_ctrl.dart';
+import 'package:apollo/resources/Apis/api_models/friend_list_model.dart';
+import 'package:apollo/resources/Apis/api_repository/group_challengers_repo.dart';
+import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
 
 class GroupChallengersScreen extends StatefulWidget {
   // int seconds;
@@ -118,6 +119,11 @@ class _GroupChallengersScreenState extends State<GroupChallengersScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    HomeController controller = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
+    controller.stopBackgroundSound();
     return PopScope(
       canPop: false,
       child: Scaffold(

@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:apollo/resources/Apis/api_constant.dart';
+import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/screens/cms_pages/cms_page_webview_ctrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,10 +25,6 @@ class _CmsViewState extends State<CmsView> {
   @override
   void initState() {
     super.initState();
-    // Android initialization
-    // if (Platform.isAndroid) {
-    //   WebView.platform = AndroidWebView();
-    // }
 
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -45,7 +43,14 @@ class _CmsViewState extends State<CmsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Privacy Policy')),
+      appBar: AppBar(
+          centerTitle: true,
+          // title: Text()
+          title: addText400(
+              widget.page=='terms'?'T & C':'Privacy Policy',
+              fontSize: 24, fontFamily: 'Caprasimo',
+              color: AppColors.whiteColor),
+      ),
       body: Obx(() => Stack(
         children: [
           WebViewWidget(controller: _webViewController),

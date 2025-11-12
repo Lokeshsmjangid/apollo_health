@@ -520,7 +520,7 @@ import 'package:apollo/resources/Apis/api_constant.dart';
 import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
 
-class CustomAdScreen extends StatefulWidget {
+/*class CustomAdScreen extends StatefulWidget {
   const CustomAdScreen({super.key});
 
   @override
@@ -616,6 +616,131 @@ class CustomAdScreenState extends State<CustomAdScreen> {
     if (mounted) {
       Get.offAll(() => DashBoardScreen());
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        color: Colors.black87,
+        child: const Center(
+          child: Text(
+            'Your Ad is loading...',
+            style: TextStyle(color: Colors.white, fontSize: 22),
+          ),
+        ),
+      ),
+    );
+  }
+}*/
+
+/// above code comment on diwali
+
+
+class CustomAdScreen extends StatefulWidget {
+  const CustomAdScreen({super.key});
+
+  @override
+  CustomAdScreenState createState() => CustomAdScreenState();
+}
+
+class CustomAdScreenState extends State<CustomAdScreen> {
+  bool _isAdReady = false;
+  bool _hasShownAd = false;
+  bool _navigated = false;
+  Timer? _timeoutTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (unityAdsInitialized) {
+        _loadUnityInterstitial();
+      } else {
+        _navigateToDashboard();
+      }
+    });
+  }
+
+  void _loadUnityInterstitial() {
+    final placementId = Platform.isAndroid
+        ? ApiUrls.unityInterstitialAndroid
+        : ApiUrls.unityInterstitialIOS;
+
+    // Timeout fallback — ensures app doesn’t hang if Unity doesn’t respond
+    _timeoutTimer = Timer(const Duration(seconds: 8), () {
+      if (!_navigated) {
+        print("⏰ Ad load timeout — skipping to dashboard");
+        _navigateToDashboard();
+      }
+    });
+
+    UnityAds.load(
+      placementId: placementId,
+      onComplete: (id) {
+        print('✅ Interstitial Loaded: $id');
+        _timeoutTimer?.cancel();
+        setState(() => _isAdReady = true);
+        _showInterstitial(); // show immediately when ready
+      },
+      onFailed: (id, error, message) {
+        print('❌ Failed to load ad: $error | $message');
+        _timeoutTimer?.cancel();
+        _navigateToDashboard();
+      },
+    );
+  }
+
+  Future<void> _showInterstitial() async {
+    if (_isAdReady && !_hasShownAd) {
+      _hasShownAd = true;
+      final placementId = Platform.isAndroid
+          ? ApiUrls.unityInterstitialAndroid
+          : ApiUrls.unityInterstitialIOS;
+
+      print('🎬 Showing Unity Interstitial...');
+      await UnityAds.showVideoAd(
+        placementId: placementId,
+        onStart: (id) {
+          print('▶️ Ad Started');
+          _timeoutTimer?.cancel();
+        },
+        onClick: (id) => print('🖱 Ad Clicked'),
+        onSkipped: (id) {
+          print('⏭ Ad Skipped');
+          _navigateToDashboard();
+        },
+        onComplete: (id) {
+          print('✅ Ad Completed');
+          _navigateToDashboard();
+        },
+        onFailed: (id, error, message) {
+          print('❌ Ad Failed: $error | $message');
+          _navigateToDashboard();
+        },
+      );
+    } else {
+      print('⚠️ Ad not ready yet, navigating...');
+      _navigateToDashboard();
+    }
+  }
+
+  void _navigateToDashboard() {
+    if (_navigated) return; // Prevent multiple calls
+    _navigated = true;
+
+    _timeoutTimer?.cancel();
+    print("➡️ Navigating to Dashboard...");
+
+    if (mounted) {
+      Get.offAll(() => DashBoardScreen());
+    }
+  }
+
+  @override
+  void dispose() {
+    _timeoutTimer?.cancel();
+    super.dispose();
   }
 
   @override

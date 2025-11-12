@@ -23,6 +23,11 @@ String shareText="Hi! Ever wish learning about health felt more like a fun game?
     "(yep, medical moments in movies!).\n\nThink you can beat my score? Let’s find out! 👀💪\n\nHere’s my referral code — use it on the sign-up page: ${AuthData().userModel?.referralCode}\n\n"
     "Play now:\niOS 👉 https://apps.apple.com/us/app/apollo-medgames/id6751579578?refCode=${AuthData().userModel?.referralCode}\n\nAndroid 👉 https://play.google.com/store/apps/details?id=com.apollomedgames.app&refCode=${AuthData().userModel?.referralCode}";
 
+String shareTextGuest="Hi! Ever wish learning about health felt more like a fun game? 🎯 Check out Apollo MedGames. It’s crafted by doctors for everyone and full of smart quizzes, fun facts, and brainy puzzles!\n\nTest yourself in categories like "
+    "‘Myth vs. Fact’ and ‘Med Pop Culture’ "
+    "(yep, medical moments in movies!).\n\nThink you can beat my score? Let’s find out! 👀💪\n\n"
+    "Play now:\niOS 👉 https://apps.apple.com/us/app/apollo-medgames/id6751579578\n\nAndroid 👉 https://play.google.com/store/apps/details?id=com.apollomedgames.app";
+
 boxShadow() {
   return BoxShadow(
     color: AppColors.containerBorderColor.withOpacity(0.4),

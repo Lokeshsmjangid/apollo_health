@@ -1,12 +1,9 @@
-
 import 'package:apollo/bottom_sheets/daily_dose_bottom_sheet.dart';
 import 'package:apollo/bottom_sheets/signup_gift_bottom_sheet.dart';
 import 'package:apollo/resources/Apis/api_repository/daily_dose_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/signup_bonus_repo.dart';
 import 'package:apollo/resources/auth_data.dart';
-import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/app_subscriptions/subscription_ctrl.dart';
 import 'package:apollo/screens/dashboard/all_category_screen.dart';
 import 'package:apollo/screens/dashboard/home_screen.dart';
 import 'package:apollo/screens/dashboard/leaderboard_screen.dart';
@@ -16,11 +13,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../resources/unilink.dart';
-
 class BottomBarController extends GetxController{
 
-  // SubscriptionCtrl subscriptionCtrl = Get.find<SubscriptionCtrl>();
   final AudioPlayer _audioPlayer = AudioPlayer();
   Future<void> effectSound({required String sound}) async { await _audioPlayer.play(AssetSource(sound));}
 
@@ -29,7 +23,7 @@ class BottomBarController extends GetxController{
     const HomeScreen(),
     CategoryScreen(),
     LeaderboardScreen(),
-    DealsScreen(),
+    // DealsScreen(),
     MyProfileScreen(),
   ];
 
@@ -45,6 +39,7 @@ class BottomBarController extends GetxController{
       loadInitApis();
     }
   }
+
   Future<void> loadInitApis() async {
     try {
       final results = await Future.wait([
@@ -58,7 +53,6 @@ class BottomBarController extends GetxController{
       print('Init load error: $e');
     }
   }
-
 
   getDailyDose() async{
     await dailyDoseApi().then((value){

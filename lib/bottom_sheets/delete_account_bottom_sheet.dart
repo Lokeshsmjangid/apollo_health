@@ -1,16 +1,14 @@
-import 'dart:io';
-
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/resources/Apis/api_repository/profile_delete_permanent_repo.dart';
-
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io';
 
 void showDeleteAccountRequestSheet(BuildContext context) {
   showModalBottomSheet(

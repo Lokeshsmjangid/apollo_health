@@ -1,17 +1,17 @@
-import 'dart:async';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/resources/Apis/api_models/live_challenger_register.dart';
 import 'package:apollo/resources/Apis/api_repository/get_live_challenges_question_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/Apis/api_models/live_challenger_register.dart';
+import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
+import 'dart:async';
 
 class TimerLiveChallengeScreen extends StatefulWidget {
   final int? durationInMilliseconds;

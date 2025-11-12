@@ -1,24 +1,23 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:apollo/controllers/bottom_bar_ctrl.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/Apis/api_models/group_play_result_model.dart';
 import 'package:apollo/resources/Apis/api_repository/group_play_result_update_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/group_point_distribute_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/auth_data.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/ads/ads_example.dart';
+import 'package:apollo/resources/Apis/api_models/group_play_result_model.dart';
 import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
+import 'package:apollo/controllers/bottom_bar_ctrl.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/screens/ads/ads_example.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'dart:io';
+import 'dart:async';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/app_assets.dart';
 
 class GroupPlayResultScreen extends StatefulWidget {
   bool? isPlayRequest;
@@ -48,7 +47,9 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
   }
 
   Future<void> _playConfettiSound({required String sound}) async {
-    await _audioPlayer.play(AssetSource(sound));
+    // if(AuthData().musicONOFF) {
+      await _audioPlayer.play(AssetSource(sound));
+    // }
   }
 
   @override
@@ -93,7 +94,7 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
   }
 
 
-  // for remove all screens and to back to home
+  // for remove all screens and Go back to home
   Timer? _timerNew;
   int _counter = 10;
   void _startPeriodicTimer() {
@@ -115,7 +116,6 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -139,13 +139,12 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
                 height: double.infinity,
               ),
             ),
-
             SafeArea(
               bottom: false,
               child: Column(
                 children: [
-
                   addHeight(10),
+
                   // Top Bar
                   Row(
                     children: [
@@ -172,7 +171,7 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
 
                             // _playConfettiSound(sound: AppAssets.actionButtonTapSound);
                             Share.share(
-                                shareText                            );
+                                AuthData().userModel?.roleId==4?shareTextGuest:shareText                            );
                           },
                           child: Container(
                               height: 36,
@@ -185,8 +184,13 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
                       // const SizedBox(width: 10),
                       GestureDetector(
                           onTap: (){
-                            // _playConfettiSound(sound: AppAssets.actionButtonTapSound);
-                            Get.to(()=>DashBoardScreen());
+                            // Get.to(()=>DashBoardScreen());
+                            if(AuthData().isPremium){
+                              // Get.back(); // remove because it redirects to previous screen i mean challengers list 27oct
+                              Get.to(()=>DashBoardScreen()); ///use bcoz of redirects to previous screen i mean challengers list 27oct
+                            }else {
+                              Get.to(()=>CustomAdScreen());
+                            }
                           },
                           child: Container(
                               height: 36,
@@ -206,12 +210,11 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
                   //   fontSize: 16,
                   // ),
                   const SizedBox(height: 8),
-                  addText400(
-                    // 'Congratulations!',
+                  addText400( // 'Congratulations!',
                     'Results Are In!',
-
-                        fontSize: 34,height: 40,
-                        color: Colors.white,fontFamily: 'Caprasimo'
+                      fontSize: 34, height: 40,
+                      color: Colors.white,
+                      fontFamily: 'Caprasimo'
                   ),
 
                   // const SizedBox(height: 14),
@@ -239,7 +242,6 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
                         children: [
                           ...widget.users.asMap().entries.map((entry) => _buildPlayerTile(entry.key, entry.value,isMadPardy: widget.isMadPardy!)),
 
-
                           // Play Again Button
                           // const SizedBox(height: 24),
                           // AppButton(
@@ -251,12 +253,13 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
                       ),
                     ),
                   ),
+
                 ],
               ),
             ),
           ],
         ),
-        bottomNavigationBar: MediaQuery.removePadding(
+        /*bottomNavigationBar: MediaQuery.removePadding(
           context: context,
           removeBottom: Platform.isIOS ? true : false,
           removeTop: true,
@@ -286,14 +289,77 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
               },
             ),
           ).marginOnly(left: 16,right: 16,bottom: 35),
-        ),
-      ),
+        ),*/
+        /// above code comment on diwali
+        bottomNavigationBar: MediaQuery.removePadding(
+          context: context,
+          removeBottom: Platform.isIOS ? true : false,
+          removeTop: true,
+          child: BottomAppBar(
+            elevation: 0,
+            color: Colors.transparent,
+            child: AppButton(
+              buttonTxtColor: AppColors.whiteColor,
+              buttonColor: AppColors.primaryColor,
+              buttonText: 'Play Again',
+              onButtonTap: () {
+                /// ✅ Premium check first
+                if (AuthData().isPremium) {
+                  // Premium users skip ads
+                  if (widget.isMadPardy == false) {
+                    if (widget.isPlayRequest == true) {
+                      // Because of notification play request
+                      Get.find<BottomBarController>().selectedIndex = 0;
+                      Get.find<BottomBarController>().update();
+                      Get.offAll(DashBoardScreen());
+                    } else {
+                      Get.back();
+                      Get.back();
+                    }
+                  } else {
+                    Get.back();
+                  }
+                }
+                else {
+                  /// Non-premium users → Show ad screen before proceeding
+                  if (widget.isMadPardy == false) {
+                    if (widget.isPlayRequest == true) {
+                      // If it’s a play request, go directly to dashboard after ad
+                      Get.to(() => CustomAdScreen(),
+                          arguments: {
+                        'onAdComplete': () {
+                          Get.find<BottomBarController>().selectedIndex = 0;
+                          Get.find<BottomBarController>().update();
+                          Get.offAll(DashBoardScreen());
+                        }
+                      });}
+                    else {
+                      // Normal flow
+                      Get.to(() => CustomAdScreen(), arguments: {
+                        'onAdComplete': () {
+                          Get.back();
+                          Get.back();
+                        }
+                      });
+                    }
+                  }
+                  else {
+                    Get.to(() => CustomAdScreen(), arguments: {
+                      'onAdComplete': () {
+                        Get.back();
+                      }
+                    });
+                  }
+                }
+              })).marginOnly(left: 16, right: 16, bottom: 35))),
     );
   }
 
-  Widget _buildPlayerTile(int index,
+  Widget _buildPlayerTile(
+      int index,
       GroupUser player,
-      {bool isMadPardy = false}) {
+      {bool isMadPardy = false})
+  {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -311,7 +377,7 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
           Expanded(
             child: Text.rich(
               TextSpan(
-                text: getTruncatedName('${player.firstName}', '${player.lastName}'),
+                text: getTruncatedName(player.firstName??"", player.lastName??""),
                 style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 20),
                 children: [
                   const TextSpan(text: '\n'),
@@ -367,5 +433,3 @@ class _GroupPlayResultScreenState extends State<GroupPlayResultScreen> {
     );
   }
 }
-
-

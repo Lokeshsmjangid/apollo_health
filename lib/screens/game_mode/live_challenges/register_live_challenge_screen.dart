@@ -1,18 +1,18 @@
-import 'package:apollo/bottom_sheets/live_challenge_register_bottom_sheet.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/resources/Apis/api_models/live_challenge_model.dart';
-import 'package:apollo/resources/Apis/api_repository/live_challenge_list_repo.dart';
+import 'package:apollo/screens/game_mode/live_challenges/timer_live_challenge_screen.dart';
 import 'package:apollo/resources/Apis/api_repository/live_challenger_register_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/Apis/api_repository/live_challenge_list_repo.dart';
+import 'package:apollo/bottom_sheets/live_challenge_register_bottom_sheet.dart';
+import 'package:apollo/resources/Apis/api_models/live_challenge_model.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/game_mode/live_challenges/timer_live_challenge_screen.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
 
 
 class RegisterLiveChallengeScreen extends StatefulWidget {

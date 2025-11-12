@@ -1,21 +1,19 @@
-import 'dart:io';
-
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/custom_widgets/custom_text_field.dart';
-import 'package:apollo/resources/Apis/api_models/live_challenge_final_result.dart';
 import 'package:apollo/resources/Apis/api_repository/live_challenge_submit_form_repo.dart';
+import 'package:apollo/resources/Apis/api_models/live_challenge_final_result.dart';
+import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
+import 'live_challenge_result_with_country_score.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/auth_data.dart';
-import 'package:apollo/resources/custom_loader.dart';
-import 'package:apollo/resources/text_utility.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-
-import 'live_challenge_result_with_country_score.dart';
+import 'package:get/get.dart';
+import 'dart:io';
 
 class LiveChallengeResultScreen extends StatefulWidget {
   List<LiveChallengeFinalResult>? resultData;
@@ -42,10 +40,6 @@ class _LiveChallengeResultScreenState extends State<LiveChallengeResultScreen> {
     phoneController.addListener(_onTextChanged);
   }
 
-  Future<void> _playConfettiSound({required String sound}) async {
-    await _audioPlayer.play(AssetSource(sound));
-  }
-
   @override
   void dispose() {
     _audioPlayer.dispose();
@@ -54,8 +48,13 @@ class _LiveChallengeResultScreenState extends State<LiveChallengeResultScreen> {
     phoneController.dispose();
     super.dispose();
   }
+
   void _onTextChanged() {
     setState(() {});
+  }
+
+  Future<void> _playConfettiSound({required String sound}) async {
+    await _audioPlayer.play(AssetSource(sound));
   }
 
   @override
@@ -63,7 +62,6 @@ class _LiveChallengeResultScreenState extends State<LiveChallengeResultScreen> {
     return Scaffold(
       extendBody: true,
       resizeToAvoidBottomInset: true,
-
       body: SizedBox.expand(
         child: Stack(
           children: [
@@ -71,14 +69,12 @@ class _LiveChallengeResultScreenState extends State<LiveChallengeResultScreen> {
               color: AppColors.primaryColor,
             ),
 
-
             Positioned.fill( // Background image 1
               child: Image.asset(
                 AppAssets.splashScreenBgImg,
                 fit: BoxFit.cover,
               ),
             ),
-
 
             Positioned.fill(  // Background image 2 overlay
               child: Image.asset(
@@ -102,10 +98,9 @@ class _LiveChallengeResultScreenState extends State<LiveChallengeResultScreen> {
                   const SizedBox(height: 10),
 
                   addText500(
-                    'You are a winner of today\'s live challenge',
-                    color: AppColors.whiteColor,
-                    fontSize: 14,
-                  ).marginSymmetric(horizontal: 24),
+                      'You are a winner of today\'s live challenge',
+                      color: AppColors.whiteColor,
+                      fontSize: 14).marginSymmetric(horizontal: 24),
 
                   // Animation
                   Lottie.asset(

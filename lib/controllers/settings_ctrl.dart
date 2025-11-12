@@ -109,8 +109,8 @@ class SettingsCtrl extends GetxController{
       }
       if(model.userData!=null){
         LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.userData));
-        AuthData().getLoginData();
         LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.userData!.subscription==1?true:false);
+        AuthData().getLoginData();
       }
       update();
     });

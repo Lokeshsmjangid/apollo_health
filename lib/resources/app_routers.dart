@@ -1,4 +1,5 @@
 
+import 'package:apollo/screens/apollo_guest/guest_code_screen.dart';
 import 'package:apollo/screens/app_subscriptions/premium_plan_screen.dart';
 import 'package:apollo/screens/app_subscriptions/subscription_screen.dart';
 import 'package:apollo/screens/game_mode/medPardy/round_1/medpardy_1st_round_quiz_screen.dart';
@@ -138,6 +139,10 @@ class AppRoutes {
 
   // MedLingo
   static String medLingoWordGameScreen = '/MEDLINGO_WORDGAME_SCREEN';
+
+
+  // Guest Screens
+  static String guestCodeSCREEN = '/GUEST_CODE_SCREEN';
 
 
 
@@ -431,6 +436,12 @@ class AppRoutes {
     GetPage(
       name: AppRoutes.medLingoWordGameScreen,
       page: () => MedLingoWordGame(),
+    ),
+
+    // Guest screens
+    GetPage(
+      name: AppRoutes.guestCodeSCREEN,
+      page: () => GuestCodeScreen(),
     ),
   ];
 }

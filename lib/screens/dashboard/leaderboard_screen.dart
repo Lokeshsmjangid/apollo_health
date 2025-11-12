@@ -36,8 +36,7 @@ import 'package:share_plus/share_plus.dart';
   void initState() {
     startGlowTimer();
     super.initState();
-    _scrollController =
-        ScrollController()..addListener(() {
+    _scrollController = ScrollController()..addListener(() {
           if (_scrollController.position.pixels > 10 && showPodium) {
             setState(() => showPodium = false);
           // } else if (_scrollController.position.pixels <= 10 && !showPodium) {
@@ -66,8 +65,12 @@ import 'package:share_plus/share_plus.dart';
   }
 
   void glowSubscriptionIcon() async {
+    if (!mounted) return;
     setState(() => _showGlow = true);
+
     await Future.delayed(Duration(milliseconds: 600)); // Glow duration
+
+    if (!mounted) return;
     setState(() => _showGlow = false);
   }
 
@@ -114,7 +117,7 @@ import 'package:share_plus/share_plus.dart';
           IconButton(
             onPressed: () {
               Share.share(
-                  shareText
+                  AuthData().userModel?.roleId==4?shareTextGuest:shareText
               );
             },
             icon: _showGlow
@@ -330,8 +333,6 @@ import 'package:share_plus/share_plus.dart';
                                     addHeight(60)
                                   ],
                                 ))
-
-                      // ),
                     ],
                   );
                 },
@@ -355,12 +356,11 @@ import 'package:share_plus/share_plus.dart';
     required String onlineStatus, // for greeen ,yellow & gray
     required int isOnline,
     required int subscription,
-  }) { double height = [3, 2, 1][position - 1] * 40 + 80;
-    return GestureDetector(
+  }) { double height = [3, 2, 1][position - 1] * 40 + 80; return GestureDetector(
       onTap: (){
         if(userId==AuthData().userModel?.id){
           Future.microtask((){
-            Get.find<BottomBarController>().selectedIndex = 4;
+            Get.find<BottomBarController>().selectedIndex = 3;
             Get.find<BottomBarController>().update();
           });
 
@@ -386,11 +386,11 @@ import 'package:share_plus/share_plus.dart';
                 ),
                 child: CachedImageCircle2(imageUrl: image,isCircular: true),
               ),
-              Positioned(
-      // top: 2,
+              Positioned( // top: 2,
                 right: 0,
                 bottom: 0,
-                child: flag.isNotEmpty?Container(
+                child: flag.isNotEmpty
+                    ? Container(
                   width: 22,height: 15,
                   decoration: BoxDecoration(
       // border: Border.all(color: AppColors.whiteColor,width: 1.5),
@@ -401,7 +401,8 @@ import 'package:share_plus/share_plus.dart';
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     borderRadius: BorderRadius.circular(2),
                     child: Image.network(flag,fit: BoxFit.cover),
-                  ),):SizedBox.shrink(),
+                  ),)
+                    : SizedBox.shrink()
               ),
 
               if(isOnline==1 && (onlineStatus!=null && onlineStatus.isNotEmpty))
@@ -410,7 +411,6 @@ import 'package:share_plus/share_plus.dart';
                     right: 0,
                     // bottom: 0,
                     child: OnlineStatusDot(lastActiveTime: DateTime.parse(onlineStatus))),
-
             ],
           ),
           const SizedBox(height: 12),
@@ -464,8 +464,7 @@ import 'package:share_plus/share_plus.dart';
 
         ],
       ),
-    );
-  }
+    );}
 
   Widget _buildListItem({
        int? userId,
@@ -482,7 +481,7 @@ import 'package:share_plus/share_plus.dart';
   }) { return GestureDetector(
       onTap: (){
         if(userId==AuthData().userModel?.id){
-          Get.find<BottomBarController>().selectedIndex = 4;
+          Get.find<BottomBarController>().selectedIndex = 3;
           Get.find<BottomBarController>().update();
         }else{
         Get.toNamed(AppRoutes.otherProfileScreen,arguments: {'screen':'leaderboard','friend_id':userId});}
@@ -495,6 +494,7 @@ import 'package:share_plus/share_plus.dart';
         ),
         child: Row(
           children: [
+
             Column(
               children: [
                 addText400(
@@ -519,6 +519,7 @@ import 'package:share_plus/share_plus.dart';
               ],
             ),
             const SizedBox(width: 24),
+
             Stack(
               children: [
                 Container(
@@ -568,6 +569,7 @@ import 'package:share_plus/share_plus.dart';
                 ],
               ),
             ),
+
           ],
         ),
       ),
@@ -611,3 +613,5 @@ import 'package:share_plus/share_plus.dart';
     return offset * 0.5; // reduce scroll speed to 50%
   }
 }
+
+

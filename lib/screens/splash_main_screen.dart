@@ -1,24 +1,17 @@
 
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:apollo/resources/Apis/api_models/onboarding_model.dart';
 import 'package:apollo/resources/Apis/api_repository/fetch_subscription_repo.dart';
-import 'package:apollo/resources/Apis/api_repository/onboarding_pages_repo.dart';
-import 'package:apollo/resources/local_storage.dart';
-import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
-import 'package:get/get.dart';
-import 'package:flutter/material.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/auth_data.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:apollo/controllers/app_push_nottification.dart';
+import 'package:apollo/resources/local_storage.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'dart:convert';
 
 class SplashMainScreen extends StatefulWidget {
   const SplashMainScreen({super.key});
@@ -118,6 +111,7 @@ class _SplashMainScreenState extends State<SplashMainScreen>
         // If there's a notification, handle it first
         apolloPrint(message: 'Notification found on app start: ${initialMessage.data}');
         // Navigate to dashboard first, then handle notification
+        if(AuthData().userModel?.roleId !=4)
         fetchDetails();
 
 
@@ -128,12 +122,14 @@ class _SplashMainScreenState extends State<SplashMainScreen>
         });
       } else {
         // No notification, just go to dashboard
+        if(AuthData().userModel?.roleId !=4)
         fetchDetails();
         Get.offAll(() => DashBoardScreen());
       }
     } catch (e) {
       apolloPrint(message: 'Error checking notification: $e');
       // If there's an error, just go to dashboard
+      if(AuthData().userModel?.roleId !=4)
       fetchDetails();
       Get.offAll(() => DashBoardScreen());
     }
@@ -160,9 +156,9 @@ class _SplashMainScreenState extends State<SplashMainScreen>
 
     getSubscriptionDetailsApi().then((value){
       // apolloPrint(message: 'Subscription wali api call hui hain');
-      if(value.userData!=null){
-        LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.userData));
-        LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.userData!.subscription==1?true:false);
+      if(value.data!=null){
+        LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.data));
+        LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.data!.subscription==1?true:false);
         setState(() {});
         AuthData().getLoginData();
 

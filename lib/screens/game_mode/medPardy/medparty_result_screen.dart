@@ -1,19 +1,19 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/Apis/api_models/medpardy_models/medpardy_result_model.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
+import 'package:apollo/resources/utils.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
+import 'dart:async';
+import 'dart:io';
 
 class MedpardyResultScreen extends StatefulWidget {
   List<MedpardyResult> userList;
@@ -64,7 +64,9 @@ class _MedpardyResultScreenState extends State<MedpardyResultScreen> {
   }
 
   Future<void> _playConfettiSound({required String sound}) async {
-    await _audioPlayer.play(AssetSource(sound));
+    // if(AuthData().musicONOFF) {
+      await _audioPlayer.play(AssetSource(sound));
+    // }
   }
 
   @override
@@ -148,7 +150,7 @@ class _MedpardyResultScreenState extends State<MedpardyResultScreen> {
 
                             // _playConfettiSound(sound: AppAssets.actionButtonTapSound);
                             Share.share(
-                                shareText                            );
+                                AuthData().userModel?.roleId==4?shareTextGuest:shareText                      );
                           },
                           child: Container(
                               height: 36,

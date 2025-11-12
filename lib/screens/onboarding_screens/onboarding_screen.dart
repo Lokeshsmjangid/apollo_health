@@ -123,16 +123,16 @@ class OnboardingScreen extends StatelessWidget {
 */
 
 
-import 'package:apollo/controllers/onboard_ctrl.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/controllers/onboard_ctrl.dart';
+import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:get/get.dart';
 
 class OnboardingScreen extends StatefulWidget {
 

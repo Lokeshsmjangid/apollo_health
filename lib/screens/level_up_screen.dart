@@ -1,6 +1,6 @@
+import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,19 +39,10 @@ class HowToLevelUpScreen extends StatelessWidget {
       'title': 'Medpardy',
       'desc': 'Play & earn a 25 HP bonus each day.',
     },
-
-    // {
-    //   'title': 'Live Challenge',
-    //   'desc': 'Scores are doubled. That’s a 100% bonus!',
-    // },
     {
       'title': 'Apollo Spotlight',
       'desc': 'Special-themed events = +20% per game.',
     },
-    // {
-    //   'title': 'Fewer Hints',
-    //   'desc': 'Tapping the Hand one costs HP, so use wisely!',
-    // },
   ];
 
 

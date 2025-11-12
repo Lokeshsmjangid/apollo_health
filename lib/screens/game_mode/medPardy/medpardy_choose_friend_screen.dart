@@ -1,19 +1,18 @@
-import 'dart:io';
-
-import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/resources/Apis/api_repository/medpardy_register_repo.dart';
 import 'package:apollo/custom_widgets/custom_text_field.dart';
 import 'package:apollo/models/medpardy_players_model.dart';
-import 'package:apollo/resources/Apis/api_repository/medpardy_register_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get/utils.dart';
+import 'package:get/get.dart';
+import 'dart:io';
 
 class MedpardyChooseFriendScreen extends StatefulWidget {
   @override

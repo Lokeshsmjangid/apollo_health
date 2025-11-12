@@ -36,7 +36,6 @@ class _DealsScreenState extends State<DealsScreen> {
       time =  DateTime.now().millisecondsSinceEpoch+ duration;
       print("again tap");
       back = true;
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Press again the button to exit")));
       showToastBack(context,'Press back again to exit.');
     }
     return false;
@@ -85,18 +84,6 @@ class _DealsScreenState extends State<DealsScreen> {
             ),
             child: Stack(
               children: [
-                // Positioned.fill(
-                //   child: SizedBox.expand(
-                //     child: Image.asset(
-                //       AppAssets.notificationsBg,
-                //       fit: BoxFit.fill,
-                //       // height: double.maxFinite,
-                //       // width: double.maxFinite,
-                //       color: AppColors.primaryColor,
-                //     ),
-                //   ),
-                // ),
-
 
                 GetBuilder<DealsController>(builder: (logic) {
                   return SafeArea(
@@ -104,25 +91,7 @@ class _DealsScreenState extends State<DealsScreen> {
 
                     child: Column(
                       children: [
-                        // Column(
-                        //   mainAxisSize: MainAxisSize.min,
-                        //   children: [
-                        //     addText400(
-                        //       "Apollo Deals",
-                        //       fontSize: 32,
-                        //       height: 40,
-                        //       color: AppColors.primaryColor,
-                        //       fontFamily: 'Caprasimo',
-                        //     ),
-                        //     addText400(
-                        //       "Discover healthier living—one deal at a time.",
-                        //       fontSize: 10,
-                        //       color: AppColors.primaryColor,
-                        //       fontFamily: 'Manrope',
-                        //
-                        //     ),
-                        //   ],
-                        // ),
+
                         SingleChildScrollView(
                           child: Column(
                             children: [

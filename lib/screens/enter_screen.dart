@@ -77,17 +77,17 @@ class _EnterScreenState extends State<EnterScreen> {
   }
 }
 */
-
-
 import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/text_utility.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
+
+import 'apollo_guest/guest_code_screen.dart';
 
 class EnterScreen extends StatefulWidget {
   const EnterScreen({super.key});
@@ -99,12 +99,10 @@ class EnterScreen extends StatefulWidget {
 class _EnterScreenState extends State<EnterScreen> {
   final AudioPlayer effectPlayer = AudioPlayer();
 
-
   Future<void> effectSound({required String sound}) async {
     await effectPlayer.play(AssetSource(sound));
 
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +114,7 @@ class _EnterScreenState extends State<EnterScreen> {
           Positioned.fill(
             child: Image.asset(
               AppAssets.enterScreenBg,
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
             ),
           ),
 
@@ -148,8 +146,8 @@ class _EnterScreenState extends State<EnterScreen> {
                     height: 22,
                   ).marginSymmetric(horizontal: 12),
 
-                  addHeight(69),
 
+                  addHeight(69),
                   AppButton(
                     buttonText: 'Create an Account',
                     onButtonTap: () {
@@ -159,7 +157,6 @@ class _EnterScreenState extends State<EnterScreen> {
                   ),
 
                   addHeight(13),
-
                   AppButton(
                     buttonText: 'Sign in',
                     buttonColor: AppColors.whiteColor,
@@ -169,6 +166,13 @@ class _EnterScreenState extends State<EnterScreen> {
                       Get.toNamed(AppRoutes.signInScreen);
                     },
                   ),
+
+                  addHeight(16),
+                  GestureDetector(
+                      onTap: (){
+                        Get.toNamed(AppRoutes.guestCodeSCREEN);
+                      },
+                      child: addText600('Institutional Login',fontSize: 16,decoration: TextDecoration.underline,color: AppColors.primaryColor)),
 
                   addHeight(24),
                 ],

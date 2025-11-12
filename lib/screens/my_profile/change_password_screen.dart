@@ -1,16 +1,15 @@
-import 'package:apollo/controllers/change_password_ctrl.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/custom_widgets/custom_text_field.dart';
 import 'package:apollo/resources/Apis/api_repository/change_password_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/controllers/change_password_ctrl.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 
 class ChangePasswordScreen extends StatefulWidget {

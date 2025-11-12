@@ -85,8 +85,8 @@ class _SpinButtonState extends State<SpinButton>
 
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
 
 class SpinButton extends StatefulWidget {
   final VoidCallback onTap;

@@ -1,13 +1,13 @@
-import 'dart:ui';
-
-import 'package:apollo/models/medpardy_board_cells.dart';
-import 'package:apollo/models/medpardy_players_model.dart';
-import 'package:apollo/resources/Apis/api_models/category_model.dart';
 import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
+import 'package:apollo/resources/Apis/api_models/category_model.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:apollo/models/medpardy_players_model.dart';
+import 'package:apollo/models/medpardy_board_cells.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:get/get.dart';
+import 'dart:ui';
+
 
 class Medpardy3rdRoundQuizCtrl extends GetxController{
   String? fromPlayer;

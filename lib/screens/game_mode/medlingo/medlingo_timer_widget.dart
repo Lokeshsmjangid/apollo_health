@@ -1,8 +1,8 @@
-import 'dart:async';
+import 'package:apollo/resources/text_utility.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/text_utility.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class CountdownTimerWidgetMedlingo extends StatefulWidget {
   final int duration; // duration in minutes or seconds based on isInSecondsMode

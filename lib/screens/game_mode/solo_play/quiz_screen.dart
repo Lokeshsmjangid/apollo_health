@@ -1,25 +1,26 @@
-import 'dart:developer';
 
-import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/stuck_bottom_sheet.dart';
-import 'package:apollo/controllers/gM_quiz_ctrl.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/linear_progress_segment.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/countdown_timer.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/screens/game_mode/group_play/group_play_result.dart';
 import 'package:apollo/screens/game_mode/solo_play/solo_play_result.dart';
+import 'package:apollo/custom_widgets/linear_progress_segment.dart';
+import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
+import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/bottom_sheets/stuck_bottom_sheet.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:apollo/resources/countdown_timer.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/controllers/gM_quiz_ctrl.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:apollo/resources/utils.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
+import 'dart:developer';
 
 
 class QuizScreen extends StatefulWidget {
@@ -40,7 +41,9 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   Future<void> _playConfettiSound({required String sound}) async {
-    await _audioPlayer.play(AssetSource(sound));
+    // if(AuthData().musicONOFF) {
+      await _audioPlayer.play(AssetSource(sound));
+    // }
   }
 
   @override
@@ -1074,7 +1077,6 @@ class _QuizScreenState extends State<QuizScreen> {
               AppButton(
                   buttonText: 'Next',
                   onButtonTap: () {
-                    // _playConfettiSound(sound: AppAssets.actionButtonTapSound);
                     apolloPrint(message: 'message::::taped');
                     // timerController.resetTimer();
                     final isLastQuestion = qIndex == logic.questions.length - 1;

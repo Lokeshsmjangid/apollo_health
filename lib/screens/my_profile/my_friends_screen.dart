@@ -1,19 +1,19 @@
 
-import 'package:apollo/controllers/group_play_frinds_ctrl.dart';
-import 'package:apollo/controllers/my_frinds_ctrl.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/custom_widgets/online_status_dot_screen.dart';
 import 'package:apollo/resources/Apis/api_repository/add_friend_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/custom_widgets/online_status_dot_screen.dart';
+import 'package:apollo/controllers/group_play_frinds_ctrl.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/controllers/my_frinds_ctrl.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
 
 
 class MyFriendsScreen extends StatefulWidget {
@@ -244,6 +244,8 @@ class _MyFriendsScreenState extends State<MyFriendsScreen> {
                                                 ],
                                               ),
                                             ),
+
+                                            if(AuthData().userModel?.roleId !=4)
                                             player.selfAccountStatus==1 || player.selfAccountStatus==2
                                                 ? buildAddPlayButtonGrey():
                                             buildAddPlayButton(isMyFriendsTab: logic.isMyFriendsTab,

@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:apollo/resources/auth_data.dart';
-import 'package:apollo/resources/local_storage.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:apollo/custom_widgets/custom_snakebar.dart';
 

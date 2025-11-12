@@ -1,33 +1,34 @@
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/models/medpardy_board_cells.dart';
-import 'package:apollo/models/medpardy_players_model.dart';
-import 'package:apollo/resources/Apis/api_models/category_model.dart';
 import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
-import 'package:apollo/resources/Apis/api_repository/medpardy_change_round_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/medpardy_submit_answer_repo.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/countdown_timer_explanation.dart';
-import 'package:apollo/resources/custom_loader.dart';
-import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
-import 'package:apollo/custom_widgets/custom_card_stack.dart';
+import 'package:apollo/resources/Apis/api_repository/medpardy_change_round_repo.dart';
+import 'package:apollo/resources/Apis/api_models/category_model.dart';
 import 'package:apollo/custom_widgets/linear_progress_segment.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/countdown_timer_explanation.dart';
+import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
+import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/custom_widgets/custom_card_stack.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/models/medpardy_players_model.dart';
+import 'package:apollo/models/medpardy_board_cells.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/resources/countdown_timer.dart';
+import 'package:simple_html_css/simple_html_css.dart';
+import 'package:apollo/resources/custom_loader.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/countdown_timer.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:apollo/resources/utils.dart';
+import 'medpardy_1st_round_quiz_ctrl.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:simple_html_css/simple_html_css.dart';
+import 'package:get/get.dart';
 
-import 'medpardy_1st_round_quiz_ctrl.dart';
 
 class Medpardy1stRoundQuizScreen extends StatefulWidget {
   const Medpardy1stRoundQuizScreen({super.key});
@@ -46,7 +47,10 @@ class _Medpardy1stRoundQuizScreenState extends State<Medpardy1stRoundQuizScreen>
   }
 
   Future<void> _playConfettiSound({required String sound}) async {
-    await _audioPlayer.play(AssetSource(sound));
+
+    // if(AuthData().musicONOFF) {
+      await _audioPlayer.play(AssetSource(sound));
+    // }
   }
 
   @override
@@ -420,6 +424,7 @@ class _Medpardy1stRoundQuizScreenState extends State<Medpardy1stRoundQuizScreen>
                           // if (optIndex == q.correctIndex) {
                           if (q.isAnswered) {
                             if (optIndex == q.correctIndex) {
+
                               _playConfettiSound(sound: AppAssets.correctAnswerSound);
                             }
                             else {

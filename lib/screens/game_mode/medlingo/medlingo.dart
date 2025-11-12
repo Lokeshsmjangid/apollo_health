@@ -1,23 +1,23 @@
-import 'dart:math' as Math;
-import 'dart:math';
-
+import 'package:apollo/resources/Apis/api_repository/medlingo_result_repo.dart';
+import 'package:apollo/screens/game_mode/medlingo/medlingo_result_screen.dart';
+import 'package:apollo/resources/Apis/api_repository/quit_medlingo_repo.dart';
+import 'package:apollo/screens/game_mode/medlingo/medlingo_timer_widget.dart';
+import 'package:apollo/controllers/madlingo_ctrls/medlingo_ctrl.dart';
 import 'package:apollo/Dialogues/medlingo_game_over_dialogue.dart';
 import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
-import 'package:apollo/controllers/madlingo_ctrls/medlingo_ctrl.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/resources/Apis/api_repository/medlingo_result_repo.dart';
-import 'package:apollo/resources/Apis/api_repository/quit_medlingo_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/game_mode/medlingo/medlingo_result_screen.dart';
-import 'package:apollo/screens/game_mode/medlingo/medlingo_timer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'dart:math' as Math;
+import 'dart:math';
+
 
 // import 'package:apollo/resources/Apis/api_models/medlingo_start_model.dart';
 class MedLingoWordGame extends StatefulWidget {

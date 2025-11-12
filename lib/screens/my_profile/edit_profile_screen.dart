@@ -1,34 +1,31 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:apollo/bottom_sheets/camera_gallery_bottom_sheet.dart';
+import 'package:apollo/resources/Apis/api_repository/profile_update_repo.dart';
 import 'package:apollo/bottom_sheets/deactive_account_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/camera_gallery_bottom_sheet.dart';
 import 'package:apollo/bottom_sheets/delete_account_bottom_sheet.dart';
-import 'package:apollo/controllers/edit_profile_ctrl.dart';
-import 'package:apollo/controllers/my_profile_ctrl.dart';
-import 'package:apollo/controllers/settings_ctrl.dart';
 import 'package:apollo/controllers/sign_up_personal_info_ctrl.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/custom_widgets/custom_text_field.dart';
 import 'package:apollo/custom_widgets/custom_dropdown.dart';
 import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/custom_widgets/custom_text_field.dart';
+import 'package:apollo/controllers/edit_profile_ctrl.dart';
 import 'package:apollo/resources/Apis/api_constant.dart';
-import 'package:apollo/resources/Apis/api_repository/profile_update_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/controllers/my_profile_ctrl.dart';
+import 'package:apollo/controllers/settings_ctrl.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/app_subscriptions/subscription_ctrl.dart';
-import 'package:apollo/screens/app_subscriptions/subscription_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:flutter/material.dart';
 import 'change_password_screen.dart';
+import 'package:get/get.dart';
+import 'dart:convert';
+import 'dart:io';
+
 
 
 class EditProfileScreen extends StatelessWidget {
@@ -468,14 +465,12 @@ class EditProfileScreen extends StatelessWidget {
       {VoidCallback? onTap, bool needLeadingIcon = true, bool needLeadingTrailing = true,}) { return GestureDetector(
       onTap: onTap,
       child: Container(
-        // margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: option.colorBG,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if(needLeadingIcon)
               Image.asset(AppAssets.starIcon, height: 24,

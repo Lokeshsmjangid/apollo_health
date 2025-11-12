@@ -1,15 +1,15 @@
-import 'dart:io';
 
+import 'package:apollo/resources/Apis/api_repository/add_friend_repo.dart';
 import 'package:apollo/bottom_sheets/badge_achieved_bottom_sheet.dart';
+import 'package:apollo/custom_widgets/online_status_dot_screen.dart';
 import 'package:apollo/controllers/other_profile_ctrl.dart';
 import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/custom_widgets/online_status_dot_screen.dart';
-import 'package:apollo/resources/Apis/api_repository/add_friend_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -47,19 +47,21 @@ class OtherProfileScreen extends StatelessWidget {
                               },backButtonColor: AppColors.whiteColor).marginOnly(left: 16)),
 
 
+                          if(AuthData().userModel?.roleId !=4 )
                           logic.isMyFriend ==null || logic.isMyFriend==true?SizedBox.shrink():Align(
                               alignment: Alignment.centerLeft,
                               child: GestureDetector(
                                 onTap: (){
+
                                   showLoader(true);
                                   addFriendApi(userId: logic.profileModel.data?.id).then((value){
-                                    showLoader(false);
-                                    if(value.status==true){
-                                      logic.isMyFriend=true;
-                                      logic.update();
-                                    }else if(value.status==false){
-                                      CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
-                                    }
+                                  showLoader(false);
+                                  if(value.status==true){
+                                  logic.isMyFriend=true;
+                                  logic.update();
+                                  }else if(value.status==false){
+                                  CustomSnackBar().showSnack(Get.context!,isSuccess: false,message: '${value.message}');
+                                  }
                                   });
                                 },
                                 child: Container(

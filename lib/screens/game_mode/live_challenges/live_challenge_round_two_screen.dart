@@ -1,24 +1,21 @@
-import 'dart:async';
-
-import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
-import 'package:apollo/controllers/live_challenge_round_two_ctrl.dart';
-
-import 'package:apollo/custom_widgets/custom_card_stack.dart';
-import 'package:apollo/custom_widgets/linear_progress_segment.dart';
 import 'package:apollo/resources/Apis/api_models/solo_play_models/solo_play_questions_model.dart';
 import 'package:apollo/resources/Apis/api_repository/submit_answer_live_challenge_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
+import 'package:apollo/controllers/live_challenge_round_two_ctrl.dart';
+import 'package:apollo/custom_widgets/linear_progress_segment.dart';
+import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
+import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/custom_widgets/custom_card_stack.dart';
 import 'package:apollo/resources/countdown_timer.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/dashboard/custom_bottom_bar.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
-
 import 'live_challenge_round_timer_screen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'dart:async';
 
 class LiveChallengeRoundTwoScreen extends StatefulWidget {
   const LiveChallengeRoundTwoScreen({super.key});

@@ -1,6 +1,6 @@
-import 'package:apollo/models/notifications_model.dart';
-import 'package:apollo/resources/Apis/api_models/notification_model.dart';
 import 'package:apollo/resources/Apis/api_repository/notification_list_repo.dart';
+import 'package:apollo/resources/Apis/api_models/notification_model.dart';
+import 'package:apollo/models/notifications_model.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,12 +11,8 @@ class NotificationsCtrl extends GetxController{
 
   final AudioPlayer audioPlayer = AudioPlayer();
   Future<void> effectSound({required String sound}) async {
-
     await audioPlayer.play(AssetSource(sound));
-
   }
-
-
   late PageController scaleController;
   final List<NotificationItem> notifications = [
     NotificationItem(
@@ -85,15 +81,15 @@ class NotificationsCtrl extends GetxController{
       createdAt: "1yr ago",
 
       message: "Your next quiz challenge awaits!",
-    ),
+    )
   ];
+
   @override
   void onInit() {
     scaleController = PageController();
     super.onInit();
     getNotificationData();
   }
-
 
   getNotificationData() async {
     isDataLoading=true;
@@ -109,5 +105,5 @@ class NotificationsCtrl extends GetxController{
     scaleController.dispose();
     super.onClose();
   }
-
 }
+

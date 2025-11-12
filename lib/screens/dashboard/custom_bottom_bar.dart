@@ -3,15 +3,12 @@ import 'dart:io';
 
 import 'package:apollo/controllers/bottom_bar_ctrl.dart';
 import 'package:apollo/controllers/home_ctrl.dart';
-import 'package:apollo/controllers/settings_ctrl.dart';
-import 'package:apollo/resources/Apis/api_repository/fetch_subscription_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/user_active_status_repo.dart';
 import 'package:apollo/resources/app_assets.dart';
 import 'package:apollo/resources/app_color.dart';
 import 'package:apollo/resources/auth_data.dart';
 import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -144,18 +141,18 @@ class _DashBoardScreenState extends State<DashBoardScreen> with WidgetsBindingOb
                           : AppAssets.leaderBoardUnFillIcon,
                       label: "Leaderboard",
                     ),
+                    // _buildNavItem(
+                    //   logic,
+                    //   index: 3,
+                    //   icon: logic.selectedIndex == 3
+                    //       ? AppAssets.dealFillIcon
+                    //       : AppAssets.dealSvgUnFillIcon,
+                    //   label: "Deals",
+                    // ),
                     _buildNavItem(
                       logic,
                       index: 3,
                       icon: logic.selectedIndex == 3
-                          ? AppAssets.dealFillIcon
-                          : AppAssets.dealSvgUnFillIcon,
-                      label: "Deals",
-                    ),
-                    _buildNavItem(
-                      logic,
-                      index: 4,
-                      icon: logic.selectedIndex == 4
                           ? AppAssets.profileFillIcon
                           : AppAssets.profileUnFillIcon,
                       label: "Account",

@@ -1,48 +1,46 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
-
-import 'package:apollo/bottom_sheets/category_ready_more_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/group_play_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/group_play_rules_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/live_challenge_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/madlingo_rules_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/medlingo_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/medpardy_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/medpardy_play_rules_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/solo_play_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/solo_play_rules_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/unlock_exclusive_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/wheel%20_Of_Wellness_bottom_sheet.dart';
-import 'package:apollo/bottom_sheets/wheel_for_wellness_rules_bottom_sheet.dart';
-import 'package:apollo/controllers/app_push_nottification.dart';
-import 'package:apollo/controllers/bottom_bar_ctrl.dart';
-import 'package:apollo/controllers/home_ctrl.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/resources/Apis/api_repository/category_repo.dart';
+import 'package:apollo/controllers/settings_ctrl.dart';
+import 'package:apollo/screens/game_mode/wheel_of_wellness/wheel_of_wellness_screen.dart';
+import 'package:apollo/screens/game_mode/live_challenges/challenges_list_screen.dart';
 import 'package:apollo/resources/Apis/api_repository/fetch_subscription_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/home_blur_status_repo.dart';
-import 'package:apollo/resources/Apis/api_repository/one_day_pass_repo.dart';
+import 'package:apollo/bottom_sheets/wheel_for_wellness_rules_bottom_sheet.dart';
 import 'package:apollo/resources/Apis/api_repository/start_medlingo_repo.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/bottom_sheets/wheel%20_Of_Wellness_bottom_sheet.dart';
+import 'package:apollo/resources/Apis/api_repository/one_day_pass_repo.dart';
+import 'package:apollo/bottom_sheets/category_ready_more_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/medpardy_play_rules_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/unlock_exclusive_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/group_play_rules_bottom_sheet.dart';
+import 'package:apollo/resources/Apis/api_repository/category_repo.dart';
+import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
+import 'package:apollo/bottom_sheets/solo_play_rules_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/madlingo_rules_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/group_play_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/solo_play_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/medlingo_bottom_sheet.dart';
+import 'package:apollo/bottom_sheets/medpardy_bottom_sheet.dart';
+import 'package:apollo/controllers/app_push_nottification.dart';
+import 'package:apollo/screens/ads/free_pass_ads_screen.dart';
+import '../../resources/Apis/api_models/category_model.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
+import 'package:apollo/controllers/bottom_bar_ctrl.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/local_storage.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/ads/free_pass_ads_screen.dart';
-import 'package:apollo/screens/app_subscriptions/premium_plan_ctrl.dart';
-import 'package:apollo/screens/game_mode/live_challenges/challenges_list_screen.dart';
-import 'package:apollo/screens/game_mode/medlingo/medlingo.dart';
-import 'package:apollo/screens/game_mode/wheel_of_wellness/wheel_of_wellness_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:apollo/controllers/home_ctrl.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
+import 'dart:convert';
+import 'dart:math';
+import 'dart:io';
 
-import '../../resources/Apis/api_models/category_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -433,6 +431,7 @@ class HomeScreenState extends State<HomeScreen> {
                   },
                   onTap10MinFree: (){
                 Get.back();
+                Get.find<HomeController>().stopBackgroundSound();
                 Get.to(()=>FreePassAdsScreen(game: 'medlingo'));
                   },
                   onTapDayPass: () {
@@ -643,7 +642,9 @@ class HomeScreenState extends State<HomeScreen> {
                   setState(() {});
                 });
               },
-              onTap10MinFree: (){Get.back();
+              onTap10MinFree: (){
+            Get.back();
+            Get.find<HomeController>().stopBackgroundSound();
             Get.to(()=>FreePassAdsScreen(game: 'medpardy'));
               },
               onTapDayPass: () {
@@ -690,7 +691,9 @@ class HomeScreenState extends State<HomeScreen> {
                   setState(() {});
                 });
               },
-              onTap10MinFree: (){Get.back();
+              onTap10MinFree: (){
+            Get.back();
+            Get.find<HomeController>().stopBackgroundSound();
               Get.to(()=>FreePassAdsScreen(game: 'wow'));
               },
               onTapDayPass: () {
@@ -899,15 +902,20 @@ class HomeScreenState extends State<HomeScreen> {
           homeBlurApi(blurStatus: 0).then((blur){
             showLoader(false);
             if(blur.status==true){
-              getSubscriptionDetailsApi().then((value){
-                // apolloPrint(message: 'Subscription wali api call hui hain');
-                if(value.userData!=null){
-                  LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.userData));
-                  LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.userData!.subscription==1?true:false);
-                  AuthData().getLoginData();
-                  setState(() {});
-                }
-              });
+
+              if(AuthData().userModel?.roleId != 4){
+                getSubscriptionDetailsApi().then((value){
+                  if(value.data!=null){
+                    LocalStorage().setValue(LocalStorage.USER_DATA, jsonEncode(value.data));
+                    LocalStorage().setBoolValue(LocalStorage.IS_PREMIUM, value.data!.subscription==1?true:false);
+                    AuthData().getLoginData();
+                    setState(() {});
+                  }
+                });
+              }
+              else{
+                Get.isRegistered<SettingsCtrl>()? Get.find<SettingsCtrl>().fetchSettings1(): Get.put(SettingsCtrl()).fetchSettings1();
+              }
             }});
         },
         child: CustomPaint(

@@ -1,31 +1,32 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:math';
 
-import 'package:apollo/Dialogues/transparent_dialogue.dart';
-import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
-import 'package:apollo/controllers/home_ctrl.dart';
-import 'package:apollo/custom_widgets/custom_keyboard_game.dart';
-import 'package:apollo/custom_widgets/custom_snakebar.dart';
-import 'package:apollo/resources/Apis/api_models/wheel_for_wellness_model.dart';
+
+
+import 'package:apollo/resources/auth_data.dart';
+import 'package:apollo/screens/game_mode/wheel_of_wellness/wheel_of_wellness_result_screen.dart';
+import 'package:apollo/resources/Apis/api_repository/wheel_for_wellness_result_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/wellness_daily_limit_repo.dart';
 import 'package:apollo/resources/Apis/api_repository/wheel_for_wellness_repo.dart';
-import 'package:apollo/resources/Apis/api_repository/wheel_for_wellness_result_repo.dart';
-
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_color.dart';
-
+import 'package:apollo/resources/Apis/api_models/wheel_for_wellness_model.dart';
+import 'package:apollo/screens/game_mode/wheel_of_wellness/spin_button.dart';
+import 'package:apollo/bottom_sheets/leave_quiz_bottom_sheet.dart';
+import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
+import 'package:apollo/custom_widgets/custom_keyboard_game.dart';
 import 'package:apollo/resources/countdown_timer_wellness.dart';
+import 'package:apollo/Dialogues/transparent_dialogue.dart';
+import 'package:apollo/custom_widgets/custom_snakebar.dart';
 import 'package:apollo/resources/custom_loader.dart';
 import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:apollo/screens/game_mode/wheel_of_wellness/spin_button.dart';
-import 'package:apollo/screens/game_mode/wheel_of_wellness/wheel_of_wellness_result_screen.dart';
+import 'package:apollo/controllers/home_ctrl.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:async';
+import 'dart:math';
+import 'dart:io';
 
 class WheelItem{
   String? item;
@@ -80,7 +81,9 @@ class _WheelOfWellnessScreenState extends State<WheelOfWellnessScreen> {
   Set<String> correctLetters = {};
   Set<String> incorrectLetters = {};
   Future<void> _playConfettiSound({required String sound}) async {
-    await _effectPlayer.play(AssetSource(sound));
+    // if(AuthData().musicONOFF) {
+      await _effectPlayer.play(AssetSource(sound));
+    // }
   }
 
   @override
@@ -143,7 +146,7 @@ class _WheelOfWellnessScreenState extends State<WheelOfWellnessScreen> {
         wheelPoint: stopWheelPoint, lives: lives).then((value){
           if(value.status==true){
 
-            Get.to(WheelOfWellnessResult(showText: 'terrific',correctAns: {
+            Get.to(()=>WheelOfWellnessResult(showText: 'terrific',correctAns: {
             "id": modelWell.data?.id??0,
             "wellness_game_id": modelWell.data?.wellnessGameId??0,
             "hidden_medical_term": modelWell.data?.hiddenMedicalTerm??'',
@@ -457,7 +460,7 @@ class _WheelOfWellnessScreenState extends State<WheelOfWellnessScreen> {
                                                     wheelPoint: stopWheelPoint, lives: lives).then((value){
                                                   if(value.status==true){
 
-                                                    Get.to(WheelOfWellnessResult(showText: 'terrific',correctAns: {
+                                                    Get.to(()=>WheelOfWellnessResult(showText: 'terrific',correctAns: {
                                                       "id": modelWell.data?.id??0,
                                                       "wellness_game_id": modelWell.data?.wellnessGameId??0,
                                                       "hidden_medical_term": modelWell.data?.hiddenMedicalTerm??'',

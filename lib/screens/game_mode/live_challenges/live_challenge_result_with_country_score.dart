@@ -1,19 +1,18 @@
-
-import 'dart:io';
-import 'dart:async';
-import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
-import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:apollo/resources/utils.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:apollo/resources/app_color.dart';
-import 'package:apollo/resources/app_assets.dart';
-import 'package:apollo/resources/app_routers.dart';
-import 'package:apollo/resources/text_utility.dart';
-import 'package:apollo/screens/ads/ads_example.dart';
-import 'package:apollo/custom_widgets/app_button.dart';
 import 'package:apollo/resources/Apis/api_models/live_challenge_final_result.dart';
+import 'package:apollo/custom_widgets/app_button.dart';
+import 'package:apollo/screens/ads/ads_example.dart';
+import 'package:apollo/resources/text_utility.dart';
+import 'package:apollo/resources/app_routers.dart';
+import 'package:apollo/resources/app_assets.dart';
+import 'package:apollo/resources/app_color.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:apollo/resources/utils.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
+import 'dart:async';
+import 'dart:io';
 
 class LivePlayResultWithScoreScreen extends StatefulWidget {
   List<LiveChallengeFinalResult>? resultData;

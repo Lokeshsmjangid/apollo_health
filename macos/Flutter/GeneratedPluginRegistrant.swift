@@ -7,6 +7,7 @@ import Foundation
 
 import animated_item
 import app_links
+import app_set_id
 import audioplayers_darwin
 import connectivity_plus
 import file_selector_macos
@@ -28,6 +29,7 @@ import webview_flutter_wkwebview
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   AnimatedItemPlugin.register(with: registry.registrar(forPlugin: "AnimatedItemPlugin"))
   AppLinksMacosPlugin.register(with: registry.registrar(forPlugin: "AppLinksMacosPlugin"))
+  AppSetIdPlugin.register(with: registry.registrar(forPlugin: "AppSetIdPlugin"))
   AudioplayersDarwinPlugin.register(with: registry.registrar(forPlugin: "AudioplayersDarwinPlugin"))
   ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))

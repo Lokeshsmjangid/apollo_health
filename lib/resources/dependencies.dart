@@ -18,6 +18,7 @@ import 'package:apollo/controllers/gm_solo_play_ctrl.dart';
 import 'package:apollo/controllers/group_challengers_ctrl.dart';
 import 'package:apollo/controllers/group_play_frinds_ctrl.dart';
 import 'package:apollo/controllers/group_play_request_ctrl.dart';
+import 'package:apollo/controllers/guest_code_ctrl.dart';
 import 'package:apollo/controllers/home_ctrl.dart';
 import 'package:apollo/controllers/leaderboard_ctrl.dart';
 import 'package:apollo/controllers/live_challenge_quiz_ctrl.dart';
@@ -117,6 +118,10 @@ Future<void> init() async {
   // Get.lazyPut<SubscriptionCtrl>(() => SubscriptionCtrl(), fenix: true);
   Get.lazyPut<PremiumPlanCtrl>(() => PremiumPlanCtrl(), fenix: true);
   // Get.lazyPut<NewSubscriptionCtrl>(() => NewSubscriptionCtrl(), fenix: true);
+
+
+  // Guest Screens
+  Get.lazyPut<GuestCodeCtrl>(() => GuestCodeCtrl(), fenix: true);
 
 
 }

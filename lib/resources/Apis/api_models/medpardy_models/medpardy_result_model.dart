@@ -37,7 +37,7 @@ class MedpardyResultModel {
 }
 
 class MedpardyResult {
-  String? player;
+  dynamic player;
   String? ernPoint;
   int? correctAnswers;
   int? percentage;

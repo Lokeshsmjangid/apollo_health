@@ -36,11 +36,17 @@ class EditProfileController extends GetxController{
       locationCtrl.text = user?.country??'';
       countryFlag = user?.countryFlag??'';
       profileImage = user?.profileImage??'';
-      Future.delayed(Duration(milliseconds: 800),(){
-        AgeGroupModel age = ageGroupList.firstWhere((e)=> e.age==user?.ageGroup);
+      Future.delayed(Duration(milliseconds: 800), (){
+        // AgeGroupModel age = ageGroupList.firstWhere((e)=> e.age==user?.ageGroup);
+        // ageGroup = age;
+        // update();
+        AgeGroupModel? age = ageGroupList.firstWhere(
+              (e) => e.age == user?.ageGroup,
+          orElse: () => ageGroupList.first, // default value if not found
+        );
         ageGroup = age;
         update();
-      });
+      } );
 
     }
   }
